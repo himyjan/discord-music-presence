@@ -76,13 +76,18 @@ jobs:
           TARGET: ${{ matrix.target }}
         run: |
           set -euo pipefail
-          package_root="$RUNNER_TEMP/package"
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            runner_temp="$(cygpath -u "$RUNNER_TEMP")"
+          else
+            runner_temp="$RUNNER_TEMP"
+          fi
+          package_root="$runner_temp/package"
           package_dir="$package_root/music-presence"
           mkdir -p "$package_dir"
           cp "app/target/$TARGET/release/music-presence$EXECUTABLE" \
             "$package_dir/music-presence$EXECUTABLE"
           cp app/README.md "$package_dir/README.md"
-          tar -czf "$RUNNER_TEMP/$ASSET" -C "$package_root" music-presence
+          tar -czf "$runner_temp/$ASSET" -C "$package_root" music-presence
 
       - name: Upload build archive
         uses: actions/upload-artifact@v4
