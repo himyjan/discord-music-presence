@@ -1,0 +1,147 @@
+import { Button, LineEdit } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "Music Presence";
+    preferred-width: 720px;
+    preferred-height: 640px;
+    min-width: 560px;
+    min-height: 560px;
+    background: #11131a;
+
+    in-out property<string> application-id: "";
+    in-out property<string> activity-details: "Listening to music";
+    in-out property<string> activity-state: "";
+    in-out property<string> connection-status: "Disconnected";
+    in-out property<bool> connected: false;
+    in-out property<bool> connecting: false;
+
+    callback connect-requested(string, string, string);
+    callback disconnect-requested();
+
+    VerticalLayout {
+        padding: 28px;
+        spacing: 22px;
+
+        VerticalLayout {
+            spacing: 4px;
+
+            Text {
+                text: "Music Presence";
+                color: #f4f5f8;
+                font-size: 24px;
+                font-weight: 700;
+            }
+            Text {
+                text: "Rich Presence through the Discord desktop app";
+                color: #a4a8b5;
+                font-size: 14px;
+            }
+        }
+
+        Rectangle {
+            background: #191c25;
+            border-radius: 16px;
+            min-height: 408px;
+
+            VerticalLayout {
+                padding: 22px;
+                spacing: 14px;
+
+                Text {
+                    text: "Connect";
+                    color: #f4f5f8;
+                    font-size: 19px;
+                    font-weight: 700;
+                }
+                Text {
+                    text: "Discord desktop must be running. This uses local IPC and your public Application ID; it does not ask for or store your Discord account token.";
+                    color: #a4a8b5;
+                    font-size: 13px;
+                    wrap: word-wrap;
+                }
+
+                Text {
+                    text: "Application ID";
+                    color: #d3d6df;
+                    font-size: 13px;
+                }
+                LineEdit {
+                    text <=> root.application-id;
+                    placeholder-text: "Numeric ID from the Discord Developer Portal";
+                    enabled: !root.connected && !root.connecting;
+                    min-height: 38px;
+                }
+
+                Text {
+                    text: "Details";
+                    color: #d3d6df;
+                    font-size: 13px;
+                }
+                LineEdit {
+                    text <=> root.activity-details;
+                    placeholder-text: "Listening to music";
+                    enabled: !root.connected && !root.connecting;
+                    min-height: 38px;
+                }
+
+                Text {
+                    text: "State (optional)";
+                    color: #d3d6df;
+                    font-size: 13px;
+                }
+                LineEdit {
+                    text <=> root.activity-state;
+                    placeholder-text: "Artist or additional status";
+                    enabled: !root.connected && !root.connecting;
+                    min-height: 38px;
+                }
+
+                HorizontalLayout {
+                    spacing: 10px;
+
+                    if (!root.connected && !root.connecting): Button {
+                        text: "Connect";
+                        clicked => {
+                            root.connecting = true;
+                            root.connection-status = "Connecting to Discord desktop...";
+                            root.connect-requested(
+                                root.application-id,
+                                root.activity-details,
+                                root.activity-state
+                            );
+                        }
+                    }
+
+                    if (root.connecting): Button {
+                        text: "Connecting...";
+                        enabled: false;
+                    }
+
+                    if (root.connected): Button {
+                        text: "Disconnect";
+                        clicked => {
+                            root.connecting = true;
+                            root.connection-status = "Disconnecting...";
+                            root.disconnect-requested();
+                        }
+                    }
+
+                    Text {
+                        text: root.connection-status;
+                        color: root.connected ? #72d49a : #a4a8b5;
+                        font-size: 13px;
+                        vertical-alignment: center;
+                        wrap: word-wrap;
+                    }
+                }
+            }
+        }
+
+        Text {
+            text: "This preview sets a manual activity only. Media-player detection, album artwork, settings, tray support and updates are not implemented yet.";
+            color: #777d8c;
+            font-size: 13px;
+            wrap: word-wrap;
+        }
+    }
+}

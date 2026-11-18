@@ -1,0 +1,19 @@
+[package]
+name = "music-presence"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.95"
+description = "Rust and Slint desktop UI scaffold for Music Presence"
+
+[dependencies]
+discord-rich-presence = "1.1"
+slint = { version = "1.19", default-features = false, features = ["std", "backend-winit", "renderer-femtovg", "accessibility", "compat-1-18"] }
+
+[build-dependencies]
+slint-build = "1.19"
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+strip = "symbols"
