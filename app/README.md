@@ -35,9 +35,15 @@ The release profile uses size-oriented optimization and link-time optimization.
 Measure the generated package and runtime resource use on each target before
 making performance claims.
 
+## GitHub prereleases
+
+Pushing a tag like `slint-v0.1.0` runs the multi-platform release workflow and
+publishes a prerelease with archives for each target below. Running the
+workflow manually builds the archives without publishing a release.
+
 ## Current targets
 
 The project is configured for the platforms currently distributed by Music
 Presence: Windows x86-64, macOS ARM64 and x86-64, and Linux x86-64. This
-scaffold has only been built on the host platform so far; it still needs native
-build and runtime validation on each listed target.
+workflow builds on native runners for each listed target. Each build still
+needs runtime and feature validation on its target platform.
