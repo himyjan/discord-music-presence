@@ -1,12 +1,23 @@
 mod bot_gateway;
 mod discord_rpc;
+mod oauth;
 mod presence;
+mod scrobbling;
 mod token_store;
 
 use bot_gateway::Command as GatewayCommand;
 use discord_rpc::Command as RpcCommand;
+use oauth::Command as OAuthCommand;
 use presence::{PresenceDraft, youtube_music_search_url};
-use std::{sync::mpsc, thread};
+use scrobbling::{Command as ScrobbleCommand, Provider as ScrobbleProvider, ScrobbleTrack};
+use std::{
+    sync::{
+        Arc,
+        atomic::{AtomicBool, Ordering},
+        mpsc,
+    },
+    thread,
+};
 
 slint::include_modules!();
 
@@ -28,7 +39,31 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .name("discord-bot-gateway".into())
         .spawn(move || bot_gateway::run_worker(gateway_rx, gateway_ui))?;
 
+    let (oauth_tx, oauth_rx) = mpsc::channel();
+    let oauth_ui = window.as_weak();
+    let oauth_stopping = Arc::new(AtomicBool::new(false));
+    let oauth_worker_stopping = oauth_stopping.clone();
+    let oauth_cancel_login = Arc::new(AtomicBool::new(false));
+    let oauth_worker_cancel_login = oauth_cancel_login.clone();
+    let oauth_worker = thread::Builder::new()
+        .name("discord-oauth2".into())
+        .spawn(move || {
+            oauth::run_worker(
+                oauth_rx,
+                oauth_ui,
+                oauth_worker_stopping,
+                oauth_worker_cancel_login,
+            )
+        })?;
+
+    let (scrobble_tx, scrobble_rx) = mpsc::channel();
+    let scrobble_ui = window.as_weak();
+    let scrobble_worker = thread::Builder::new()
+        .name("music-scrobbling".into())
+        .spawn(move || scrobbling::run_worker(scrobble_rx, scrobble_ui))?;
+
     let connect_tx = rpc_tx.clone();
+    let connect_scrobble_tx = scrobble_tx.clone();
     let connect_ui = window.as_weak();
     window.on_connect_requested(move || {
         let Some(window) = connect_ui.upgrade() else {
@@ -43,6 +78,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                     window.set_connected(false);
                     window.set_connecting(false);
                     window.set_connection_status(format!("Could not connect: {error}").into());
+                } else {
+                    set_scrobble_track(&connect_scrobble_tx, &window);
                 }
             }
             Err(error) => {
@@ -65,6 +102,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let update_rpc_tx = rpc_tx.clone();
     let update_gateway_tx = gateway_tx.clone();
+    let update_scrobble_tx = scrobble_tx.clone();
     let update_ui = window.as_weak();
     window.on_presence_update_requested(move || {
         let Some(window) = update_ui.upgrade() else {
@@ -85,6 +123,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                         format!("Could not update bot activity: {error}").into(),
                     );
                 }
+                set_scrobble_track(&update_scrobble_tx, &window);
             }
             Err(error) => window.set_connection_status(error.into()),
         }
@@ -110,6 +149,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     });
 
     let login_tx = gateway_tx.clone();
+    let login_scrobble_tx = scrobble_tx.clone();
     let login_ui = window.as_weak();
     window.on_gateway_login_requested(move || {
         let Some(window) = login_ui.upgrade() else {
@@ -125,6 +165,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 if let Err(error) = login_tx.send(command) {
                     window.set_gateway_connecting(false);
                     window.set_gateway_status(format!("Could not start bot login: {error}").into());
+                } else {
+                    set_scrobble_track(&login_scrobble_tx, &window);
                 }
             }
             Err(error) => {
@@ -145,16 +187,195 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    let oauth_login_tx = oauth_tx.clone();
+    let oauth_login_ui = window.as_weak();
+    let oauth_cancel_login_on_start = oauth_cancel_login.clone();
+    window.on_oauth_login_requested(move || {
+        let Some(window) = oauth_login_ui.upgrade() else {
+            return;
+        };
+        oauth_cancel_login_on_start.store(false, Ordering::Relaxed);
+        if let Err(error) =
+            oauth_login_tx.send(OAuthCommand::Login(window.get_application_id().to_string()))
+        {
+            window.set_oauth_connecting(false);
+            window
+                .set_oauth_status(format!("Could not start Discord OAuth2 login: {error}").into());
+        }
+    });
+
+    let oauth_logout_tx = oauth_tx.clone();
+    let oauth_logout_ui = window.as_weak();
+    window.on_oauth_logout_requested(move || {
+        if let Err(error) = oauth_logout_tx.send(OAuthCommand::Logout)
+            && let Some(window) = oauth_logout_ui.upgrade()
+        {
+            window.set_oauth_connecting(false);
+            window.set_oauth_status(format!("Could not log out of Discord: {error}").into());
+        }
+    });
+
+    let cancel_login_ui = window.as_weak();
+    window.on_oauth_cancel_requested(move || {
+        oauth_cancel_login.store(true, Ordering::Relaxed);
+        if let Some(window) = cancel_login_ui.upgrade() {
+            window.set_oauth_status("Canceling browser sign-in...".into());
+        }
+    });
+
+    let open_oauth_link_ui = window.as_weak();
+    window.on_oauth_open_authorize_url_requested(move || {
+        let Some(window) = open_oauth_link_ui.upgrade() else {
+            return;
+        };
+        let authorize_url = window.get_oauth_authorize_url().to_string();
+        match oauth::open_authorization_url(&authorize_url) {
+            Ok(()) => {
+                window.set_oauth_status("Opened the Discord sign-in link in your browser.".into())
+            }
+            Err(error) => window.set_oauth_status(
+                format!("Could not open the browser: {error}. Copy the link above into a browser.")
+                    .into(),
+            ),
+        }
+    });
+
+    let scrobble_lastfm_authorize_tx = scrobble_tx.clone();
+    let scrobble_lastfm_authorize_ui = window.as_weak();
+    window.on_scrobble_lastfm_authorize_requested(move || {
+        let Some(window) = scrobble_lastfm_authorize_ui.upgrade() else {
+            return;
+        };
+        send_scrobble_command(
+            &scrobble_lastfm_authorize_tx,
+            &window,
+            ScrobbleCommand::Authorize {
+                provider: ScrobbleProvider::LastFm,
+                api_key: window.get_scrobble_lastfm_api_key().to_string(),
+                api_secret: window.get_scrobble_lastfm_api_secret().to_string(),
+            },
+            ScrobbleProvider::LastFm,
+        );
+    });
+
+    let scrobble_lastfm_finish_tx = scrobble_tx.clone();
+    let scrobble_lastfm_finish_ui = window.as_weak();
+    window.on_scrobble_lastfm_finish_requested(move || {
+        if let Some(window) = scrobble_lastfm_finish_ui.upgrade() {
+            send_scrobble_command(
+                &scrobble_lastfm_finish_tx,
+                &window,
+                ScrobbleCommand::CompleteAuthorization(ScrobbleProvider::LastFm),
+                ScrobbleProvider::LastFm,
+            );
+        }
+    });
+
+    let scrobble_lastfm_disconnect_tx = scrobble_tx.clone();
+    let scrobble_lastfm_disconnect_ui = window.as_weak();
+    window.on_scrobble_lastfm_disconnect_requested(move || {
+        if let Some(window) = scrobble_lastfm_disconnect_ui.upgrade() {
+            send_scrobble_command(
+                &scrobble_lastfm_disconnect_tx,
+                &window,
+                ScrobbleCommand::Disconnect(ScrobbleProvider::LastFm),
+                ScrobbleProvider::LastFm,
+            );
+        }
+    });
+
+    let scrobble_listenbrainz_save_tx = scrobble_tx.clone();
+    let scrobble_listenbrainz_save_ui = window.as_weak();
+    window.on_scrobble_listenbrainz_save_requested(move || {
+        let Some(window) = scrobble_listenbrainz_save_ui.upgrade() else {
+            return;
+        };
+        send_scrobble_command(
+            &scrobble_listenbrainz_save_tx,
+            &window,
+            ScrobbleCommand::SaveListenBrainzToken(
+                window.get_scrobble_listenbrainz_token().to_string(),
+            ),
+            ScrobbleProvider::ListenBrainz,
+        );
+    });
+
+    let scrobble_listenbrainz_disconnect_tx = scrobble_tx.clone();
+    let scrobble_listenbrainz_disconnect_ui = window.as_weak();
+    window.on_scrobble_listenbrainz_disconnect_requested(move || {
+        if let Some(window) = scrobble_listenbrainz_disconnect_ui.upgrade() {
+            send_scrobble_command(
+                &scrobble_listenbrainz_disconnect_tx,
+                &window,
+                ScrobbleCommand::Disconnect(ScrobbleProvider::ListenBrainz),
+                ScrobbleProvider::ListenBrainz,
+            );
+        }
+    });
+
+    let scrobble_librefm_authorize_tx = scrobble_tx.clone();
+    let scrobble_librefm_authorize_ui = window.as_weak();
+    window.on_scrobble_librefm_authorize_requested(move || {
+        let Some(window) = scrobble_librefm_authorize_ui.upgrade() else {
+            return;
+        };
+        send_scrobble_command(
+            &scrobble_librefm_authorize_tx,
+            &window,
+            ScrobbleCommand::Authorize {
+                provider: ScrobbleProvider::LibreFm,
+                api_key: window.get_scrobble_librefm_api_key().to_string(),
+                api_secret: window.get_scrobble_librefm_api_secret().to_string(),
+            },
+            ScrobbleProvider::LibreFm,
+        );
+    });
+
+    let scrobble_librefm_finish_tx = scrobble_tx.clone();
+    let scrobble_librefm_finish_ui = window.as_weak();
+    window.on_scrobble_librefm_finish_requested(move || {
+        if let Some(window) = scrobble_librefm_finish_ui.upgrade() {
+            send_scrobble_command(
+                &scrobble_librefm_finish_tx,
+                &window,
+                ScrobbleCommand::CompleteAuthorization(ScrobbleProvider::LibreFm),
+                ScrobbleProvider::LibreFm,
+            );
+        }
+    });
+
+    let scrobble_librefm_disconnect_tx = scrobble_tx.clone();
+    let scrobble_librefm_disconnect_ui = window.as_weak();
+    window.on_scrobble_librefm_disconnect_requested(move || {
+        if let Some(window) = scrobble_librefm_disconnect_ui.upgrade() {
+            send_scrobble_command(
+                &scrobble_librefm_disconnect_tx,
+                &window,
+                ScrobbleCommand::Disconnect(ScrobbleProvider::LibreFm),
+                ScrobbleProvider::LibreFm,
+            );
+        }
+    });
+
     let run_result = window.run();
     drop(window);
+    oauth_stopping.store(true, Ordering::Relaxed);
     drop(rpc_tx);
     drop(gateway_tx);
+    drop(oauth_tx);
+    drop(scrobble_tx);
 
     if rpc_worker.join().is_err() {
         eprintln!("Discord Rich Presence worker stopped unexpectedly");
     }
     if gateway_worker.join().is_err() {
         eprintln!("Discord bot Gateway worker stopped unexpectedly");
+    }
+    if oauth_worker.join().is_err() {
+        eprintln!("Discord OAuth2 worker stopped unexpectedly");
+    }
+    if scrobble_worker.join().is_err() {
+        eprintln!("Scrobbling worker stopped unexpectedly");
     }
 
     run_result?;
@@ -170,6 +391,69 @@ fn restore_saved_token(window: &MainWindow) -> Result<(), String> {
         }
         None => Ok(()),
     }
+}
+
+fn set_scrobble_track(tx: &mpsc::Sender<ScrobbleCommand>, window: &MainWindow) {
+    let track = match scrobble_track_from_ui(window) {
+        Ok(track) => track,
+        Err(error) => {
+            window.set_scrobble_lastfm_status(error.clone().into());
+            window.set_scrobble_listenbrainz_status(error.clone().into());
+            window.set_scrobble_librefm_status(error.into());
+            return;
+        }
+    };
+    if let Err(error) = tx.send(ScrobbleCommand::SetTrack(track)) {
+        let message = format!("Could not update scrobbling: {error}");
+        window.set_scrobble_lastfm_status(message.clone().into());
+        window.set_scrobble_listenbrainz_status(message.clone().into());
+        window.set_scrobble_librefm_status(message.into());
+    }
+}
+
+fn send_scrobble_command(
+    tx: &mpsc::Sender<ScrobbleCommand>,
+    window: &MainWindow,
+    command: ScrobbleCommand,
+    provider: ScrobbleProvider,
+) {
+    if let Err(error) = tx.send(command) {
+        let message = format!("Could not start scrobbling action: {error}");
+        match provider {
+            ScrobbleProvider::LastFm => {
+                window.set_scrobble_lastfm_busy(false);
+                window.set_scrobble_lastfm_status(message.into());
+            }
+            ScrobbleProvider::ListenBrainz => {
+                window.set_scrobble_listenbrainz_busy(false);
+                window.set_scrobble_listenbrainz_status(message.into());
+            }
+            ScrobbleProvider::LibreFm => {
+                window.set_scrobble_librefm_busy(false);
+                window.set_scrobble_librefm_status(message.into());
+            }
+        }
+    }
+}
+
+fn scrobble_track_from_ui(window: &MainWindow) -> Result<Option<ScrobbleTrack>, String> {
+    if window.get_rpc_mode() != "Media RPC" {
+        return Ok(None);
+    }
+    let kind = window.get_media_kind();
+    if kind != "Song" && kind != "Music video" {
+        return Ok(None);
+    }
+    let duration = parse_seconds(&window.get_media_duration(), "duration")?;
+    let position = parse_seconds(&window.get_media_position(), "position")?;
+    Ok(Some(ScrobbleTrack {
+        title: window.get_media_title().to_string(),
+        artist: window.get_media_artist().to_string(),
+        album: window.get_media_album().to_string(),
+        duration_seconds: (duration > 0).then_some(duration),
+        position_seconds: position,
+        playing: window.get_media_playing(),
+    }))
 }
 
 fn presence_from_ui(window: &MainWindow) -> Result<PresenceDraft, String> {

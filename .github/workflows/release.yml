@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: xcode-27
+          - os: macos-27-apple-silicon
             target: aarch64-apple-darwin
             label: macOS 27 ARM64
             executable: ""
@@ -40,7 +40,7 @@ jobs:
 
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Install Linux build dependencies
         if: runner.os == 'Linux'
@@ -90,7 +90,7 @@ jobs:
           tar -czf "$runner_temp/$ASSET" -C "$package_root" music-presence
 
       - name: Upload build archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.asset }}
           path: ${{ runner.temp }}/music-presence-${{ github.ref_name }}-${{ matrix.asset }}.tar.gz
@@ -107,14 +107,14 @@ jobs:
 
     steps:
       - name: Download build archives
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           path: dist
           pattern: release-*
           merge-multiple: true
 
       - name: Publish GitHub prerelease
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           name: Music Presence Slint Preview ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}

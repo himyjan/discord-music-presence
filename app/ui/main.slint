@@ -35,6 +35,39 @@ export component MainWindow inherits Window {
     in-out property<string> gateway-status: "Not logged in";
     in-out property<bool> gateway-connected: false;
     in-out property<bool> gateway-connecting: false;
+    in-out property<string> oauth-status: "Not signed in";
+    in-out property<bool> oauth-connected: false;
+    in-out property<bool> oauth-connecting: false;
+    in-out property<bool> oauth-has-session: false;
+    in-out property<string> oauth-authorize-url: "";
+    in-out property<string> current-page: "Activity";
+    in-out property<bool> oauth-profile-loaded: false;
+    in-out property<string> oauth-display-name: "";
+    in-out property<string> oauth-username: "";
+    in-out property<string> oauth-user-id: "";
+    in-out property<string> oauth-initials: "";
+    in-out property<color> oauth-accent-color: #232428;
+    in-out property<string> oauth-profile-art-status: "";
+    in-out property<bool> oauth-has-avatar: false;
+    in-out property<bool> oauth-has-banner: false;
+    in-out property<image> oauth-avatar;
+    in-out property<image> oauth-banner;
+    in-out property<string> scrobble-lastfm-api-key: "";
+    in-out property<string> scrobble-lastfm-api-secret: "";
+    in-out property<bool> scrobble-lastfm-connected: false;
+    in-out property<bool> scrobble-lastfm-busy: false;
+    in-out property<bool> scrobble-lastfm-pending: false;
+    in-out property<string> scrobble-lastfm-status: "Not connected";
+    in-out property<string> scrobble-listenbrainz-token: "";
+    in-out property<bool> scrobble-listenbrainz-connected: false;
+    in-out property<bool> scrobble-listenbrainz-busy: false;
+    in-out property<string> scrobble-listenbrainz-status: "Not connected";
+    in-out property<string> scrobble-librefm-api-key: "";
+    in-out property<string> scrobble-librefm-api-secret: "";
+    in-out property<bool> scrobble-librefm-connected: false;
+    in-out property<bool> scrobble-librefm-busy: false;
+    in-out property<bool> scrobble-librefm-pending: false;
+    in-out property<string> scrobble-librefm-status: "Not connected";
 
     callback connect-requested();
     callback disconnect-requested();
@@ -42,6 +75,18 @@ export component MainWindow inherits Window {
     callback generate-youtube-music-link();
     callback gateway-login-requested();
     callback gateway-logout-requested();
+    callback oauth-login-requested();
+    callback oauth-logout-requested();
+    callback oauth-cancel-requested();
+    callback oauth-open-authorize-url-requested();
+    callback scrobble-lastfm-authorize-requested();
+    callback scrobble-lastfm-finish-requested();
+    callback scrobble-lastfm-disconnect-requested();
+    callback scrobble-listenbrainz-save-requested();
+    callback scrobble-listenbrainz-disconnect-requested();
+    callback scrobble-librefm-authorize-requested();
+    callback scrobble-librefm-finish-requested();
+    callback scrobble-librefm-disconnect-requested();
 
     ScrollView {
         width: parent.width;
@@ -68,16 +113,41 @@ export component MainWindow inherits Window {
                 }
             }
 
-            Rectangle {
-                background: #191c25;
-                border-radius: 16px;
+            HorizontalLayout {
+                spacing: 10px;
+                Button {
+                    text: "Manual RPC";
+                    clicked => {
+                        root.current-page = "Activity";
+                    }
+                }
+                Button {
+                    text: "Discord OAuth2";
+                    clicked => {
+                        root.current-page = "Profile";
+                    }
+                }
+                Button {
+                    text: "Scrobbling";
+                    clicked => {
+                        root.current-page = "Scrobbling";
+                    }
+                }
+            }
+
+            if (root.current-page == "Activity"): VerticalLayout {
+                spacing: 18px;
+
+                Rectangle {
+                    background: #191c25;
+                    border-radius: 16px;
 
                 VerticalLayout {
                     padding: 20px;
                     spacing: 12px;
 
                     Text {
-                        text: "Activity";
+                        text: "Manual RPC";
                         color: #f4f5f8;
                         font-size: 18px;
                         font-weight: 700;
@@ -90,6 +160,12 @@ export component MainWindow inherits Window {
 
                     if (root.rpc-mode == "Custom RPC"): VerticalLayout {
                         spacing: 10px;
+                        Text {
+                            text: "Manually set the activity name, details, state, and type.";
+                            color: #a4a8b5;
+                            font-size: 13px;
+                            wrap: word-wrap;
+                        }
                         LineEdit {
                             text <=> root.activity-name;
                             placeholder-text: "Activity name";
@@ -292,6 +368,12 @@ export component MainWindow inherits Window {
                         font-size: 13px;
                         wrap: word-wrap;
                     }
+                    Button {
+                        text: "Open personal-account OAuth2 sign-in";
+                        clicked => {
+                            root.current-page = "Profile";
+                        }
+                    }
                     LineEdit {
                         text <=> root.gateway-token;
                         input-type: InputType.password;
@@ -329,6 +411,397 @@ export component MainWindow inherits Window {
                             color: root.gateway-connected ? #72d49a : #a4a8b5;
                             vertical-alignment: center;
                             wrap: word-wrap;
+                        }
+                    }
+                }
+                }
+
+                if (root.current-page == "Profile"): VerticalLayout {
+                spacing: 18px;
+
+                Rectangle {
+                    background: #191c25;
+                    border-radius: 16px;
+
+                    VerticalLayout {
+                        padding: 20px;
+                        spacing: 12px;
+                        Text {
+                            text: "Discord account";
+                            color: #f4f5f8;
+                            font-size: 18px;
+                            font-weight: 700;
+                        }
+                        Text {
+                            text: "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your Discord profile or send activity.";
+                            color: #a4a8b5;
+                            font-size: 13px;
+                            wrap: word-wrap;
+                        }
+                        LineEdit {
+                            text <=> root.application-id;
+                            placeholder-text: "Discord Application ID";
+                            enabled: !root.oauth-connecting;
+                        }
+                        Text {
+                            text: "Register http://127.0.0.1:49153/oauth/callback as an OAuth2 redirect URI for this application.";
+                            color: #818797;
+                            font-size: 12px;
+                            wrap: word-wrap;
+                        }
+                        HorizontalLayout {
+                            spacing: 10px;
+                            if (!root.oauth-connected && !root.oauth-connecting): Button {
+                                text: "Login with Discord";
+                                clicked => {
+                                    root.oauth-connecting = true;
+                                    root.oauth-status = "Opening browser...";
+                                    root.oauth-login-requested();
+                                }
+                            }
+                            if (root.oauth-connecting): Button {
+                                text: "Cancel";
+                                clicked => {
+                                    root.oauth-status = "Canceling browser sign-in...";
+                                    root.oauth-cancel-requested();
+                                }
+                            }
+                            if (root.oauth-connecting && root.oauth-authorize-url != ""): Button {
+                                text: "Open Discord sign-in link";
+                                clicked => {
+                                    root.oauth-open-authorize-url-requested();
+                                }
+                            }
+                            if (root.oauth-has-session && !root.oauth-connecting): Button {
+                                text: "Logout";
+                                clicked => {
+                                    root.oauth-connecting = true;
+                                    root.oauth-status = "Signing out...";
+                                    root.oauth-logout-requested();
+                                }
+                            }
+                            Text {
+                                text: root.oauth-status;
+                                color: root.oauth-connected ? #72d49a : #a4a8b5;
+                                vertical-alignment: center;
+                                wrap: word-wrap;
+                            }
+                        }
+                        if (root.oauth-connecting && root.oauth-authorize-url != ""): VerticalLayout {
+                            spacing: 6px;
+                            Text {
+                                text: "If the browser did not open, copy this link into a browser or open it again:";
+                                color: #818797;
+                                font-size: 12px;
+                                wrap: word-wrap;
+                            }
+                            LineEdit {
+                                text <=> root.oauth-authorize-url;
+                                read-only: true;
+                            }
+                        }
+                    }
+                }
+
+                if (root.oauth-profile-loaded): Rectangle {
+                    background: #191c25;
+                    border-radius: 16px;
+
+                    VerticalLayout {
+                        padding: 18px;
+                        spacing: 12px;
+                        Text {
+                            text: "Profile preview";
+                            color: #f4f5f8;
+                            font-size: 18px;
+                            font-weight: 700;
+                        }
+                        Rectangle {
+                            height: 140px;
+                            background: root.oauth-accent-color;
+                            border-radius: 12px;
+                            if (root.oauth-has-banner): Image {
+                                source: root.oauth-banner;
+                                width: parent.width;
+                                height: parent.height;
+                                image-fit: ImageFit.cover;
+                            }
+                        }
+                        HorizontalLayout {
+                            spacing: 14px;
+                            if (root.oauth-has-avatar): Image {
+                                source: root.oauth-avatar;
+                                width: 84px;
+                                height: 84px;
+                                image-fit: ImageFit.cover;
+                            }
+                            if (!root.oauth-has-avatar): Rectangle {
+                                width: 84px;
+                                height: 84px;
+                                border-radius: 42px;
+                                background: #5865f2;
+                                Text {
+                                    text: root.oauth-initials;
+                                    color: #ffffff;
+                                    font-size: 26px;
+                                    font-weight: 700;
+                                    horizontal-alignment: center;
+                                    vertical-alignment: center;
+                                }
+                            }
+                            VerticalLayout {
+                                spacing: 3px;
+                                Text {
+                                    text: root.oauth-display-name;
+                                    color: #f4f5f8;
+                                    font-size: 22px;
+                                    font-weight: 700;
+                                }
+                                Text {
+                                    text: root.oauth-username;
+                                    color: #b7bac4;
+                                    font-size: 14px;
+                                }
+                            }
+                        }
+                        Text {
+                            text: "User ID: " + root.oauth-user-id;
+                            color: #d3d6df;
+                            font-size: 13px;
+                        }
+                        Text {
+                            text: root.oauth-profile-art-status;
+                            color: #818797;
+                            font-size: 12px;
+                            wrap: word-wrap;
+                        }
+                        Text {
+                            text: "Preview only; profile changes, bio, server roles, and current Discord presence are not fetched.";
+                            color: #818797;
+                            font-size: 12px;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+
+                if (!root.oauth-profile-loaded): Rectangle {
+                    background: #191c25;
+                    border-radius: 16px;
+                    Text {
+                        text: "Sign in to load a preview of your Discord display name, username, avatar, and profile banner.";
+                        color: #a4a8b5;
+                        wrap: word-wrap;
+                        x: 20px;
+                        y: 20px;
+                        width: parent.width - 40px;
+                    }
+                }
+                }
+
+                if (root.current-page == "Scrobbling"): VerticalLayout {
+                    spacing: 18px;
+
+                    Text {
+                        text: "Scrobbling";
+                        color: #f4f5f8;
+                        font-size: 20px;
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Scrobble manually entered songs from the Manual RPC page. A listen is submitted after half the track or four minutes, whichever comes first.";
+                        color: #a4a8b5;
+                        font-size: 13px;
+                        wrap: word-wrap;
+                    }
+
+                    Rectangle {
+                        background: #191c25;
+                        border-radius: 16px;
+                        VerticalLayout {
+                            padding: 20px;
+                            spacing: 10px;
+                            Text {
+                                text: "Last.fm";
+                                color: #f4f5f8;
+                                font-size: 18px;
+                                font-weight: 700;
+                            }
+                            Text {
+                                text: "Enter your Last.fm API key and secret. The session is stored in the OS credential store.";
+                                color: #a4a8b5;
+                                font-size: 13px;
+                                wrap: word-wrap;
+                            }
+                            LineEdit {
+                                text <=> root.scrobble-lastfm-api-key;
+                                placeholder-text: "Last.fm API key";
+                                enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy;
+                            }
+                            LineEdit {
+                                text <=> root.scrobble-lastfm-api-secret;
+                                input-type: InputType.password;
+                                placeholder-text: "Last.fm API secret";
+                                enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy;
+                            }
+                            HorizontalLayout {
+                                spacing: 10px;
+                                if (!root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): Button {
+                                    text: "Authorize Last.fm";
+                                    clicked => {
+                                        root.scrobble-lastfm-busy = true;
+                                        root.scrobble-lastfm-status = "Opening browser...";
+                                        root.scrobble-lastfm-authorize-requested();
+                                    }
+                                }
+                                if (root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy): Button {
+                                    text: "Finish sign-in";
+                                    clicked => {
+                                        root.scrobble-lastfm-busy = true;
+                                        root.scrobble-lastfm-status = "Finishing authorization...";
+                                        root.scrobble-lastfm-finish-requested();
+                                    }
+                                }
+                                if (root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): Button {
+                                    text: "Disconnect";
+                                    clicked => {
+                                        root.scrobble-lastfm-busy = true;
+                                        root.scrobble-lastfm-disconnect-requested();
+                                    }
+                                }
+                                if (root.scrobble-lastfm-busy): Button {
+                                    text: "Working...";
+                                    enabled: false;
+                                }
+                                Text {
+                                    text: root.scrobble-lastfm-status;
+                                    color: root.scrobble-lastfm-connected ? #72d49a : #a4a8b5;
+                                    vertical-alignment: center;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        background: #191c25;
+                        border-radius: 16px;
+                        VerticalLayout {
+                            padding: 20px;
+                            spacing: 10px;
+                            Text {
+                                text: "ListenBrainz";
+                                color: #f4f5f8;
+                                font-size: 18px;
+                                font-weight: 700;
+                            }
+                            Text {
+                                text: "Paste a user token from listenbrainz.org/settings. It is stored in the OS credential store.";
+                                color: #a4a8b5;
+                                font-size: 13px;
+                                wrap: word-wrap;
+                            }
+                            LineEdit {
+                                text <=> root.scrobble-listenbrainz-token;
+                                input-type: InputType.password;
+                                placeholder-text: "ListenBrainz user token";
+                                enabled: !root.scrobble-listenbrainz-busy;
+                            }
+                            HorizontalLayout {
+                                spacing: 10px;
+                                if (!root.scrobble-listenbrainz-busy): Button {
+                                    text: "Save token";
+                                    clicked => {
+                                        root.scrobble-listenbrainz-busy = true;
+                                        root.scrobble-listenbrainz-status = "Saving token...";
+                                        root.scrobble-listenbrainz-save-requested();
+                                    }
+                                }
+                                if (root.scrobble-listenbrainz-connected && !root.scrobble-listenbrainz-busy): Button {
+                                    text: "Disconnect";
+                                    clicked => {
+                                        root.scrobble-listenbrainz-busy = true;
+                                        root.scrobble-listenbrainz-disconnect-requested();
+                                    }
+                                }
+                                if (root.scrobble-listenbrainz-busy): Button {
+                                    text: "Working...";
+                                    enabled: false;
+                                }
+                                Text {
+                                    text: root.scrobble-listenbrainz-status;
+                                    color: root.scrobble-listenbrainz-connected ? #72d49a : #a4a8b5;
+                                    vertical-alignment: center;
+                                    wrap: word-wrap;
+                                }
+                            }
+                        }
+                    }
+
+                    Rectangle {
+                        background: #191c25;
+                        border-radius: 16px;
+                        VerticalLayout {
+                            padding: 20px;
+                            spacing: 10px;
+                            Text {
+                                text: "Libre.fm";
+                                color: #f4f5f8;
+                                font-size: 18px;
+                                font-weight: 700;
+                            }
+                            Text {
+                                text: "Enter your Libre.fm API key and secret. The session is stored in the OS credential store.";
+                                color: #a4a8b5;
+                                font-size: 13px;
+                                wrap: word-wrap;
+                            }
+                            LineEdit {
+                                text <=> root.scrobble-librefm-api-key;
+                                placeholder-text: "Libre.fm API key";
+                                enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy;
+                            }
+                            LineEdit {
+                                text <=> root.scrobble-librefm-api-secret;
+                                input-type: InputType.password;
+                                placeholder-text: "Libre.fm API secret";
+                                enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy;
+                            }
+                            HorizontalLayout {
+                                spacing: 10px;
+                                if (!root.scrobble-librefm-connected && !root.scrobble-librefm-busy): Button {
+                                    text: "Authorize Libre.fm";
+                                    clicked => {
+                                        root.scrobble-librefm-busy = true;
+                                        root.scrobble-librefm-status = "Opening browser...";
+                                        root.scrobble-librefm-authorize-requested();
+                                    }
+                                }
+                                if (root.scrobble-librefm-pending && !root.scrobble-librefm-busy): Button {
+                                    text: "Finish sign-in";
+                                    clicked => {
+                                        root.scrobble-librefm-busy = true;
+                                        root.scrobble-librefm-status = "Finishing authorization...";
+                                        root.scrobble-librefm-finish-requested();
+                                    }
+                                }
+                                if (root.scrobble-librefm-connected && !root.scrobble-librefm-busy): Button {
+                                    text: "Disconnect";
+                                    clicked => {
+                                        root.scrobble-librefm-busy = true;
+                                        root.scrobble-librefm-disconnect-requested();
+                                    }
+                                }
+                                if (root.scrobble-librefm-busy): Button {
+                                    text: "Working...";
+                                    enabled: false;
+                                }
+                                Text {
+                                    text: root.scrobble-librefm-status;
+                                    color: root.scrobble-librefm-connected ? #72d49a : #a4a8b5;
+                                    vertical-alignment: center;
+                                    wrap: word-wrap;
+                                }
+                            }
                         }
                     }
                 }

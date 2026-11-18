@@ -2,7 +2,8 @@
 
 The desktop preview in [`app/`](../app/README.md) implements manually entered
 Custom RPC and Media RPC, Discord desktop IPC, Discord bot Gateway login and
-activity updates, and AES-256-GCM credential persistence. It is not
+activity updates, AES-256-GCM credential persistence, an OAuth2 identity-only
+profile preview, and Last.fm, ListenBrainz and Libre.fm scrobbling. It is not
 feature-complete and does not provide automatic media detection, playback
 control, tray behavior, updates or complete parity with the original
 application.
@@ -35,7 +36,9 @@ app/
     bot_gateway.rs
     discord_rpc.rs
     main.rs
+    oauth.rs
     presence.rs
+    scrobbling.rs
     token_store.rs
   ui/
     main.slint
@@ -145,9 +148,13 @@ implementation under the same conditions, including media detection,
 artwork loading, animation conversion and Discord reconnects.
 
 The current preview supports manually entered activity over Discord desktop
-IPC or a bot Gateway connection. Its media timeline uses user-entered position
-and duration, and its paused state only changes the activity presentation; it
-does not control a player. Before it can replace the existing application,
+IPC or a bot Gateway connection, plus an OAuth2 identity-only profile preview
+and scrobbling to Last.fm, ListenBrainz and Libre.fm. The profile preview uses
+only the `identify` scope and does not send presence updates. Scrobbling uses
+manually entered song metadata and the listen threshold; it does not detect
+player changes. Its media timeline uses user-entered position and duration,
+and its paused state only changes the activity presentation; it does not
+control a player. Before it can replace the existing application,
 implement and test feature parity, settings migration, packaging, updates,
 media detection, tray behavior and Discord connectivity on every target in the
 table. Do not remove the existing implementation until parity and resource

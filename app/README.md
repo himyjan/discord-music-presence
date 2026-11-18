@@ -1,10 +1,10 @@
-# Music Presence — Rust + Slint preview
+missing# Music Presence — Rust + Slint preview
 
 This is a desktop preview of the RPC features, not a feature-complete
-replacement for Music Presence. It supports manually entered Custom RPC and
-Media RPC, activity links, and timeline metadata. Media-player detection,
-playback control, player settings, album-art retrieval, the system tray and
-updates are not implemented.
+replacement for Music Presence. The **Manual RPC** page supports manually
+entered Custom RPC and Media RPC, activity links, and timeline metadata.
+Media-player detection, playback control, player settings, album-art retrieval,
+the system tray and updates are not implemented.
 
 ## Discord connections
 
@@ -16,15 +16,50 @@ updates are not implemented.
   supported. If "Remember bot token" is enabled, AES-256-GCM encrypted token
   data and its key are stored separately in the operating system credential
   store; there is no plaintext fallback.
+- **OAuth2 account sign-in:** Opens Discord in the system browser and uses
+  authorization code with PKCE and the `identify` scope to show a profile
+  preview with the display name, username, user ID, avatar and banner. In the
+  Discord Developer Portal, register
+  `http://127.0.0.1:49153/oauth/callback` as a redirect URI. OAuth2 is separate
+  from bot login and does not update a user's personal activity. The saved
+  access and refresh tokens are stored in the operating system credential
+  store; logout attempts to revoke the token and clears the local session,
+  reporting any credential-store or revocation errors. If the browser does not
+  open automatically, the app displays the authorization URL to copy or reopen.
 
-Pasted OAuth2 user tokens are intentionally unsupported: they are not bot
-tokens and cannot be used to set a user's personal activity through this app.
+OAuth2 credentials are not bot tokens and are never passed to the bot Gateway.
+Personal Rich Presence uses Discord desktop IPC; bot activity uses a bot token.
 
 Media metadata is entered manually. Turning off the Playing option marks the
 activity as paused and removes the RPC timeline; it does not pause the media
 player. The YouTube Music helper creates a search URL from the entered title,
 artist, album or media kind; it does not resolve a canonical song, video,
 album, playlist or channel URL.
+
+To publish a manual activity, open **Manual RPC**, choose **Custom RPC**, fill
+in the activity name and optional details/state, then connect to Discord
+desktop with the public Application ID from the Discord Developer Portal.
+Choose **Media RPC** instead to enter a track or video and its timeline
+manually.
+
+## Scrobbling
+
+The **Scrobbling** page supports Last.fm, ListenBrainz and Libre.fm. Last.fm
+and Libre.fm require an API key and secret from [Last.fm's developer page](https://www.last.fm/api/account/create)
+or [Libre.fm's API key page](https://libre.fm/api-keys.php) (Libre.fm documents
+32-character API keys); enter them and authorize in the browser, then return
+to the app and choose **Finish sign-in**.
+ListenBrainz uses a user token from
+[your settings](https://listenbrainz.org/settings/). All session keys and
+tokens are saved in the OS credential store.
+
+Scrobbling uses the manually entered **Media RPC** track. Enter both a title
+and artist, choose **Song** or **Music video**, and connect the desktop RPC or
+bot Gateway. The app sends a now-playing update when the track starts, then
+submits one listen after half the duration or four minutes, whichever comes
+first; tracks shorter than 30 seconds are ignored. Update the connected
+presence when you change tracks, seek or pause; automatic media-player
+detection is not implemented.
 
 ## Requirements
 
