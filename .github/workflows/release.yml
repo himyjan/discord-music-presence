@@ -17,14 +17,14 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: macos-15
+          - os: xcode-27
             target: aarch64-apple-darwin
-            label: macOS ARM64
+            label: macOS 27 ARM64
             executable: ""
             asset: macos-arm64
-          - os: macos-15-intel
+          - os: macos-26-intel
             target: x86_64-apple-darwin
-            label: macOS x86-64
+            label: macOS 26 x86-64
             executable: ""
             asset: macos-x86_64
           - os: windows-2025
