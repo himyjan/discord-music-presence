@@ -1,16 +1,17 @@
-# Proposed Rust + Slint Project
+# Rust + Slint Preview and Migration Plan
 
-This document describes a proposed Rust and Slint implementation of Music
-Presence. The initial desktop UI scaffold is in [`app/`](../app/README.md), but
-it is not a description of the current application architecture or a
-feature-complete application. The source code needed to validate existing
-implementation details is not present in this checkout.
+The desktop preview in [`app/`](../app/README.md) implements manually entered
+Custom RPC and Media RPC, Discord desktop IPC, Discord bot Gateway login and
+activity updates, and AES-256-GCM credential persistence. It is not
+feature-complete and does not provide automatic media detection, playback
+control, tray behavior, updates or complete parity with the original
+application.
 
-## Build the scaffold
+## Build the preview
 
 From the [`app/`](../app/) directory, run `cargo run` to open the UI or
-`cargo build --release` to produce an optimized binary. The current scaffold
-has not yet been validated on every target operating system.
+`cargo build --release` to produce an optimized binary. Build and runtime
+validation is still required on every target operating system.
 
 ## Goals
 
@@ -24,14 +25,18 @@ has not yet been validated on every target operating system.
 - Keep platform-specific integrations isolated so each operating system can be
   tested and maintained independently.
 
-## Scaffold and planned structure
+## Current and planned structure
 
 ```text
 app/
   Cargo.toml
   build.rs
   src/
+    bot_gateway.rs
+    discord_rpc.rs
     main.rs
+    presence.rs
+    token_store.rs
   ui/
     main.slint
 ```
@@ -40,8 +45,9 @@ The Slint files define the windows and user interactions. Rust owns the
 application lifecycle, integrations, persistence and background work. The UI
 should receive small display models and send user actions through the generated
 Slint APIs; it should not perform media I/O, network requests or image
-conversion. The current scaffold contains only the window and app entry point;
-the following modules are future work as features are ported:
+conversion. The preview keeps Discord IPC, Gateway and credential handling in
+separate Rust modules. The following modules are future work as the remaining
+features are ported:
 
 ```text
 src/
@@ -81,9 +87,10 @@ target: document any platform limitation and test it explicitly.
   use bounded, low-frequency refreshes only where event notifications are not
   available.
 - **Discord layer (`discord/`):** convert normalized playback state into
-  Discord Rich Presence updates through the local Discord desktop IPC and
-  handle connection lifecycle away from the UI thread. This route requires the
-  Discord desktop client; it is not an Android Gateway connection.
+  Discord Rich Presence updates through local desktop IPC or a bot Gateway
+  connection, and handle connection lifecycle away from the UI thread. Desktop
+  IPC requires the Discord desktop client; bot Gateway activity updates affect
+  the bot, not a user's personal profile.
 - **Settings (`settings.rs`):** load, validate and persist global and per-player
   preferences without blocking UI interactions.
 - **Tray (`tray.rs`):** present active, waiting and disabled states using the
@@ -137,10 +144,11 @@ installed package size on each supported operating system. Compare the Slint
 implementation under the same conditions, including media detection,
 artwork loading, animation conversion and Discord reconnects.
 
-The current scaffold supports manually entered activity text over local
-Discord desktop IPC, but does not implement the feature list above. Before it
-can replace the existing application, implement and test feature parity,
-settings migration, packaging, updates, media detection, tray behavior and
-Discord connectivity on every target in the table. Do not remove the existing
-implementation until parity and resource goals have been measured and reviewed
-on all targets.
+The current preview supports manually entered activity over Discord desktop
+IPC or a bot Gateway connection. Its media timeline uses user-entered position
+and duration, and its paused state only changes the activity presentation; it
+does not control a player. Before it can replace the existing application,
+implement and test feature parity, settings migration, packaging, updates,
+media detection, tray behavior and Discord connectivity on every target in the
+table. Do not remove the existing implementation until parity and resource
+goals have been measured and reviewed on all targets.

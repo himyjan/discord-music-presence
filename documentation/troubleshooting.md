@@ -2,24 +2,24 @@
 
 Follow this guide step-by-step to troubleshoot your issue.
 
-* [Check your Discord settings first](#check-your-discord-settings-first)
-* [Media players that don't work out of the box](#media-players-that-dont-work-out-of-the-box)
-* [Web versions of streaming services are not supported yet](#web-versions-of-streaming-services-are-not-supported-yet)
-* [The player is detected, but still no status](#the-player-is-detected-but-still-no-status)
-* [Are you running Discord as administrator?](#are-you-running-discord-as-administrator)
-* [Other edge cases](#other-edge-cases)
-* [If your media player is still not detected](#if-your-media-player-is-still-not-detected)
-* [Your media player does not integrate with your operating system](#your-media-player-does-not-integrate-with-your-operating-system)
-* [Reporting a different problem](#reporting-a-different-problem)
-* [Edge cases](#edge-cases)
-    * [Fully reinstall your media player](#fully-reinstall-your-media-player)
-    * [AppleScript automation is not working on Mac](#applescript-automation-is-not-working-on-mac)
-    * [Custom Windows ISO installs may interfere](#custom-windows-iso-installs-may-interfere)
-    * [Windows tweaks may interfere](#windows-tweaks-may-interfere)
-    * [Windows 10 or later is needed](#windows-10-or-later-is-needed)
-    * [explorer7 is not supported](#explorer7-is-not-supported)
+- [Check your Discord settings first](#check-your-discord-settings-first)
+- [Media players that don't work out of the box](#media-players-that-dont-work-out-of-the-box)
+- [Web versions of streaming services are not supported yet](#web-versions-of-streaming-services-are-not-supported-yet)
+- [The player is detected, but still no status](#the-player-is-detected-but-still-no-status)
+- [Are you running Discord as administrator?](#are-you-running-discord-as-administrator)
+- [Other edge cases](#other-edge-cases)
+- [If your media player is still not detected](#if-your-media-player-is-still-not-detected)
+- [Your media player does not integrate with your operating system](#your-media-player-does-not-integrate-with-your-operating-system)
+- [Reporting a different problem](#reporting-a-different-problem)
+- [Edge cases](#edge-cases)
+  - [Fully reinstall your media player](#fully-reinstall-your-media-player)
+  - [AppleScript automation is not working on Mac](#applescript-automation-is-not-working-on-mac)
+  - [Custom Windows ISO installs may interfere](#custom-windows-iso-installs-may-interfere)
+  - [Windows tweaks may interfere](#windows-tweaks-may-interfere)
+  - [Windows 10 or later is needed](#windows-10-or-later-is-needed)
+  - [explorer7 is not supported](#explorer7-is-not-supported)
 
-# Common Issues 
+# Common Issues
 
 ## Check your Discord settings first
 
@@ -46,7 +46,7 @@ These players require a plugin or helper program:
 
 If you have issues with any of these players,
 please refer to the "Additional notes" in
-[**this document**](https://github.com/ungive/discord-music-presence/blob/master/documentation/supported-media-players.md)
+[**this document**](https://github.com/himyjan/discord-music-presence/blob/master/documentation/supported-media-players.md)
 for instructions on which external plugins or helper programs are required
 to get them to be detected by Music Presence.
 
@@ -64,7 +64,7 @@ That is because these operating systems do not report
 what website the media is being played on,
 which makes it impossible to determine the source.
 Support for browsers will arrive
-[in a future update](https://github.com/ungive/discord-music-presence/issues/5).
+[in a future update](https://github.com/himyjan/discord-music-presence/issues/5).
 
 For now you can try [WebCatalog](https://webcatalog.io)
 to install a website as a desktop application.
@@ -158,7 +158,7 @@ the developers of the media player need to get started:
 ## Reporting a different problem
 
 If you have a different issue, please open a
-[GitHub issue](https://github.com/ungive/discord-music-presence/issues/new/choose)
+[GitHub issue](https://github.com/himyjan/discord-music-presence/issues/new/choose)
 or join the [Discord server](https://discord-invite.musicpresence.app).
 
 ## Edge cases
@@ -211,5 +211,5 @@ If you are using explorer7, you will have to switch back to the Windows 10 explo
 
 If none of these edge cases apply to you,
 feel free to open a
-[GitHub issue](https://github.com/ungive/discord-music-presence/issues/new/choose)
+[GitHub issue](https://github.com/himyjan/discord-music-presence/issues/new/choose)
 or join the [Discord server](https://discord-invite.musicpresence.app).

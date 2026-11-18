@@ -3,14 +3,16 @@
 To install Music Presence, pick the right download for your platform:
 
 <!-- DL_BUTTONS_BEGIN -->
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_windows-installer-x64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-windows-x64-installer.exe)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_windows-zip-x64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-windows-x64.zip)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_mac-dmg-arm64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-mac-arm64.dmg)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_mac-dmg-x86_64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-mac-x86_64.dmg)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_linux-AppImage-x64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.AppImage)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_linux-deb-x64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.deb)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_linux-rpm-x64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.rpm)
-[<img src="https://raw.githubusercontent.com/ungive/discord-music-presence/refs/heads/master/assets/download_linux-tar-gz-x64.png" width="190">](https://github.com/ungive/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.tar.gz)
+
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_windows-installer-x64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-windows-x64-installer.exe)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_windows-zip-x64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-windows-x64.zip)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_mac-dmg-arm64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-mac-arm64.dmg)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_mac-dmg-x86_64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-mac-x86_64.dmg)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_linux-AppImage-x64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.AppImage)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_linux-deb-x64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.deb)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_linux-rpm-x64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.rpm)
+[<img src="https://raw.githubusercontent.com/himyjan/discord-music-presence/refs/heads/master/assets/download_linux-tar-gz-x64.png" width="190">](https://github.com/himyjan/discord-music-presence/releases/download/v2.3.6/musicpresence-2.3.6-linux-x86_64.tar.gz)
+
 <!-- DL_BUTTONS_END -->
 
 > Don't know what download to choose?
@@ -106,7 +108,7 @@ Join our Discord community:
 [**discord.gg/musicpresence**](https://discord.gg/musicpresence)
 
 Or open an issue here:
-[**github.com/ungive/discord-music-presence/issues**](https://github.com/ungive/discord-music-presence/issues)
+[**github.com/himyjan/discord-music-presence/issues**](https://github.com/himyjan/discord-music-presence/issues)
 
 ---
 
@@ -120,7 +122,7 @@ Your donation helps with:
 - Maintaining the costs for my Apple Developer account (99 USD a year)
   to sign and notarize macOS builds
   and maintain animated album covers for Apple Music
-  ([#23](https://github.com/ungive/discord-music-presence/issues/123))
+  ([#23](https://github.com/himyjan/discord-music-presence/issues/123))
 - At some point get a Windows signing certificate
   (prices vary, but certificates cost multiple hundred dollars a year).
   The need for this is not as high as signed builds for macOS though,

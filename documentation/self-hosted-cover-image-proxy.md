@@ -1,7 +1,7 @@
 # Self-hosted cover image proxy
 
 To host your own cover image server, follow the steps in this document:
-https://github.com/ungive/loon/blob/master/deployments/basic-deployment/README.md
+https://github.com/himyjan/loon/blob/master/deployments/basic-deployment/README.md
 
 After setting up the server,
 make sure you've followed the steps in the section

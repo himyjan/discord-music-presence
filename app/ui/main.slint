@@ -1,147 +1,338 @@
-import { Button, LineEdit } from "std-widgets.slint";
+import { Button, CheckBox, ComboBox, LineEdit, ScrollView } from "std-widgets.slint";
 
 export component MainWindow inherits Window {
     title: "Music Presence";
-    preferred-width: 720px;
-    preferred-height: 640px;
-    min-width: 560px;
-    min-height: 560px;
+    preferred-width: 860px;
+    preferred-height: 900px;
+    min-width: 640px;
+    min-height: 620px;
     background: #11131a;
 
     in-out property<string> application-id: "";
+    in-out property<string> rpc-mode: "Custom RPC";
+    in-out property<string> activity-name: "Music Presence";
     in-out property<string> activity-details: "Listening to music";
     in-out property<string> activity-state: "";
+    in-out property<string> activity-type: "Listening";
+    in-out property<string> media-title: "";
+    in-out property<string> media-artist: "";
+    in-out property<string> media-album: "";
+    in-out property<string> media-kind: "Song";
+    in-out property<string> media-duration: "";
+    in-out property<string> media-position: "";
+    in-out property<bool> media-playing: true;
+    in-out property<string> large-image: "";
+    in-out property<string> large-text: "";
+    in-out property<string> button1-label: "";
+    in-out property<string> button1-url: "";
+    in-out property<string> button2-label: "";
+    in-out property<string> button2-url: "";
     in-out property<string> connection-status: "Disconnected";
     in-out property<bool> connected: false;
     in-out property<bool> connecting: false;
+    in-out property<string> gateway-token: "";
+    in-out property<bool> remember-gateway-token: false;
+    in-out property<string> gateway-status: "Not logged in";
+    in-out property<bool> gateway-connected: false;
+    in-out property<bool> gateway-connecting: false;
 
-    callback connect-requested(string, string, string);
+    callback connect-requested();
     callback disconnect-requested();
+    callback presence-update-requested();
+    callback generate-youtube-music-link();
+    callback gateway-login-requested();
+    callback gateway-logout-requested();
 
-    VerticalLayout {
-        padding: 28px;
-        spacing: 22px;
+    ScrollView {
+        width: parent.width;
+        height: parent.height;
+        vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
 
         VerticalLayout {
-            spacing: 4px;
-
-            Text {
-                text: "Music Presence";
-                color: #f4f5f8;
-                font-size: 24px;
-                font-weight: 700;
-            }
-            Text {
-                text: "Rich Presence through the Discord desktop app";
-                color: #a4a8b5;
-                font-size: 14px;
-            }
-        }
-
-        Rectangle {
-            background: #191c25;
-            border-radius: 16px;
-            min-height: 408px;
+            width: parent.width;
+            padding: 28px;
+            spacing: 18px;
 
             VerticalLayout {
-                padding: 22px;
-                spacing: 14px;
-
+                spacing: 4px;
                 Text {
-                    text: "Connect";
+                    text: "Music Presence";
                     color: #f4f5f8;
-                    font-size: 19px;
+                    font-size: 24px;
                     font-weight: 700;
                 }
                 Text {
-                    text: "Discord desktop must be running. This uses local IPC and your public Application ID; it does not ask for or store your Discord account token.";
+                    text: "Custom or media Rich Presence for Discord";
                     color: #a4a8b5;
-                    font-size: 13px;
-                    wrap: word-wrap;
+                    font-size: 14px;
                 }
+            }
 
-                Text {
-                    text: "Application ID";
-                    color: #d3d6df;
-                    font-size: 13px;
-                }
-                LineEdit {
-                    text <=> root.application-id;
-                    placeholder-text: "Numeric ID from the Discord Developer Portal";
-                    enabled: !root.connected && !root.connecting;
-                    min-height: 38px;
-                }
+            Rectangle {
+                background: #191c25;
+                border-radius: 16px;
 
-                Text {
-                    text: "Details";
-                    color: #d3d6df;
-                    font-size: 13px;
-                }
-                LineEdit {
-                    text <=> root.activity-details;
-                    placeholder-text: "Listening to music";
-                    enabled: !root.connected && !root.connecting;
-                    min-height: 38px;
-                }
+                VerticalLayout {
+                    padding: 20px;
+                    spacing: 12px;
 
-                Text {
-                    text: "State (optional)";
-                    color: #d3d6df;
-                    font-size: 13px;
-                }
-                LineEdit {
-                    text <=> root.activity-state;
-                    placeholder-text: "Artist or additional status";
-                    enabled: !root.connected && !root.connecting;
-                    min-height: 38px;
-                }
+                    Text {
+                        text: "Activity";
+                        color: #f4f5f8;
+                        font-size: 18px;
+                        font-weight: 700;
+                    }
 
-                HorizontalLayout {
-                    spacing: 10px;
+                    ComboBox {
+                        model: ["Custom RPC", "Media RPC"];
+                        current-value <=> root.rpc-mode;
+                    }
 
-                    if (!root.connected && !root.connecting): Button {
-                        text: "Connect";
-                        clicked => {
-                            root.connecting = true;
-                            root.connection-status = "Connecting to Discord desktop...";
-                            root.connect-requested(
-                                root.application-id,
-                                root.activity-details,
-                                root.activity-state
-                            );
+                    if (root.rpc-mode == "Custom RPC"): VerticalLayout {
+                        spacing: 10px;
+                        LineEdit {
+                            text <=> root.activity-name;
+                            placeholder-text: "Activity name";
+                        }
+                        LineEdit {
+                            text <=> root.activity-details;
+                            placeholder-text: "Details";
+                        }
+                        LineEdit {
+                            text <=> root.activity-state;
+                            placeholder-text: "State";
+                        }
+                        ComboBox {
+                            model: ["Playing", "Listening", "Watching", "Competing"];
+                            current-value <=> root.activity-type;
                         }
                     }
 
-                    if (root.connecting): Button {
-                        text: "Connecting...";
-                        enabled: false;
-                    }
-
-                    if (root.connected): Button {
-                        text: "Disconnect";
-                        clicked => {
-                            root.connecting = true;
-                            root.connection-status = "Disconnecting...";
-                            root.disconnect-requested();
+                    if (root.rpc-mode == "Media RPC"): VerticalLayout {
+                        spacing: 10px;
+                        Text {
+                            text: "Enter media metadata manually. Automatic player detection is not implemented yet.";
+                            color: #a4a8b5;
+                            font-size: 13px;
+                            wrap: word-wrap;
+                        }
+                        LineEdit {
+                            text <=> root.media-title;
+                            placeholder-text: "Track or video title";
+                        }
+                        LineEdit {
+                            text <=> root.media-artist;
+                            placeholder-text: "Artist or channel";
+                        }
+                        LineEdit {
+                            text <=> root.media-album;
+                            placeholder-text: "Album or playlist";
+                        }
+                        ComboBox {
+                            model: ["Song", "Music video", "Album", "Playlist", "Channel"];
+                            current-value <=> root.media-kind;
+                        }
+                        HorizontalLayout {
+                            spacing: 8px;
+                            LineEdit {
+                                text <=> root.media-duration;
+                                placeholder-text: "Duration (seconds)";
+                            }
+                            LineEdit {
+                                text <=> root.media-position;
+                                placeholder-text: "Position (seconds)";
+                            }
+                        }
+                        CheckBox {
+                            text: "Playing (turn off to show Paused and hide the RPC timeline; this does not control playback)";
+                            checked <=> root.media-playing;
                         }
                     }
 
                     Text {
-                        text: root.connection-status;
-                        color: root.connected ? #72d49a : #a4a8b5;
+                        text: "Artwork asset key (optional)";
+                        color: #d3d6df;
                         font-size: 13px;
-                        vertical-alignment: center;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        LineEdit {
+                            text <=> root.large-image;
+                            placeholder-text: "Large image key";
+                        }
+                        LineEdit {
+                            text <=> root.large-text;
+                            placeholder-text: "Image hover text";
+                        }
+                    }
+
+                    Text {
+                        text: "RPC link buttons (up to 2)";
+                        color: #d3d6df;
+                        font-size: 13px;
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        LineEdit {
+                            text <=> root.button1-label;
+                            placeholder-text: "Button 1 label";
+                        }
+                        LineEdit {
+                            text <=> root.button1-url;
+                            placeholder-text: "Button 1 URL";
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        LineEdit {
+                            text <=> root.button2-label;
+                            placeholder-text: "Button 2 label";
+                        }
+                        LineEdit {
+                            text <=> root.button2-url;
+                            placeholder-text: "Button 2 URL";
+                        }
+                    }
+                    HorizontalLayout {
+                        spacing: 10px;
+                        Button {
+                            text: "Auto-fill YouTube Music link";
+                            clicked => {
+                                root.generate-youtube-music-link();
+                            }
+                        }
+                        Button {
+                            text: "Update connected presence";
+                            enabled: root.connected || root.gateway-connected;
+                            clicked => {
+                                root.presence-update-requested();
+                            }
+                        }
+                    }
+                    Text {
+                        text: "The generated YouTube Music URL opens a search for the selected media type; it is not guaranteed to resolve to a canonical item URL.";
+                        color: #818797;
+                        font-size: 12px;
                         wrap: word-wrap;
                     }
                 }
             }
-        }
 
-        Text {
-            text: "This preview sets a manual activity only. Media-player detection, album artwork, settings, tray support and updates are not implemented yet.";
-            color: #777d8c;
-            font-size: 13px;
-            wrap: word-wrap;
+            Rectangle {
+                background: #191c25;
+                border-radius: 16px;
+
+                VerticalLayout {
+                    padding: 20px;
+                    spacing: 10px;
+                    Text {
+                        text: "Discord desktop Rich Presence";
+                        color: #f4f5f8;
+                        font-size: 18px;
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Uses local IPC and a public Application ID. No Discord account login is needed.";
+                        color: #a4a8b5;
+                        font-size: 13px;
+                        wrap: word-wrap;
+                    }
+                    LineEdit {
+                        text <=> root.application-id;
+                        placeholder-text: "Discord Application ID";
+                        enabled: !root.connected && !root.connecting;
+                    }
+                    HorizontalLayout {
+                        spacing: 10px;
+                        if (!root.connected && !root.connecting): Button {
+                            text: "Connect";
+                            clicked => {
+                                root.connecting = true;
+                                root.connection-status = "Connecting...";
+                                root.connect-requested();
+                            }
+                        }
+                        if (root.connecting): Button {
+                            text: "Connecting...";
+                            enabled: false;
+                        }
+                        if (root.connected): Button {
+                            text: "Disconnect";
+                            clicked => {
+                                root.connecting = true;
+                                root.connection-status = "Disconnecting...";
+                                root.disconnect-requested();
+                            }
+                        }
+                        Text {
+                            text: root.connection-status;
+                            color: root.connected ? #72d49a : #a4a8b5;
+                            vertical-alignment: center;
+                        }
+                    }
+                }
+            }
+
+            Rectangle {
+                background: #191c25;
+                border-radius: 16px;
+
+                VerticalLayout {
+                    padding: 20px;
+                    spacing: 10px;
+                    Text {
+                        text: "Discord bot Gateway";
+                        color: #f4f5f8;
+                        font-size: 18px;
+                        font-weight: 700;
+                    }
+                    Text {
+                        text: "Logs in as a bot and updates the bot's activity, not your personal Discord profile. Bot tokens are encrypted with AES-256-GCM and the key is kept in the OS credential store.";
+                        color: #a4a8b5;
+                        font-size: 13px;
+                        wrap: word-wrap;
+                    }
+                    LineEdit {
+                        text <=> root.gateway-token;
+                        input-type: InputType.password;
+                        placeholder-text: "Discord bot token";
+                        enabled: !root.gateway-connected && !root.gateway-connecting;
+                    }
+                    CheckBox {
+                        text: "Remember bot token (encrypted)";
+                        checked <=> root.remember-gateway-token;
+                    }
+                    HorizontalLayout {
+                        spacing: 10px;
+                        if (!root.gateway-connected && !root.gateway-connecting): Button {
+                            text: "Login";
+                            clicked => {
+                                root.gateway-connecting = true;
+                                root.gateway-status = "Connecting as bot...";
+                                root.gateway-login-requested();
+                            }
+                        }
+                        if (root.gateway-connecting): Button {
+                            text: "Connecting...";
+                            enabled: false;
+                        }
+                        if (root.gateway-connected): Button {
+                            text: "Logout";
+                            clicked => {
+                                root.gateway-connecting = true;
+                                root.gateway-status = "Logging out...";
+                                root.gateway-logout-requested();
+                            }
+                        }
+                        Text {
+                            text: root.gateway-status;
+                            color: root.gateway-connected ? #72d49a : #a4a8b5;
+                            vertical-alignment: center;
+                            wrap: word-wrap;
+                        }
+                    }
+                }
+            }
         }
     }
 }

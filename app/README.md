@@ -1,16 +1,30 @@
-# Music Presence — Rust + Slint scaffold
+# Music Presence — Rust + Slint preview
 
-This directory contains a desktop Slint preview, not a feature-complete
-replacement for Music Presence. It can publish a manually entered activity to
-the running Discord desktop client using Discord's local Rich Presence IPC.
-Media detection, player settings, album artwork, the system tray and updates
-are not implemented yet.
+This is a desktop preview of the RPC features, not a feature-complete
+replacement for Music Presence. It supports manually entered Custom RPC and
+Media RPC, activity links, and timeline metadata. Media-player detection,
+playback control, player settings, album-art retrieval, the system tray and
+updates are not implemented.
 
-The connection uses a public Discord Application ID, not a user account token
-or a direct Discord Gateway login. Create an application in the Discord
-Developer Portal, run Discord desktop, then enter its Application ID in the
-preview. The Android-style Gateway connection described by Kizzy is not
-implemented.
+## Discord connections
+
+- **Desktop Rich Presence:** Connects through Discord's local IPC using a
+  public Application ID. Discord desktop must be running; no account token or
+  login is required.
+- **Bot Gateway:** Logs in as a Discord bot and updates the bot's activity.
+  This does not change a user's personal profile. Login and logout are
+  supported. If "Remember bot token" is enabled, AES-256-GCM encrypted token
+  data and its key are stored separately in the operating system credential
+  store; there is no plaintext fallback.
+
+Pasted OAuth2 user tokens are intentionally unsupported: they are not bot
+tokens and cannot be used to set a user's personal activity through this app.
+
+Media metadata is entered manually. Turning off the Playing option marks the
+activity as paused and removes the RPC timeline; it does not pause the media
+player. The YouTube Music helper creates a search URL from the entered title,
+artist, album or media kind; it does not resolve a canonical song, video,
+album, playlist or channel URL.
 
 ## Requirements
 
@@ -44,6 +58,7 @@ workflow manually builds the archives without publishing a release.
 ## Current targets
 
 The project is configured for the platforms currently distributed by Music
-Presence: Windows x86-64, macOS ARM64 and x86-64, and Linux x86-64. This
+Presence: Windows x86-64, macOS ARM64 and x86-64, and Linux x86-64. The release
 workflow builds on native runners for each listed target. Each build still
-needs runtime and feature validation on its target platform.
+needs runtime and feature validation on its target platform, including the
+platform credential store used for encrypted token persistence.

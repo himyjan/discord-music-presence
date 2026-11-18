@@ -1,40 +1,37 @@
-use discord_rich_presence::{DiscordIpc, DiscordIpcClient, activity::Activity};
+use discord_rich_presence::{DiscordIpc, DiscordIpcClient};
 use std::sync::mpsc;
 
-use crate::MainWindow;
-
-const TEXT_LIMIT: usize = 128;
+use crate::{MainWindow, presence::PresenceDraft};
 
 pub enum Command {
     Connect {
         application_id: String,
-        details: String,
-        state: String,
+        presence: PresenceDraft,
     },
+    Update(PresenceDraft),
     Disconnect,
 }
 
 pub fn run_worker(commands: mpsc::Receiver<Command>, ui: slint::Weak<MainWindow>) {
-    let mut client = None;
+    let mut client: Option<DiscordIpcClient> = None;
 
     while let Ok(command) = commands.recv() {
         match command {
             Command::Connect {
                 application_id,
-                details,
-                state,
+                presence,
             } => {
                 set_ui_state(&ui, false, true, "Connecting to Discord desktop...".into());
 
-                if let Err(message) = validate(&application_id, &details, &state) {
+                if let Err(message) = validate(&application_id, &presence) {
                     set_ui_state(&ui, false, false, message);
                     continue;
                 }
 
-                if let Some(mut connected) = client.take() {
-                    if let Err(error) = close_client(&mut connected) {
-                        eprintln!("Failed to close previous Discord IPC connection: {error}");
-                    }
+                if let Some(mut connected) = client.take()
+                    && let Err(error) = close_client(&mut connected)
+                {
+                    eprintln!("Failed to close previous Discord IPC connection: {error}");
                 }
 
                 let mut next = DiscordIpcClient::new(application_id.trim());
@@ -50,15 +47,7 @@ pub fn run_worker(commands: mpsc::Receiver<Command>, ui: slint::Weak<MainWindow>
                     continue;
                 }
 
-                let mut activity = Activity::new();
-                if !details.trim().is_empty() {
-                    activity = activity.details(details.trim());
-                }
-                if !state.trim().is_empty() {
-                    activity = activity.state(state.trim());
-                }
-
-                if let Err(error) = next.set_activity(activity) {
+                if let Err(error) = next.set_activity(presence.ipc_activity()) {
                     let close_error = next.close().err();
                     let message = match close_error {
                         Some(close_error) => {
@@ -74,6 +63,31 @@ pub fn run_worker(commands: mpsc::Receiver<Command>, ui: slint::Weak<MainWindow>
 
                 client = Some(next);
                 set_ui_state(&ui, true, false, "Connected to Discord desktop".into());
+            }
+            Command::Update(presence) => {
+                if let Err(message) = validate_presence(&presence) {
+                    set_ui_state(&ui, client.is_some(), false, message);
+                    continue;
+                }
+                let Some(connected) = client.as_mut() else {
+                    continue;
+                };
+                match connected.set_activity(presence.ipc_activity()) {
+                    Ok(()) => set_ui_state(&ui, true, false, "Desktop activity updated.".into()),
+                    Err(error) => {
+                        set_ui_state(
+                            &ui,
+                            false,
+                            false,
+                            format!("Could not update desktop activity: {error}"),
+                        );
+                        if let Some(mut disconnected) = client.take()
+                            && let Err(close_error) = close_client(&mut disconnected)
+                        {
+                            eprintln!("Failed to close disconnected Discord IPC: {close_error}");
+                        }
+                    }
+                }
             }
             Command::Disconnect => {
                 set_ui_state(&ui, false, true, "Disconnecting...".into());
@@ -96,10 +110,10 @@ pub fn run_worker(commands: mpsc::Receiver<Command>, ui: slint::Weak<MainWindow>
         }
     }
 
-    if let Some(mut connected) = client {
-        if let Err(error) = close_client(&mut connected) {
-            eprintln!("Failed to close Discord IPC during shutdown: {error}");
-        }
+    if let Some(mut connected) = client
+        && let Err(error) = close_client(&mut connected)
+    {
+        eprintln!("Failed to close Discord IPC during shutdown: {error}");
     }
 }
 
@@ -130,40 +144,60 @@ fn set_ui_state(ui: &slint::Weak<MainWindow>, connected: bool, connecting: bool,
     }
 }
 
-fn validate(application_id: &str, details: &str, state: &str) -> Result<(), String> {
+fn validate(application_id: &str, presence: &PresenceDraft) -> Result<(), String> {
     let application_id = application_id.trim();
     if application_id.is_empty() || !application_id.bytes().all(|byte| byte.is_ascii_digit()) {
         return Err("Enter the numeric Application ID from the Discord Developer Portal.".into());
     }
+    validate_presence(presence)
+}
 
-    if details.chars().count() > TEXT_LIMIT || state.chars().count() > TEXT_LIMIT {
-        return Err(format!(
-            "Activity text must be {TEXT_LIMIT} characters or fewer."
-        ));
-    }
-
-    if details.trim().is_empty() && state.trim().is_empty() {
+fn validate_presence(presence: &PresenceDraft) -> Result<(), String> {
+    presence.validate()?;
+    if presence.details.trim().is_empty() && presence.state.trim().is_empty() {
         return Err("Enter activity details or state before connecting.".into());
     }
-
     Ok(())
 }
 
 #[cfg(test)]
 mod tests {
-    use super::validate;
+    use super::{validate, validate_presence};
+    use crate::presence::PresenceDraft;
 
-    #[test]
-    fn requires_a_numeric_application_id() {
-        assert!(validate("123456789012345678", "Listening to music", "").is_ok());
-        assert!(validate("not-an-id", "Listening to music", "").is_err());
-        assert!(validate("", "Listening to music", "").is_err());
+    fn presence() -> PresenceDraft {
+        PresenceDraft {
+            name: "Music Presence".into(),
+            details: "Listening to music".into(),
+            state: String::new(),
+            activity_type: 2,
+            playing: false,
+            position_seconds: 0,
+            duration_seconds: 0,
+            large_image: String::new(),
+            large_text: String::new(),
+            button1_label: String::new(),
+            button1_url: String::new(),
+            button2_label: String::new(),
+            button2_url: String::new(),
+        }
     }
 
     #[test]
-    fn validates_activity_text_limits_and_content() {
-        assert!(validate("123456789012345678", "", "").is_err());
-        assert!(validate("123456789012345678", &"x".repeat(129), "").is_err());
-        assert!(validate("123456789012345678", &"x".repeat(128), "").is_ok());
+    fn requires_a_numeric_application_id() {
+        assert!(validate("123456789012345678", &presence()).is_ok());
+        assert!(validate("not-an-id", &presence()).is_err());
+        assert!(validate("", &presence()).is_err());
+    }
+
+    #[test]
+    fn rejects_empty_or_invalid_activity() {
+        let mut invalid = presence();
+        invalid.details.clear();
+        assert!(validate_presence(&invalid).is_err());
+
+        invalid.details = "Listening".into();
+        invalid.button1_label = "Open".into();
+        assert!(validate_presence(&invalid).is_err());
     }
 }

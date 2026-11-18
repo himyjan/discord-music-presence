@@ -70,7 +70,7 @@ A number of techniques are employed to prevent this from happening:
   If Music Presence never generates a URL, then it never gets any request.
 - The response for a request to a generated URL is cached on the server
   for a short duration (30 seconds at the time of writing).
-  This ensures that the application can get *at most*
+  This ensures that the application can get _at most_
   one forwarded request for that duration
   and cannot be spammed with requests for a single generated URL.
 - Due to the way the system was designed,
@@ -91,9 +91,9 @@ A number of techniques are employed to prevent this from happening:
 The logic behind this is rather complex
 and has been decoupled from Music Presence in its own server and library:
 
-- **ungive/loon**  - *local files online*  
+- **himyjan/loon** - _local files online_  
   loon enables you to temporarily host a local file online via HTTP, without exposing your device to the internet, by using the bare minimum of resources needed.  
-  **[https://github.com/ungive/loon](https://github.com/ungive/loon)**
+  **[https://github.com/himyjan/loon](https://github.com/himyjan/loon)**
 
 ---
 

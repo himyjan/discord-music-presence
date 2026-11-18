@@ -19,7 +19,8 @@ Please refer to the list below for your media player.
 Since a past update Qobuz has stopped reporting what it's playing to Windows.
 
 Possible workarounds are:
-- Downgrading your Qobuz version, see this GitHub issue comment: https://github.com/ungive/discord-music-presence/issues/244#issuecomment-3556269025
+
+- Downgrading your Qobuz version, see this GitHub issue comment: https://github.com/himyjan/discord-music-presence/issues/244#issuecomment-3556269025
 - Modifying your Qobuz installation (might violate ToS): https://github.com/TubaApollo/qobuz-smtc
 
 If you are on Linux, you can use the Qobuz website in a Firefox-based browser
@@ -39,7 +40,7 @@ Once you have installed and enabled it, Music Presence should detect Music Bee.
 
 While foobar2000 reports basic information out of the box,
 this plugin will add the album name and a progress bar to your status:
-https://github.com/ungive/foo_mediacontrol
+https://github.com/himyjan/foo_mediacontrol
 
 This is a fork of an old plugin which I have adapted
 to report missing song information.
@@ -88,7 +89,7 @@ otherwise it cannot be detected at this time.
 Installing it with brew only installs a command line tool.
 If you need Music Presence to work with the command line tool only
 and you don't want to install an app bundle,
-please [open an issue](https://github.com/ungive/discord-music-presence/issues).
+please [open an issue](https://github.com/himyjan/discord-music-presence/issues).
 
 If cover images are not showing or the above setting is not available,
 try updating mpv or installing a development version of mpv.
@@ -98,7 +99,7 @@ try updating mpv or installing a development version of mpv.
 ## Players with known issues
 
 Some media players do not report metadata properly.
-Note that these are issues with the ***media players themselves***,
+Note that these are issues with the **_media players themselves_**,
 not with Music Presence.
 Affected players are sometimes reporting
 incorrect song metadata or playback information,
@@ -116,7 +117,7 @@ Known cases:
 - **foobar2000**: Out of the box, foobar2000 does not report the album
   and the track duration, so you won't see a progress bar in your status.
   You need to install the
-  [foo_mediacontrol](https://github.com/ungive/foo_mediacontrol)
+  [foo_mediacontrol](https://github.com/himyjan/foo_mediacontrol)
   plugin for this
 
 This list is a non-exhaustive.

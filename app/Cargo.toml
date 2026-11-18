@@ -6,8 +6,15 @@ rust-version = "1.95"
 description = "Rust and Slint desktop UI scaffold for Music Presence"
 
 [dependencies]
+aes-gcm = "0.11"
 discord-rich-presence = "1.1"
+getrandom = "0.3"
+keyring = "4.2"
 slint = { version = "1.19", default-features = false, features = ["std", "backend-winit", "renderer-femtovg", "accessibility", "compat-1-18"] }
+tokio = { version = "1", features = ["macros", "rt", "time", "net", "sync"] }
+twilight-gateway = { version = "0.18", default-features = false, features = ["rustls-native-roots"] }
+twilight-model = "0.18"
+zeroize = "1"
 
 [build-dependencies]
 slint-build = "1.19"

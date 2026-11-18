@@ -12,11 +12,11 @@ This document aims to give insight into how it works and the security of it.
 ## Summary
 
 - The source code for the updater component is open-source:
-  [https://github.com/ungive/libupdate](https://github.com/ungive/libupdate)
+  [https://github.com/himyjan/libupdate](https://github.com/himyjan/libupdate)
 - The following guarantees are made about automatically downloaded updates:
   - The download was not tampered with during transmission (integrity)
   - The update was created by the project author and no other party
-    (authenticity): [https://github.com/ungive](https://github.com/ungive)
+    (authenticity): [https://github.com/himyjan](https://github.com/himyjan)
   - The downloaded version is always a newer version,
     i.e. the application will not downgrade itself
   - At the moment, updates are only released on and downloaded from GitHub
@@ -25,7 +25,7 @@ This document aims to give insight into how it works and the security of it.
   - The authenticity is verified with a cryptographic Ed25519 signature:
     `sha256sum.txt.sig`
 - The cryptographic keys used to verify the release can be found here:
-  - [https://github.com/ungive/keys](https://github.com/ungive/keys)
+  - [https://github.com/himyjan/keys](https://github.com/himyjan/keys)
   - [https://vandenbe.com/keys](https://vandenbe.com/keys)
 - You can verify releases yourself using the instructions below
 
@@ -84,19 +84,27 @@ is to not artifically inflate the GitHub download counter.
 Otherwise one in-app or automatic update
 would cause the download counter to increase by 3 instead of 1.
 
-[^1]: Music Presence releases:
-https://github.com/ungive/discord-music-presence/releases
+[^1]:
+    Music Presence releases:
+    https://github.com/himyjan/discord-music-presence/releases
+
 [^2]: GitHub API documentation: https://docs.github.com/en/rest
-[^3]: Example GitHub API request
-to retrieve information about the latest version:
-https://api.github.com/repos/ungive/discord-music-presence/releases/latest
-[^4]: By verifying the integrity of a file,
-it is ensured that it has not been modified by a third party,
-see https://en.wikipedia.org/wiki/Data_integrity
-[^5]: By verifying the authenticity of a file,
-it is ensured that it originates from the correct source
-(in this case the project author and nobody else),
-see https://en.wikipedia.org/wiki/Authentication
+
+[^3]:
+    Example GitHub API request
+    to retrieve information about the latest version:
+    https://api.github.com/repos/himyjan/discord-music-presence/releases/latest
+
+[^4]:
+    By verifying the integrity of a file,
+    it is ensured that it has not been modified by a third party,
+    see https://en.wikipedia.org/wiki/Data_integrity
+
+[^5]:
+    By verifying the authenticity of a file,
+    it is ensured that it originates from the correct source
+    (in this case the project author and nobody else),
+    see https://en.wikipedia.org/wiki/Authentication
 
 ## Verifying releases
 
@@ -117,17 +125,17 @@ which do not have a valid checksum and signature.
 
 Download the release file you wish to verify,
 `sha256sum.txt` and `sha256sum.txt.sig` from the
-[release page](https://github.com/ungive/discord-music-presence/releases).
+[release page](https://github.com/himyjan/discord-music-presence/releases).
 
 Also download the public key that was used to sign the release
 from any of the following sources:
 
 > It is recommended to download the key from the **non-GitHub link**,
-as the release has already been downloaded from GitHub
-and it is good practice to not put all your trust into one party.
+> as the release has already been downloaded from GitHub
+> and it is good practice to not put all your trust into one party.
 
 - https://vandenbe.com/keys
-- https://github.com/ungive/keys
+- https://github.com/himyjan/keys
 
 The key's filename should be `ed25519_musicpresence_release.pub.pem`.
 
@@ -198,9 +206,9 @@ has been decoupled from the Music Presence application
 and is available as an open-source C++ library.
 It is licensed under the MIT license:
 
-- https://github.com/ungive/libupdate
-- https://github.com/ungive/libupdate/blob/master/LICENSE.txt
-- https://github.com/ungive/libupdate/blob/master/SECURITY.md
+- https://github.com/himyjan/libupdate
+- https://github.com/himyjan/libupdate/blob/master/LICENSE.txt
+- https://github.com/himyjan/libupdate/blob/master/SECURITY.md
 
 The statements that are made in this document
 can be verified by reading the source code.
@@ -208,7 +216,7 @@ can be verified by reading the source code.
 ## Security
 
 If you encounter any security issues, please report them as documented
-[here](https://github.com/ungive/libupdate/blob/master/SECURITY.md).
+[here](https://github.com/himyjan/libupdate/blob/master/SECURITY.md).
 
 ---
 
