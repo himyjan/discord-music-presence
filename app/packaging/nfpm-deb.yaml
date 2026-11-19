@@ -29,3 +29,5 @@ depends:
   - libwayland-cursor0
   - libegl1
   - libgl1
+deb:
+  compression: xz

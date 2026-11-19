@@ -140,6 +140,7 @@ jobs:
             -srcfolder "$staging" \
             -ov \
             -format UDZO \
+            -imagekey zlib-level=9 \
             "$assets/music-presence-${GITHUB_REF_NAME}-${ASSET}.dmg"
 
       - name: Package Windows ZIP

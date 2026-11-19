@@ -35,6 +35,7 @@ chmod +x "$linuxdeploy" "$plugin"
 export APPIMAGE_EXTRACT_AND_RUN=1
 export LINUXDEPLOY_OUTPUT_APP_NAME=music-presence
 export LINUXDEPLOY_OUTPUT_VERSION="$version"
+export LDAI_COMP=xz
 export LDAI_OUTPUT="$assets/music-presence-${GITHUB_REF_NAME}-linux-x86_64.AppImage"
 "$linuxdeploy" \
   --appdir "$appdir" \

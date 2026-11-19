@@ -32,3 +32,4 @@ depends:
   - mesa-libGL
 rpm:
   group: Applications/Multimedia
+  compression: xz
