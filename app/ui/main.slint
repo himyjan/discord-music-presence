@@ -2,7 +2,7 @@
 // Palette mirrors Discord's own dark/light surfaces (see discord.com/branding)
 // and the tokens shipped with Kizzy Enhanced.
 
-import { LineEdit, ScrollView } from "std-widgets.slint";
+import { ComboBox, LineEdit, ScrollView } from "std-widgets.slint";
 
 // ---------------------------------------------------------------------------
 // Theme tokens
@@ -32,6 +32,14 @@ global AppTheme {
     out property<color> yellow: root.dark ? #f0b232 : #c8912b;
     out property<color> red: root.dark ? #f23f43 : #da373c;
     out property<color> on-brand: #ffffff;
+}
+
+export global AppLocalization {
+    in property <[string]> language_options: [];
+    in-out property <string> selected_language: "English";
+    in-out property <string> current_locale: "";
+    callback language_selected(string);
+    pure callback translate(string, string) -> string;
 }
 
 // ---------------------------------------------------------------------------
@@ -267,7 +275,7 @@ component StatusPill inherits Rectangle {
 // Main window
 // ---------------------------------------------------------------------------
 export component MainWindow inherits Window {
-    title: "Music Presence";
+    title: AppLocalization.translate(AppLocalization.current_locale, "Music Presence");
     icon: @image-url("../packaging/music-presence.svg");
     preferred-width: 1100px;
     preferred-height: 780px;
@@ -283,7 +291,7 @@ export component MainWindow inherits Window {
     in-out property<string> activity-state: "";
     in-out property<string> activity-type: "Listening";
     in-out property<string> status-display-type: "Name";
-    in-out property<string> media-title: "";
+    in-out property<string> media-title: AppLocalization.translate(AppLocalization.current_locale, "");
     in-out property<string> media-artist: "";
     in-out property<string> media-album: "";
     in-out property<string> media-kind: "Song";
@@ -291,14 +299,14 @@ export component MainWindow inherits Window {
     in-out property<string> media-position: "";
     in-out property<bool> media-playing: true;
     in-out property<string> large-image: "";
-    in-out property<string> large-text: "";
+    in-out property<string> large-text: AppLocalization.translate(AppLocalization.current_locale, "");
     in-out property<string> details-url: "";
     in-out property<string> state-url: "";
     in-out property<string> large-url: "";
     in-out property<string> small-url: "";
-    in-out property<string> button1-label: "";
+    in-out property<string> button1-label: AppLocalization.translate(AppLocalization.current_locale, "");
     in-out property<string> button1-url: "";
-    in-out property<string> button2-label: "";
+    in-out property<string> button2-label: AppLocalization.translate(AppLocalization.current_locale, "");
     in-out property<string> button2-url: "";
     in-out property<string> connection-status: "Disconnected";
     in-out property<bool> connected: false;
@@ -405,40 +413,48 @@ export component MainWindow inherits Window {
                     }
                     VerticalLayout {
                         spacing: 0px;
-                        Text { text: "Music Presence"; color: AppTheme.text; font-size: 15px; font-weight: 700; vertical-alignment: center; }
-                        Text { text: "Rich Presence for Discord"; color: AppTheme.muted; font-size: 11px; }
+                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Music Presence"); color: AppTheme.text; font-size: 15px; font-weight: 700; vertical-alignment: center; }
+                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Rich Presence for Discord"); color: AppTheme.muted; font-size: 11px; }
                     }
                 }
                 Rectangle { height: 6px; }
-                NavItem { icon: "⌂"; label: "Home"; page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "✎"; label: "Activity"; page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "♫"; label: "Media RPC"; page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "▦"; label: "App Detection"; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "⚡"; label: "Connections"; page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "☺"; label: "Profile"; page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "↻"; label: "Scrobbling"; page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "⚙"; label: "Settings"; page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "⌂"; label: AppLocalization.translate(AppLocalization.current_locale, "Home"); page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "✎"; label: AppLocalization.translate(AppLocalization.current_locale, "Activity"); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "♫"; label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "▦"; label: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "⚡"; label: AppLocalization.translate(AppLocalization.current_locale, "Connections"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "☺"; label: AppLocalization.translate(AppLocalization.current_locale, "Profile"); page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "↻"; label: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "⚙"; label: AppLocalization.translate(AppLocalization.current_locale, "Settings"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                 Rectangle { vertical-stretch: 1; }
                 Rectangle {
                     background: AppTheme.card;
                     border-radius: 10px;
                     VerticalLayout {
                         padding: 12px; spacing: 6px;
-                        Text { text: "STATUS"; color: AppTheme.subtle; font-size: 10px; font-weight: 700; }
+                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "STATUS"); color: AppTheme.subtle; font-size: 10px; font-weight: 700; }
                         StatusPill {
-                            label: root.connected ? "Desktop RPC: Connected" : "Desktop RPC: Offline";
+                            label: root.connected
+                                ? AppLocalization.translate(AppLocalization.current_locale, "Desktop RPC: Connected")
+                                : AppLocalization.translate(AppLocalization.current_locale, "Desktop RPC: Offline");
                             dot: root.connected ? AppTheme.green : AppTheme.subtle;
                         }
                         StatusPill {
-                            label: root.gateway-connected ? "Bot gateway: Online" : "Bot gateway: Offline";
+                            label: root.gateway-connected
+                                ? AppLocalization.translate(AppLocalization.current_locale, "Bot gateway: Online")
+                                : AppLocalization.translate(AppLocalization.current_locale, "Bot gateway: Offline");
                             dot: root.gateway-connected ? AppTheme.green : AppTheme.subtle;
                         }
                         StatusPill {
-                            label: root.oauth-connected ? "Discord: Signed in" : "Discord: Not signed in";
+                            label: root.oauth-connected
+                                ? AppLocalization.translate(AppLocalization.current_locale, "Discord: Signed in")
+                                : AppLocalization.translate(AppLocalization.current_locale, "Discord: Not signed in");
                             dot: root.oauth-connected ? AppTheme.green : AppTheme.subtle;
                         }
                         StatusPill {
-                            label: root.auto-detect ? "Auto-detect: On" : "Auto-detect: Off";
+                            label: root.auto-detect
+                                ? AppLocalization.translate(AppLocalization.current_locale, "Auto-detect: On")
+                                : AppLocalization.translate(AppLocalization.current_locale, "Auto-detect: Off");
                             dot: root.auto-detect ? AppTheme.green : AppTheme.yellow;
                         }
                     }
@@ -457,14 +473,14 @@ export component MainWindow inherits Window {
                     HorizontalLayout {
                         padding-left: 24px; padding-right: 24px; spacing: 12px;
                         Text {
-                            text: root.current-page == "Home" ? "Overview"
-                                : root.current-page == "Activity" ? "Activity"
-                                : root.current-page == "Media" ? "Media RPC"
-                                : root.current-page == "Apps" ? "App Detection"
-                                : root.current-page == "Connections" ? "Connections"
-                                : root.current-page == "Profile" ? "Discord Profile"
-                                : root.current-page == "Scrobbling" ? "Scrobbling"
-                                : "Settings";
+                            text: root.current-page == "Home" ? AppLocalization.translate(AppLocalization.current_locale, "Overview")
+                                : root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Activity")
+                                : root.current-page == "Media" ? AppLocalization.translate(AppLocalization.current_locale, "Media RPC")
+                                : root.current-page == "Apps" ? AppLocalization.translate(AppLocalization.current_locale, "App Detection")
+                                : root.current-page == "Connections" ? AppLocalization.translate(AppLocalization.current_locale, "Connections")
+                                : root.current-page == "Profile" ? AppLocalization.translate(AppLocalization.current_locale, "Discord Profile")
+                                : root.current-page == "Scrobbling" ? AppLocalization.translate(AppLocalization.current_locale, "Scrobbling")
+                                : AppLocalization.translate(AppLocalization.current_locale, "Settings");
                             color: AppTheme.text;
                             font-size: 18px;
                             font-weight: 700;
@@ -472,11 +488,17 @@ export component MainWindow inherits Window {
                         }
                         Rectangle { horizontal-stretch: 1; }
                         StatusPill {
-                            label: root.detecting ? "Scanning…" : (root.media-source.is-empty ? "No media" : root.media-source);
+                            label: root.detecting
+                                ? AppLocalization.translate(AppLocalization.current_locale, "Scanning…")
+                                : (root.media-source.is-empty
+                                    ? AppLocalization.translate(AppLocalization.current_locale, "No media")
+                                    : root.media-source);
                             dot: root.detecting ? AppTheme.yellow : (root.media-source.is-empty ? AppTheme.subtle : AppTheme.green);
                         }
                         SecondaryButton {
-                            label: AppTheme.dark ? "☾ Dark" : "☀ Light";
+                            label: AppTheme.dark
+                                ? AppLocalization.translate(AppLocalization.current_locale, "☾ Dark")
+                                : AppLocalization.translate(AppLocalization.current_locale, "☀ Light");
                             min-width: 104px;
                             clicked => { AppTheme.dark = !AppTheme.dark; }
                         }
@@ -494,26 +516,26 @@ export component MainWindow inherits Window {
                         // ===================== HOME =====================
                         if (root.current-page == "Home"): VerticalLayout {
                             spacing: 18px;
-                            Text { text: "Everything you need to broadcast what you play."; color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Everything you need to broadcast what you play."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
                             HorizontalLayout {
                                 spacing: 14px;
-                                FeatureCard { icon: "♫"; title: "Media RPC"; description: "Auto-detect your music and videos, with video and channel links."; page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                                FeatureCard { icon: "▦"; title: "App Detection"; description: "Choose which players and browsers feed your status."; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "♫"; title: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect your music and videos, with video and channel links."); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "▦"; title: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); description: AppLocalization.translate(AppLocalization.current_locale, "Choose which players and browsers feed your status."); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                             }
                             HorizontalLayout {
                                 spacing: 14px;
-                                FeatureCard { icon: "✎"; title: "Activity"; description: "Hand-craft a custom or media Rich Presence."; page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                                FeatureCard { icon: "⚡"; title: "Connections"; description: "Connect Discord desktop, bot gateway, and OAuth."; page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "✎"; title: AppLocalization.translate(AppLocalization.current_locale, "Activity"); description: AppLocalization.translate(AppLocalization.current_locale, "Hand-craft a custom or media Rich Presence."); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "⚡"; title: AppLocalization.translate(AppLocalization.current_locale, "Connections"); description: AppLocalization.translate(AppLocalization.current_locale, "Connect Discord desktop, bot gateway, and OAuth."); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                             }
                             HorizontalLayout {
                                 spacing: 14px;
-                                FeatureCard { icon: "☺"; title: "Profile"; description: "Preview the Discord account details OAuth can share."; page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                                FeatureCard { icon: "↻"; title: "Scrobbling"; description: "Forward plays to Last.fm, ListenBrainz, and Libre.fm."; page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "☺"; title: AppLocalization.translate(AppLocalization.current_locale, "Profile"); description: AppLocalization.translate(AppLocalization.current_locale, "Preview the Discord account details OAuth can share."); page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "↻"; title: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); description: AppLocalization.translate(AppLocalization.current_locale, "Forward plays to Last.fm, ListenBrainz, and Libre.fm."); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                             }
                             Card {
                                 VerticalLayout { spacing: 8px;
-                                    Text { text: "Quick start"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: "1. Open Media RPC and press Detect now.  2. Turn on Auto-detect to keep Discord in sync.  3. Add your Application ID under Connections and connect."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Quick start"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "1. Open Media RPC and press Detect now.  2. Turn on Auto-detect to keep Discord in sync.  3. Add your Application ID under Connections and connect."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                                 }
                             }
                         }
@@ -521,81 +543,81 @@ export component MainWindow inherits Window {
                         // ===================== ACTIVITY =====================
                         if (root.current-page == "Activity"): VerticalLayout {
                             spacing: 18px;
-                            Text { text: "Craft a Rich Presence by hand."; color: AppTheme.muted; font-size: 14px; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Craft a Rich Presence by hand."); color: AppTheme.muted; font-size: 14px; }
                             Card {
                                 VerticalLayout { spacing: 12px;
-                                    Text { text: "Activity type"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Activity type"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        SecondaryButton { label: "Custom RPC"; active: root.rpc-mode == "Custom RPC"; clicked => { root.rpc-mode = "Custom RPC"; } }
-                                        SecondaryButton { label: "Media RPC"; active: root.rpc-mode == "Media RPC"; clicked => { root.rpc-mode = "Media RPC"; } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); active: root.rpc-mode == "Custom RPC"; clicked => { root.rpc-mode = "Custom RPC"; } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); active: root.rpc-mode == "Media RPC"; clicked => { root.rpc-mode = "Media RPC"; } }
                                     }
                                     if (root.rpc-mode == "Custom RPC"): VerticalLayout {
                                         spacing: 10px;
-                                        Field { label: "Activity name"; value <=> root.activity-name; placeholder: "Music Presence"; }
-                                        Field { label: "Details"; value <=> root.activity-details; placeholder: "Listening to music"; }
-                                        Field { label: "State"; value <=> root.activity-state; placeholder: "Artist · Album"; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Activity name"); value <=> root.activity-name; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Music Presence"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); value <=> root.activity-details; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Listening to music"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "State"); value <=> root.activity-state; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Artist · Album"); }
                                         HorizontalLayout {
                                             spacing: 8px;
-                                            SecondaryButton { label: "Playing"; active: root.activity-type == "Playing"; clicked => { root.activity-type = "Playing"; } }
-                                            SecondaryButton { label: "Listening"; active: root.activity-type == "Listening"; clicked => { root.activity-type = "Listening"; } }
-                                            SecondaryButton { label: "Watching"; active: root.activity-type == "Watching"; clicked => { root.activity-type = "Watching"; } }
-                                            SecondaryButton { label: "Competing"; active: root.activity-type == "Competing"; clicked => { root.activity-type = "Competing"; } }
+                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Playing"); active: root.activity-type == "Playing"; clicked => { root.activity-type = "Playing"; } }
+                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Listening"); active: root.activity-type == "Listening"; clicked => { root.activity-type = "Listening"; } }
+                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Watching"); active: root.activity-type == "Watching"; clicked => { root.activity-type = "Watching"; } }
+                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Competing"); active: root.activity-type == "Competing"; clicked => { root.activity-type = "Competing"; } }
                                         }
                                     }
                                     if (root.rpc-mode == "Media RPC"): VerticalLayout {
                                         spacing: 10px;
-                                        Text { text: "Manual metadata (auto-detected values can overwrite these)."; color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
-                                        Field { label: "Title"; value <=> root.media-title; placeholder: "Track or video title"; }
-                                        Field { label: "Artist / channel"; value <=> root.media-artist; placeholder: "Artist or channel"; }
-                                        Field { label: "Album / playlist"; value <=> root.media-album; placeholder: "Album or playlist"; }
+                                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Manual metadata (auto-detected values can overwrite these)."); color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Title"); value <=> root.media-title; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Track or video title"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Artist / channel"); value <=> root.media-artist; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Artist or channel"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Album / playlist"); value <=> root.media-album; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Album or playlist"); }
                                         HorizontalLayout {
                                             spacing: 8px;
-                                            Field { label: "Duration (s)"; value <=> root.media-duration; placeholder: "0"; }
-                                            Field { label: "Position (s)"; value <=> root.media-position; placeholder: "0"; }
+                                            Field { label: AppLocalization.translate(AppLocalization.current_locale, "Duration (s)"); value <=> root.media-duration; placeholder: AppLocalization.translate(AppLocalization.current_locale, "0"); }
+                                            Field { label: AppLocalization.translate(AppLocalization.current_locale, "Position (s)"); value <=> root.media-position; placeholder: AppLocalization.translate(AppLocalization.current_locale, "0"); }
                                         }
-                                        ToggleRow { title: "Playing"; subtitle: "Off shows a paused state and hides the timeline."; checked <=> root.media-playing; toggled => {} }
+                                        ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Playing"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Off shows a paused state and hides the timeline."); checked <=> root.media-playing; toggled => {} }
                                     }
-                                    Text { text: "Artwork"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Artwork"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        Field { label: "Large image key or image URL"; value <=> root.large-image; placeholder: "Optional asset key"; }
-                                        Field { label: "Hover text"; value <=> root.large-text; placeholder: "Optional"; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Large image key or image URL"); value <=> root.large-image; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Optional asset key"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Hover text"); value <=> root.large-text; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Optional"); }
                                     }
-                                    Text { text: "Clickable field URLs (Discord Social SDK)"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    Text { text: "Makes the details line, state line and image assets clickable in Discord."; color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Clickable field URLs (Discord Social SDK)"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Makes the details line, state line and image assets clickable in Discord."); color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        Field { label: "Details URL"; value <=> root.details-url; placeholder: "https://…"; }
-                                        Field { label: "State URL"; value <=> root.state-url; placeholder: "https://…"; }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: "Large image URL"; value <=> root.large-url; placeholder: "https://…"; }
-                                        Field { label: "Small image URL"; value <=> root.small-url; placeholder: "https://…"; }
-                                    }
-                                    Text { text: "Status text in member list"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        SecondaryButton { label: "Name"; active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; } }
-                                        SecondaryButton { label: "State"; active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; } }
-                                        SecondaryButton { label: "Details"; active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; } }
-                                    }
-                                    Text { text: "Buttons"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: "Button 1 label"; value <=> root.button1-label; placeholder: "Open on YouTube"; }
-                                        Field { label: "Button 1 URL"; value <=> root.button1-url; placeholder: "https://…"; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Details URL"); value <=> root.details-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "State URL"); value <=> root.state-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
                                     }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        Field { label: "Button 2 label"; value <=> root.button2-label; placeholder: "Visit channel"; }
-                                        Field { label: "Button 2 URL"; value <=> root.button2-url; placeholder: "https://…"; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Large image URL"); value <=> root.large-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Small image URL"); value <=> root.small-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
+                                    }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Status text in member list"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Name"); active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "State"); active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; } }
+                                    }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Buttons"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 1 label"); value <=> root.button1-label; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Open on YouTube"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 1 URL"); value <=> root.button1-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 2 label"); value <=> root.button2-label; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Visit channel"); }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 2 URL"); value <=> root.button2-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
                                     }
                                     HorizontalLayout {
                                         spacing: 10px;
-                                        SecondaryButton { label: "Auto YouTube Music link"; clicked => { root.generate-youtube-music-link(); } }
-                                        PrimaryButton { label: "Update presence"; active: root.connected || root.gateway-connected; clicked => { root.presence-update-requested(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Auto YouTube Music link"); clicked => { root.generate-youtube-music-link(); } }
+                                        PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Update presence"); active: root.connected || root.gateway-connected; clicked => { root.presence-update-requested(); } }
                                     }
                                 }
                             }
@@ -604,39 +626,39 @@ export component MainWindow inherits Window {
                         // ===================== MEDIA =====================
                         if (root.current-page == "Media"): VerticalLayout {
                             spacing: 18px;
-                            Text { text: "Automatically broadcast what your desktop is playing."; color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Automatically broadcast what your desktop is playing."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
                             Card {
                                 VerticalLayout { spacing: 14px;
                                     HorizontalLayout {
                                         spacing: 12px;
-                                        Text { text: "Auto-detect"; color: AppTheme.text; font-size: 16px; font-weight: 700; vertical-alignment: center; }
+                                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect"); color: AppTheme.text; font-size: 16px; font-weight: 700; vertical-alignment: center; }
                                         Rectangle { horizontal-stretch: 1; }
                                         Switch {
                                             checked <=> root.auto-detect;
                                             toggled => { root.auto-detect-changed(root.auto-detect); }
                                         }
                                     }
-                                    Text { text: root.detection-status; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, root.detection-status); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                                     HorizontalLayout {
                                         spacing: 10px;
-                                        PrimaryButton { label: root.detecting ? "Scanning…" : "Detect now"; active: !root.detecting; clicked => { root.detect-now-requested(); } }
-                                        SecondaryButton { label: "Open video"; active: !root.media-video-url.is-empty; clicked => { root.open-url-requested(root.media-video-url); } }
-                                        SecondaryButton { label: "Open channel"; active: !root.media-channel-url.is-empty; clicked => { root.open-url-requested(root.media-channel-url); } }
+                                        PrimaryButton { label: root.detecting ? AppLocalization.translate(AppLocalization.current_locale, "Scanning…") : AppLocalization.translate(AppLocalization.current_locale, "Detect now"); active: !root.detecting; clicked => { root.detect-now-requested(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open video"); active: !root.media-video-url.is-empty; clicked => { root.open-url-requested(root.media-video-url); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open channel"); active: !root.media-channel-url.is-empty; clicked => { root.open-url-requested(root.media-channel-url); } }
                                     }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Detection sources"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    ToggleRow { title: "Native Now Playing"; subtitle: "OS media session: Now Playing / SMTC / MPRIS."; checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Browser tabs"; subtitle: "Foreground tab URL when available (YouTube, Vimeo, Twitch, Spotify)."; checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Media players"; subtitle: "Spotify, Apple Music and iTunes on macOS."; checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Detection sources"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Native Now Playing"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "OS media session: Now Playing / SMTC / MPRIS."); checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Browser tabs"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Foreground tab URL when available (YouTube, Vimeo, Twitch, Spotify)."); checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Media players"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Spotify, Apple Music and iTunes on macOS."); checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 12px;
-                                    Text { text: "Currently detected"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: (root.media-source.is-empty ? "Nothing yet" : root.media-source + (root.detected-app.is-empty ? "" : " · " + root.detected-app)); color: AppTheme.muted; font-size: 12px; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Currently detected"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: (root.media-source.is-empty ? AppLocalization.translate(AppLocalization.current_locale, "Nothing yet") : root.media-source + (root.detected-app.is-empty ? "" : " · " + root.detected-app)); color: AppTheme.muted; font-size: 12px; }
                                     Text { text: root.media-title.is-empty ? "—" : root.media-title; color: AppTheme.text; font-size: 20px; font-weight: 700; wrap: word-wrap; }
                                     Text { text: ((root.media-artist.is-empty ? "" : root.media-artist) + (root.media-album.is-empty ? "" : " · " + root.media-album)); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
                                     Rectangle {
@@ -652,30 +674,30 @@ export component MainWindow inherits Window {
                                     }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        Text { text: root.media-playing ? "▶ Playing" : "❚❚ Paused"; color: root.media-playing ? AppTheme.green : AppTheme.yellow; font-size: 12px; }
+                                        Text { text: root.media-playing ? AppLocalization.translate(AppLocalization.current_locale, "▶ Playing") : AppLocalization.translate(AppLocalization.current_locale, "❚❚ Paused"); color: root.media-playing ? AppTheme.green : AppTheme.yellow; font-size: 12px; }
                                         Text { text: root.media-position + " / " + root.media-duration + " s"; color: AppTheme.subtle; font-size: 12px; }
                                     }
-                                    Field { label: "Video / track URL"; value <=> root.media-video-url; placeholder: "Detected automatically"; }
-                                    Field { label: "Channel / artist URL"; value <=> root.media-channel-url; placeholder: "Detected automatically"; }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Video / track URL"); value <=> root.media-video-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Detected automatically"); }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Channel / artist URL"); value <=> root.media-channel-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Detected automatically"); }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Presence options"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Presence options"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        SecondaryButton { label: "Auto"; active: root.media-activity-type == "Auto"; clicked => { root.media-activity-type = "Auto"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: "Listening"; active: root.media-activity-type == "Listening"; clicked => { root.media-activity-type = "Listening"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: "Watching"; active: root.media-activity-type == "Watching"; clicked => { root.media-activity-type = "Watching"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Auto"); active: root.media-activity-type == "Auto"; clicked => { root.media-activity-type = "Auto"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Listening"); active: root.media-activity-type == "Listening"; clicked => { root.media-activity-type = "Listening"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Watching"); active: root.media-activity-type == "Watching"; clicked => { root.media-activity-type = "Watching"; root.detector-settings-changed(); } }
                                     }
-                                    ToggleRow { title: "Show album"; checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Hide while paused"; checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
-                                    Text { text: "Status text in member list"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Show album"); checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Hide while paused"); checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Status text in member list"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        SecondaryButton { label: "Name"; active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: "State"; active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: "Details"; active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Name"); active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "State"); active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; root.detector-settings-changed(); } }
                                     }
                                 }
                             }
@@ -684,20 +706,20 @@ export component MainWindow inherits Window {
                         // ===================== APPS =====================
                         if (root.current-page == "Apps"): VerticalLayout {
                             spacing: 18px;
-                            Text { text: "Choose which sources may update your Rich Presence."; color: AppTheme.muted; font-size: 14px; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Choose which sources may update your Rich Presence."); color: AppTheme.muted; font-size: 14px; }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Detection backends"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    ToggleRow { title: "Native Now Playing"; subtitle: "macOS Now Playing, Windows SMTC, Linux MPRIS."; checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Browser detection"; subtitle: "Chrome, Safari, Edge, Brave, Arc and Firefox."; checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Player apps"; subtitle: "Spotify, Apple Music, iTunes (AppleScript on macOS)."; checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Detection backends"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Native Now Playing"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "macOS Now Playing, Windows SMTC, Linux MPRIS."); checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Browser detection"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Chrome, Safari, Edge, Brave, Arc and Firefox."); checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Player apps"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Spotify, Apple Music, iTunes (AppleScript on macOS)."); checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Supported media sources"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: "Spotify · Apple Music · iTunes · YouTube · YouTube Music · Vimeo · Twitch · Bilibili · SoundCloud · Any MPRIS or SMTC player"; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: "A browser tab or player must be the active/playing source for URL extraction. When a full URL is not exposed, a canonical search link is generated from the window title instead."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Supported media sources"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Spotify · Apple Music · iTunes · YouTube · YouTube Music · Vimeo · Twitch · Bilibili · SoundCloud · Any MPRIS or SMTC player"); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "A browser tab or player must be the active/playing source for URL extraction. When a full URL is not exposed, a canonical search link is generated from the window title instead."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                 }
                             }
                         }
@@ -707,22 +729,22 @@ export component MainWindow inherits Window {
                             spacing: 18px;
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Discord desktop Rich Presence"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: "Uses local IPC and a public Application ID — no Discord login required."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Field { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Discord application ID"; enabled: !root.connected && !root.connecting; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord desktop Rich Presence"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Uses local IPC and a public Application ID — no Discord login required."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Application ID"); value <=> root.application-id; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Numeric Discord application ID"); enabled: !root.connected && !root.connecting; }
                                     HorizontalLayout {
                                         spacing: 10px;
                                         if (!root.connected && !root.connecting): PrimaryButton {
-                                            label: "Connect";
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Connect");
                                             clicked => {
                                                 root.connecting = true;
                                                 root.connection-status = "Connecting…";
                                                 root.connect-requested();
                                             }
                                         }
-                                        if (root.connecting): SecondaryButton { label: "Connecting…"; active: false; clicked => {} }
+                                        if (root.connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Connecting…"); active: false; clicked => {} }
                                         if (root.connected): SecondaryButton {
-                                            label: "Disconnect";
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect");
                                             clicked => {
                                                 root.connecting = true;
                                                 root.connection-status = "Disconnecting…";
@@ -735,24 +757,24 @@ export component MainWindow inherits Window {
                             }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Discord bot Gateway"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: "Logs in as a bot and changes the bot's activity. Tokens are encrypted and stored in the OS credential store."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    SecondaryButton { label: "Use personal-account OAuth2 instead"; clicked => { root.navigate("Profile"); } }
-                                    Field { label: "Bot token"; value <=> root.gateway-token; secret: true; placeholder: "Discord bot token"; enabled: !root.gateway-connected && !root.gateway-connecting; }
-                                    ToggleRow { title: "Remember bot token (encrypted)"; checked <=> root.remember-gateway-token; toggled => {} }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord bot Gateway"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Logs in as a bot and changes the bot's activity. Tokens are encrypted and stored in the OS credential store."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Use personal-account OAuth2 instead"); clicked => { root.navigate("Profile"); } }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Bot token"); value <=> root.gateway-token; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Discord bot token"); enabled: !root.gateway-connected && !root.gateway-connecting; }
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Remember bot token (encrypted)"); checked <=> root.remember-gateway-token; toggled => {} }
                                     HorizontalLayout {
                                         spacing: 10px;
                                         if (!root.gateway-connected && !root.gateway-connecting): PrimaryButton {
-                                            label: "Login";
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Login");
                                             clicked => {
                                                 root.gateway-connecting = true;
                                                 root.gateway-status = "Connecting as bot…";
                                                 root.gateway-login-requested();
                                             }
                                         }
-                                        if (root.gateway-connecting): SecondaryButton { label: "Connecting…"; active: false; clicked => {} }
+                                        if (root.gateway-connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Connecting…"); active: false; clicked => {} }
                                         if (root.gateway-connected): SecondaryButton {
-                                            label: "Logout";
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Logout");
                                             clicked => {
                                                 root.gateway-connecting = true;
                                                 root.gateway-status = "Logging out…";
@@ -770,24 +792,24 @@ export component MainWindow inherits Window {
                             spacing: 18px;
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Discord account"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your profile or send activity."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Field { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Discord application ID"; enabled: !root.oauth-connecting; }
-                                    Text { text: "Uses Kizzy Enhanced's OAuth app by default; you can enter your own Client ID. Callback: kizzy://oauth2/callback."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord account"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your profile or send activity."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Application ID"); value <=> root.application-id; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Numeric Discord application ID"); enabled: !root.oauth-connecting; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Uses Kizzy Enhanced's OAuth app by default; you can enter your own Client ID. Callback: kizzy://oauth2/callback."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                     HorizontalLayout {
                                         spacing: 10px;
                                         if (!root.oauth-connected && !root.oauth-connecting): PrimaryButton {
-                                            label: "Login with Discord";
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Login with Discord");
                                             clicked => {
                                                 root.oauth-connecting = true;
                                                 root.oauth-status = "Opening browser…";
                                                 root.oauth-login-requested();
                                             }
                                         }
-                                        if (root.oauth-connecting): SecondaryButton { label: "Cancel"; clicked => { root.oauth-status = "Canceling…"; root.oauth-cancel-requested(); } }
-                                        if (root.oauth-connecting && root.oauth-authorize-url != ""): SecondaryButton { label: "Open sign-in link"; clicked => { root.oauth-open-authorize-url-requested(); } }
+                                        if (root.oauth-connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Cancel"); clicked => { root.oauth-status = "Canceling…"; root.oauth-cancel-requested(); } }
+                                        if (root.oauth-connecting && root.oauth-authorize-url != ""): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open sign-in link"); clicked => { root.oauth-open-authorize-url-requested(); } }
                                         if (root.oauth-has-session && !root.oauth-connecting): SecondaryButton {
-                                            label: "Logout";
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Logout");
                                             clicked => {
                                                 root.oauth-connecting = true;
                                                 root.oauth-status = "Signing out…";
@@ -796,12 +818,12 @@ export component MainWindow inherits Window {
                                         }
                                         Text { text: root.oauth-status; color: root.oauth-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
                                     }
-                                    if (root.oauth-connecting && root.oauth-authorize-url != ""): Field { label: "Sign-in link"; value <=> root.oauth-authorize-url; placeholder: ""; }
+                                    if (root.oauth-connecting && root.oauth-authorize-url != ""): Field { label: AppLocalization.translate(AppLocalization.current_locale, "Sign-in link"); value <=> root.oauth-authorize-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, ""); }
                                 }
                             }
                             if (root.oauth-profile-loaded): Card {
                                 VerticalLayout { spacing: 12px;
-                                    Text { text: "Profile preview"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Profile preview"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
                                     Rectangle {
                                         height: 130px; border-radius: 10px; background: root.oauth-accent-color;
                                         if (root.oauth-has-banner): Image { source: root.oauth-banner; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
@@ -822,62 +844,62 @@ export component MainWindow inherits Window {
                                             spacing: 2px;
                                             Text { text: root.oauth-display-name; color: AppTheme.text; font-size: 21px; font-weight: 700; }
                                             Text { text: root.oauth-username; color: AppTheme.muted; font-size: 14px; }
-                                            Text { text: "User ID: " + root.oauth-user-id; color: AppTheme.subtle; font-size: 12px; }
+                                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "User ID: ") + root.oauth-user-id; color: AppTheme.subtle; font-size: 12px; }
                                         }
                                     }
                                     Text { text: root.oauth-profile-art-status; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                    Text { text: "Preview only — profile changes, roles and live presence are not fetched."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Preview only — profile changes, roles and live presence are not fetched."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                 }
                             }
                             if (!root.oauth-profile-loaded): Card {
-                                Text { text: "Sign in to preview your Discord display name, username, avatar and banner."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                Text { text: AppLocalization.translate(AppLocalization.current_locale, "Sign in to preview your Discord display name, username, avatar and banner."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                             }
                         }
 
                         // ===================== SCROBBLING =====================
                         if (root.current-page == "Scrobbling"): VerticalLayout {
                             spacing: 18px;
-                            Text { text: "Forward detected or manually entered songs to scrobbling services."; color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Forward detected or manually entered songs to scrobbling services."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Last.fm"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Last.fm"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
                                     HorizontalLayout { spacing: 8px;
-                                        Field { label: "API key"; value <=> root.scrobble-lastfm-api-key; placeholder: "Last.fm API key"; enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
-                                        Field { label: "API secret"; value <=> root.scrobble-lastfm-api-secret; secret: true; placeholder: "Last.fm API secret"; enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API key"); value <=> root.scrobble-lastfm-api-key; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Last.fm API key"); enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API secret"); value <=> root.scrobble-lastfm-api-secret; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Last.fm API secret"); enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
                                     }
                                     HorizontalLayout { spacing: 10px;
-                                        if (!root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): PrimaryButton { label: "Authorize"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Opening browser…"; root.scrobble-lastfm-authorize-requested(); } }
-                                        if (root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy): SecondaryButton { label: "Finish sign-in"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Finishing…"; root.scrobble-lastfm-finish-requested(); } }
-                                        if (root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): SecondaryButton { label: "Disconnect"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-disconnect-requested(); } }
-                                        if (root.scrobble-lastfm-busy): SecondaryButton { label: "Working…"; active: false; clicked => {} }
+                                        if (!root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Authorize"); clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Opening browser…"; root.scrobble-lastfm-authorize-requested(); } }
+                                        if (root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Finish sign-in"); clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Finishing…"; root.scrobble-lastfm-finish-requested(); } }
+                                        if (root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-disconnect-requested(); } }
+                                        if (root.scrobble-lastfm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Working…"); active: false; clicked => {} }
                                         Text { text: root.scrobble-lastfm-status; color: root.scrobble-lastfm-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
                                     }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "ListenBrainz"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Field { label: "User token"; value <=> root.scrobble-listenbrainz-token; secret: true; placeholder: "listenbrainz.org/settings token"; enabled: !root.scrobble-listenbrainz-busy; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "ListenBrainz"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "User token"); value <=> root.scrobble-listenbrainz-token; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "listenbrainz.org/settings token"); enabled: !root.scrobble-listenbrainz-busy; }
                                     HorizontalLayout { spacing: 10px;
-                                        if (!root.scrobble-listenbrainz-busy): PrimaryButton { label: "Save token"; clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-status = "Saving…"; root.scrobble-listenbrainz-save-requested(); } }
-                                        if (root.scrobble-listenbrainz-connected && !root.scrobble-listenbrainz-busy): SecondaryButton { label: "Disconnect"; clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-disconnect-requested(); } }
-                                        if (root.scrobble-listenbrainz-busy): SecondaryButton { label: "Working…"; active: false; clicked => {} }
+                                        if (!root.scrobble-listenbrainz-busy): PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Save token"); clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-status = "Saving…"; root.scrobble-listenbrainz-save-requested(); } }
+                                        if (root.scrobble-listenbrainz-connected && !root.scrobble-listenbrainz-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-disconnect-requested(); } }
+                                        if (root.scrobble-listenbrainz-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Working…"); active: false; clicked => {} }
                                         Text { text: root.scrobble-listenbrainz-status; color: root.scrobble-listenbrainz-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
                                     }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 10px;
-                                    Text { text: "Libre.fm"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Libre.fm"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
                                     HorizontalLayout { spacing: 8px;
-                                        Field { label: "API key"; value <=> root.scrobble-librefm-api-key; placeholder: "Libre.fm API key"; enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
-                                        Field { label: "API secret"; value <=> root.scrobble-librefm-api-secret; secret: true; placeholder: "Libre.fm API secret"; enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API key"); value <=> root.scrobble-librefm-api-key; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Libre.fm API key"); enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
+                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API secret"); value <=> root.scrobble-librefm-api-secret; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Libre.fm API secret"); enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
                                     }
                                     HorizontalLayout { spacing: 10px;
-                                        if (!root.scrobble-librefm-connected && !root.scrobble-librefm-busy): PrimaryButton { label: "Authorize"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Opening browser…"; root.scrobble-librefm-authorize-requested(); } }
-                                        if (root.scrobble-librefm-pending && !root.scrobble-librefm-busy): SecondaryButton { label: "Finish sign-in"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Finishing…"; root.scrobble-librefm-finish-requested(); } }
-                                        if (root.scrobble-librefm-connected && !root.scrobble-librefm-busy): SecondaryButton { label: "Disconnect"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-disconnect-requested(); } }
-                                        if (root.scrobble-librefm-busy): SecondaryButton { label: "Working…"; active: false; clicked => {} }
+                                        if (!root.scrobble-librefm-connected && !root.scrobble-librefm-busy): PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Authorize"); clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Opening browser…"; root.scrobble-librefm-authorize-requested(); } }
+                                        if (root.scrobble-librefm-pending && !root.scrobble-librefm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Finish sign-in"); clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Finishing…"; root.scrobble-librefm-finish-requested(); } }
+                                        if (root.scrobble-librefm-connected && !root.scrobble-librefm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-disconnect-requested(); } }
+                                        if (root.scrobble-librefm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Working…"); active: false; clicked => {} }
                                         Text { text: root.scrobble-librefm-status; color: root.scrobble-librefm-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
                                     }
                                 }
@@ -888,21 +910,32 @@ export component MainWindow inherits Window {
                         if (root.current-page == "Settings"): VerticalLayout {
                             spacing: 18px;
                             Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Language"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Choose the language used by the app. Missing translations fall back to English."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    ComboBox {
+                                        model: AppLocalization.language_options;
+                                        current-value <=> AppLocalization.selected_language;
+                                        selected(value) => { AppLocalization.language_selected(value); }
+                                    }
+                                }
+                            }
+                            Card {
                                 VerticalLayout { spacing: 12px;
-                                    Text { text: "Appearance"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: "Discord-inspired colour scheme."; color: AppTheme.muted; font-size: 13px; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Appearance"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord-inspired colour scheme."); color: AppTheme.muted; font-size: 13px; }
                                     HorizontalLayout {
                                         spacing: 10px;
-                                        SecondaryButton { label: "☾ Dark"; active: AppTheme.dark; clicked => { AppTheme.dark = true; } }
-                                        SecondaryButton { label: "☀ Light"; active: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "☾ Dark"); active: AppTheme.dark; clicked => { AppTheme.dark = true; } }
+                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "☀ Light"); active: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
                                     }
                                 }
                             }
                             Card {
                                 VerticalLayout { spacing: 8px;
-                                    Text { text: "About"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: "Music Presence — share what you listen to on Discord."; color: AppTheme.muted; font-size: 13px; }
-                                    Text { text: "Detects over 100 media players, browser tabs and OS now-playing sessions. UI follows Discord's branding guidelines and Kizzy Enhanced's feature layout."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "About"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Music Presence — share what you listen to on Discord."); color: AppTheme.muted; font-size: 13px; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Detects over 100 media players, browser tabs and OS now-playing sessions. UI follows Discord's branding guidelines and Kizzy Enhanced's feature layout."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                 }
                             }
                         }

@@ -1,5 +1,6 @@
 mod bot_gateway;
 mod discord_rpc;
+mod localization;
 mod media_detector;
 mod oauth;
 mod oauth_protocol;
@@ -11,8 +12,10 @@ mod urls;
 use bot_gateway::Command as GatewayCommand;
 use discord_rpc::Command as RpcCommand;
 use oauth::Command as OAuthCommand;
+use localization::Localizer;
 use presence::{PresenceDraft, youtube_music_search_url};
 use scrobbling::{Command as ScrobbleCommand, Provider as ScrobbleProvider, ScrobbleTrack};
+use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 use std::{
     sync::{
         Arc,
@@ -54,6 +57,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let window = MainWindow::new()?;
+    let localizer = Arc::new(Localizer::bundled());
+    let localization = window.global::<AppLocalization>();
+    localization.set_language_options(ModelRc::new(VecModel::from_iter(
+        localizer
+            .languages()
+            .iter()
+            .map(|language| SharedString::from(language.label.as_str())),
+    )));
+    let translate_localizer = Arc::clone(&localizer);
+    localization.on_translate(move |locale, source| {
+        translate_localizer
+            .translate(locale.as_str(), source.as_str())
+            .into()
+    });
+    let saved_language = localizer.load_saved_language();
+    localization.set_current_locale(saved_language.clone().into());
+    if let Some(label) = localizer.label_for_code(&saved_language) {
+        localization.set_selected_language(label.into());
+    }
+
+    let language_window = window.as_weak();
+    let selected_localizer = Arc::clone(&localizer);
+    localization.on_language_selected(move |label| {
+        let Some(code) = selected_localizer.code_for_label(label.as_str()) else {
+            eprintln!("Ignoring unsupported language selection: {label}");
+            return;
+        };
+        let code = code.to_owned();
+        let Some(window) = language_window.upgrade() else {
+            return;
+        };
+        let localization = window.global::<AppLocalization>();
+        localization.set_selected_language(label);
+        localization.set_current_locale(code.clone().into());
+        if let Err(error) = selected_localizer.save_language(&code) {
+            eprintln!("Could not save the selected language: {error}");
+        }
+    });
+
     #[cfg(target_os = "linux")]
     slint::set_xdg_app_id("music-presence")?;
     #[cfg(target_os = "macos")]

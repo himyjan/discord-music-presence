@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Millorat</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+
+    <string name="activity_name">Nom de lapos;activitat</string>
+    <string name="activity_details">Detalls de lapos;activitat</string>
+    <string name="activity_state">Estat de lapos;activitat</string>
+    <string name="load_config">Carrega des de fitxers</string>
+    <string name="save_config">Desa la configuració</string>
+    <string name="delete_configs">Elimina la configuració</string>
+    <string name="preview_rpc">Previsualitza RPC</string>
+    <string name="select_a_config">Selecciona una configuració</string>
+    <string name="login_with_discord">Inicia sessió amb Discord</string>
+    <string name="github_readme">LLEGEIX-ME (README)</string>
+    <string name="credits">Crèdits</string>
+    <string name="welcome">Benvingut</string>
+    <string name="features">Característiques</string>
+    <string name="account">Compte</string>
+    <string name="display">Pantalla</string>
+    <string name="about">Sobre</string>
+    <string name="settings">Configuració</string>
+    <string name="language">Llengua</string>
+    <string name="dark_theme">Tema fosc</string>
+    <string name="privacy_policy">Política de privadesa</string>
+    <string name="cancel">Cancel·la</string>
+    <string name="confirm">Confirma</string>
+    <string name="save">Desa</string>
+    <string name="delete">Elimina</string>
+    <string name="search">Cerca</string>
+    <string name="clear">Neteja</string>
+    <string name="exit">Surt</string>
+    <string name="logs">Registres (Logs)</string>
+    <string name="version">Versió</string>
+    <string name="try_again">Torna-ho a provar</string>
+    <string name="yes">Sí</string>
+    <string name="logout">Tanca la sessió</string>
+    <string name="skip">Omet</string>
+    <string name="stop">Atura</string>
+    <string name="restart">Reinicia</string>
+    <string name="no_internet_connection"> Sense connexió a Internet</string>
+    <string name="unknown_error">Sapos;ha produït un error inesperat</string>
+    <string name="copied_to_clipboard">Copiat al porta-retalls</string>
+
+    <string name="rpc_connection_method">Mètode de connexió</string>
+    <string name="rpc_connection_method_desc">Tria com es connecta Kizzy amb Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (teston del bot)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (el teu compte de Discord)</string>
+    <string name="discord_oauth2_authorize">Connecta\'t a Discord</string>
+    <string name="discord_oauth2_authorize_desc">Permet que Kizzy mostri la teva activitat al teu perfil de Discord</string>
+
+    <string name="console_include_spoofed">Inclou les compilacions falsificades</string>
+    <string name="auto_detect">Automàtic · %1$s</string>
+    <string name="save_logs_to_file">Desa els registres en un fitxer</string>
+    <string name="logs_saved_toast">Els registres s\'han desat a %1$s</string>
+    <string name="discord_step3_content">Toca el teu Estat (a sota del nom d\'usuari) i tria En línia, Ociós o No molestis. ⚠️ No facis servir Invisible — Discord amaga l\'activitat de Kizzy quan ets Invisible.</string>
+    <string name="discord_setup_title">Abans de començar</string>
+    <string name="console_auto_detect">Detecció automàtica de DroidDeck / Eden</string>
+    <string name="console_detected_hint">Toca per fer servir aquest joc per a Console RPC</string>
+    <string name="discord_step2_content">Troba "Comparteix la meva activitat" i activa\'l. A sota de "On comparteixo l\'activitat", tria "Comparteix a tots els servidors"; desplaça\'t fins a "Els meus servidors" i activa els servidors on vulguis veure el teu estat.</string>
+    <string name="discord_tip_content">Algunes versions mòbils de Discord amaguen aquest commutador. Obre discord.com al Chrome → activa el lloc d\'escriptori → inicia la sessió → Configuració (⚙️) → Privadesa de l\'activitat → activa "Comparteix la meva activitat".</string>
+    <string name="discord_setup_desc">Assegura\'t que Discord permet mostrar la teva activitat al teu perfil.</string>
+    <string name="auto_detect_activity_type_desc">Les aplicacions de música es detecten com a música i les de vídeo com a vídeo, de manera que YouTube Music ja no es mostra com a joc. El tipus triat per a una aplicació sempre té prioritat.</string>
+    <string name="auto_detect_activity_type">Detecció automàtica del tipus d\'activitat</string>
+    <string name="logs_save_error">No s\'han pogut desar els registres</string>
+    <string name="discord_tip_title">No trobes "Comparteix la meva activitat"?</string>
+    <string name="console_detected_in_game">Al joc</string>
+    <string name="rich_presence_active">Rich Presence actiu</string>
+    <string name="discord_step1_title">Pas 1: Obre la configuració de privadesa</string>
+    <string name="console_detected">Detectat</string>
+    <string name="discord_step2_title">Pas 2: Activa la compartició d\'activitat</string>
+    <string name="discord_step1_content">Obre l\'aplicació Discord → toca la teva icona Tu (foto de perfil) → toca Configuració (⚙️) → desplaça\'t cap avall i toca Contingut i social (o Privadesa de l\'activitat en versions antigues de l\'app).</string>
+    <string name="activity_type_fallback_desc">S\'utilitza per a les aplicacions que no es reconeixen i per a qualsevol aplicació quan la detecció automàtica està desactivada.</string>
+    <string name="discord_step3_title">Pas 3: Comprova el teu estat en línia</string>
+
+    <string name="console_preset_games">Jocs predefinits</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">RPC personalitzat</string>
+    <string name="rpc_tab_console_presets">RPC de consola</string>
+    <string name="rpc_tab_console_presets_desc">Tria un tipus predefinit per configurar ràpidament el Console RPC. Després podràs ajustar cada valor a la pestanya Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Torna a la configuració de Custom RPC</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">S\'ha aplicat el preajust</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Plibona</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+
+    <string name="activity_name">Nomo de agado</string>
+    <string name="activity_details">Detaloj de agado</string>
+    <string name="activity_state">Stato de agado</string>
+    <string name="load_config">Ŝargi el dosieroj</string>
+    <string name="save_config">Konservi agordon</string>
+    <string name="delete_configs">Forigi agordon</string>
+    <string name="preview_rpc">Antaŭrigardi RPC</string>
+    <string name="select_a_config">Elekti agordon</string>
+    <string name="login_with_discord">Ensaluti per Discord</string>
+    <string name="github_readme">LEGINMIN (README)</string>
+    <string name="credits">Kreditoj</string>
+    <string name="welcome">Bonvenon</string>
+    <string name="features">Trajtoj</string>
+    <string name="account">Konto</string>
+    <string name="display">Montrilo</string>
+    <string name="about">Pri</string>
+    <string name="settings">Agordoj</string>
+    <string name="language">Lingvo</string>
+    <string name="dark_theme">Malhela etoso</string>
+    <string name="privacy_policy">Privateca politiko</string>
+    <string name="cancel">Nuligi</string>
+    <string name="confirm">Konfirmi</string>
+    <string name="save">Konservi</string>
+    <string name="delete">Forigi</string>
+    <string name="search">Serĉi</string>
+    <string name="clear">Vakigi</string>
+    <string name="exit">Eliri</string>
+    <string name="logs">Protokoloj (Logs)</string>
+    <string name="version">Versio</string>
+    <string name="try_again">Reprovi</string>
+    <string name="yes">Jes</string>
+    <string name="logout">Elsaluti</string>
+    <string name="skip">Preterlasi</string>
+    <string name="stop">Halti</string>
+    <string name="restart">Rekomenci</string>
+    <string name="no_internet_connection">Neniu interreta konekto</string>
+    <string name="unknown_error">Okazis neatendita eraro</string>
+    <string name="copied_to_clipboard">Kopiita al tondejo</string>
+
+    <string name="rpc_connection_method">Metodo de konekto</string>
+    <string name="rpc_connection_method_desc">Elektu kiel Kizzy konektas al Discord</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot-tokeno)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (via Discord-konto)</string>
+    <string name="discord_oauth2_authorize">Konekti al Discord</string>
+    <string name="discord_oauth2_authorize_desc">Permesu al Kizzy montri vian aktivecon en via Discord-profilo</string>
+
+    <string name="console_include_spoofed">Inkluzigi falsajnajn konstruebilojn</string>
+    <string name="auto_detect">Aŭtomata · %1$s</string>
+    <string name="save_logs_to_file">Konservi registrojn en dosiero</string>
+    <string name="logs_saved_toast">Registroj konserviĝis en %1$s</string>
+    <string name="discord_step3_content">Tuŝu vian Staton (sub via uzantnomo) kaj elektu Enreta, Senokupa aŭ Ne ĝenu. ⚠️ Ne uzu Kaŝebla — Discord kaŝas la agadon de Kizzy kiam vi estas Kaŝebla.</string>
+    <string name="discord_setup_title">Antaŭ ol komenci</string>
+    <string name="console_auto_detect">Aŭtomata detekto de DroidDeck / Eden</string>
+    <string name="console_detected_hint">Klaku por uzi ĉi tiun ludon por Console RPC</string>
+    <string name="discord_step2_content">Trovu „Kunhavigi mian agadon“ kaj ŝaltu ĝin. Sub „Kie mi kunhavigas agon“, elektu „Kunhavigi ĉe ĉiuj serviloj“. Ruluĝu al „Miaj serviloj“ kaj ŝaltu la servilojn, kie vi volas vidi vian staton.</string>
+    <string name="discord_tip_content">Kelkaj mobilaj versioj de Discord kaŝas ĉi tiun ŝaltilon. Malfermu discord.com en Chrome → eŝaltu „Labortabla retejo“ → )-&gt; aligu → Agordoj (⚙️) → Privateco de agado → ŝaltu „Kunhavigi mian agadon“.</string>
+    <string name="discord_setup_desc">Certiĝu, ke Discord permesas montri vian agadon en via profilo.</string>
+    <string name="auto_detect_activity_type_desc">Muzikaj aplikaĵoj estas detektataj kiel muziko kaj videoaplikaĵoj kiel video, do YouTube Music plu ne aperas kiel ludo. La tipo elektita por unu sola aplikaĵo ĉiam havas prioriton.</string>
+    <string name="auto_detect_activity_type">Aŭtomate detekti la tipon de agado</string>
+    <string name="logs_save_error">Malsukcesis konservi registrojn</string>
+    <string name="discord_tip_title">Ĉu vi ne trovas „Kunhavigi mian agadon“?</string>
+    <string name="console_detected_in_game">En la ludo</string>
+    <string name="rich_presence_active">Rich Presence aktiva</string>
+    <string name="discord_step1_title">Paŝo 1: Malfermi privatecajn agordojn</string>
+    <string name="console_detected">Detektita</string>
+    <string name="discord_step2_title">Paŝo 2: Ŝalti agadon kunhavigon</string>
+    <string name="discord_step1_content">Malfermu la aplikaĵon Discord → klaku vian „Vi“-piktogramon (profilfoto) → klaku Agordoj (⚙️) → ruluĝu malsupren kaj klaku „Enhavo kaj sociaj retoj“ (aŭ „Privateco de agado“ en pli malnovaj versioj de la aplikaĵo).</string>
+    <string name="activity_type_fallback_desc">Uzata por aplikaĵoj ne rekonataj kaj por ĉiu aplikaĵo kiam aŭtomata detekto estas malŝaltita.</string>
+    <string name="discord_step3_title">Paŝo 3: Kontroli vian retan staton</string>
+
+    <string name="console_preset_games">Antaŭagorditaj ludoj</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Propra RPC</string>
+    <string name="rpc_tab_console_presets">Konzola RPC</string>
+    <string name="rpc_tab_console_presets_desc">Elektu antaŭkontrolon por rapide agordi Console RPC. Vi povas fikti ĉiun valoron poste en la langeto Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Reen al al agordoj de Custom RPC</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>

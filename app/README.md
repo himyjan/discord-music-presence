@@ -101,6 +101,14 @@ the app through Finder's **Open** command to approve it.
 The shared SVG is used for the in-app logo, native window icons where
 supported, Linux desktop launchers, and the macOS Dock icon.
 
+### Languages
+
+The Settings page offers the 88 language labels supplied by the Android-style
+resources in `src/main/res/values/` and `src/main/res/values-*/strings.xml`.
+The build script embeds these XML strings into the desktop app; it does not
+need AAPT2 or an Android runtime. Missing translations fall back to English.
+To add or update strings, edit the corresponding `strings.xml` files and rebuild.
+
 ## Current targets
 
 The project is configured for Windows x86-64, macOS ARM64 and x86-64, and Linux

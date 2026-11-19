@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+    <string name="activity_name">نام فعالیت</string>
+    <string name="activity_details">جزئیات فعالیت</string>
+    <string name="activity_state">وضعیت فعالیت</string>
+    <string name="activity_start_timestamps">شروع رویداد</string>
+    <string name="activity_stop_timestamps">توقف رویداد</string>
+    <string name="activity_status_online_idle_dnd">وضعیت فعالیت (Online، Idle، dnd)</string>
+    <string name="activity_button1_text">متن دکمه 1 فعالیت</string>
+    <string name="activity_button2_text">متن دکمه 2 فعالیت</string>
+    <string name="activity_button1_url">آدرس دکمه 1</string>
+    <string name="activity_button2_url">آدرس دکمه 2</string>
+    <string name="activity_large_image">تصویر بزرگ فعالیت</string>
+    <string name="activity_small_image">تصویر کوچک فعالیت</string>
+    <string name="activity_type">نوع فعالیت</string>
+    <string name="activity_platform">سکوی فعالیت</string>
+    <string name="load_config">بارگیری از فایل ها</string>
+    <string name="save_config">ذخیره پیکربندی</string>
+    <string name="delete_configs">حذف پیکربندی</string>
+    <string name="preview_rpc">پیش نمایش Rpc</string>
+    <string name="select_a_config">یک پیکربندی را انتخاب کنید</string>
+    <string name="login_with_discord">ورود با Discord</string>
+    <string name="github_readme">README</string>
+    <string name="github_readme_desc">بررسی مخزن گیت هاب</string>
+    <string name="github_latest_release">"آخرین نسخه "</string>
+    <string name="github_latest_release_desc">بررسی برای نسخه جدید و گذارش تغییرات</string>
+    <string name="github_issue">موضوعات Github</string>
+    <string name="github_issue_desc">گذارش اشکال یا درخواست یک ویژگی جدید</string>
+    <string name="credits">سازندگان</string>
+    <string name="credits_desc">سازندگان کتابخانه ها و مشارکت کنندگان</string>
+    <string name="enable_artist_name">فعال کردن نام هنرمند</string>
+    <string name="enable_album_name">نمایش نام آلبوم</string>
+    <string name="show_app_icon">نمایش نماد برنامه</string>
+    <string name="enable_timestamps">فعال کردن رویداد ها</string>
+    <string name="timestamp_mode">حالت مهر زمان</string>
+    <string name="start_timestamp_ms">مهر زمان شروع (میلی‌ثانیه)</string>
+    <string name="end_timestamp_ms">مهر زمان پایان (میلی‌ثانیه)</string>
+    <string name="text_after_permission_denied">Storage access is important for this app to store
+        configs in public directories. Please grant the permission.</string>
+    <string name="request_for_storage_access">Storage permission required for config features to
+        work. Please grant the permission.</string>
+    <string name="grant_permission">اعطای مجوز</string>
+    <string name="use_low_res_icon">از تصاویر با وضوح پایین استفاده کنید</string>
+    <string name="use_low_res_icon_desc">Use a lower resolution app icon for displaying on RPC (turn
+        this on if the RPC is crashing). This setting will also be applied to Apps.</string>
+    <string name="delete_saved_icon_urls">حذف پیوندهای نماد</string>
+    <string name="delete_saved_icon_urls_desc">Delete app icon URLs saved in local files (Only use
+        this as needed as it will send images to Discord servers again, which will consume more
+        data)</string>
+    <string name="app_crashed">برنامه کرش خورد</string>
+    <string name="share_crash_logs_desc">Please send the Logs in Discord channel with the following
+        stacktrace :</string>
+    <string name="share_crash_logs">ارسال لاگ ها</string>
+    <string name="welcome">خوش آمدید</string>
+    <string name="features">امکانات</string>
+    <string name="account">حساب</string>
+    <string name="display">زمینه</string>
+    <string name="about">درباره</string>
+    <string name="settings">تنظیمات</string>
+    <string name="language">زبان</string>
+    <string name="design_credits">سازندگان برنامه</string>
+    <string name="enable_appsRpc">فعال کردن تشخیص برنامه</string>
+    <string name="usage_access">دسترسی لازم است</string>
+    <string name="usage_access_desc">دسترسی برای دریافت برنامه های در حال اجرا مورد نیاز است</string>
+    <string name="enable_mediaRpc">فعال کردن Rpc رسانه</string>
+    <string name="permission_required">مجوز لازم است</string>
+    <string name="enable_customRpc">فعال کردن Rpc سفارشی</string>
+    <string name="dark_theme">تم دارک</string>
+    <string name="privacy_policy">سیاست حفظ حریم خصوصی</string>
+    <string name="privacy_policy_desc">بررسی سیاست حفظ حریم خصوصی</string>
+    <string name="enable_console_rpc">فعال کردن Rpc سفارشی</string>
+    <string name="rpc_settings_button_configs">پیکربندی دکمه برای Media و AppDetection Rpc</string>
+    <string name="use_custom_buttons">استفاده از دکمه های سفارشی</string>
+    <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
+        RPC</string>
+    <string name="follow_system">سیستم</string>
+    <string name="advance_settings">تنظیمات پیشرفته</string>
+    <string name="amoled">تم آمولد</string>
+    <string name="dynamic_color">رنگ پویا</string>
+    <string name="dynamic_color_desc">اعمال رنگ ها از کاغذ دیواری ها</string>
+    <string name="cancel">انصراف</string>
+    <string name="confirm">تایید</string>
+    <string name="primary_color">رنگ اولیه</string>
+    <string name="primary_color_hint">مانند #666666 یا 666666</string>
+    <string name="android_on">روشن</string>
+    <string name="android_off">خاموش</string>
+    <string name="setup">نصب</string>
+    <string name="user_data_policy">این برنامه هیچ گونه اطلاعات کاربری را جمع آوری نمی کند</string>
+    <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
+        to make sure all the features of the app work.</string>
+    <string name="permission_granted">اجازه داده شده</string>
+    <string name="permission_not_granted">اجازه داده نشده، برای اجازه کلیک کنید</string>
+    <string name="activity_large_text">متن بزرگ فعالیت</string>
+    <string name="activity_small_text">متن کوچک فعالیت</string>
+    <string name="contributors">مشارکت کنندگان</string>
+    <string name="stream_url">آدرس stream</string>
+    <string name="stream_url_info">فقط https://twitch.tv/ و https://youtube.com/ کار می کنند.</string>
+    <string name="activity_button_max_character">حداکثر محدودیت کاراکتر 31 است</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC
+        from the last run RPC</string>
+    <string name="clear_all_fields">پاک کردن تمام فیلدها</string>
+    <string name="share_config">اشتراک گذاری پیکربندی</string>
+    <string name="change_log">گذارش تغییرات</string>
+    <string name="update">به روزرسانی</string>
+    <string name="configs_directory">تنظیمات دایرکتوری</string>
+    <string name="custom_activity_type">نوع فعالیت سفارشی</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental RPC only</string>
+    <string name="custom_activity_status">وضعیت فعالیت سفارشی</string>
+    <string name="custom_activity_status_desc">وضعیت فعالیت پیش‌فرض را لغو می‌کند</string>
+    <string name="search">جست‌‌و‌جو</string>
+    <string name="clear">پاک کردن</string>
+    <string name="search_placeholder">جست‌‌و‌جو...</string>
+    <string name="hide_on_pause">مخفی کردن RPC موقع Pause</string>
+    <string name="idling_notification">بیکار…</string>
+    <string name="main_appDetection">تشخیص برنامه</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_mediaRpc">RPC رسانه</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_customRpc">RPC سفارشی</string>
+    <string name="main_consoleRpc">RPC کنسول</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
+    <string name="main_ManualRpc">RPC آزمایشی</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
+    <string name="main_comingSoon">به‌زودی</string>
+    <string name="exit">خروج</string>
+    <string name="logs">لاگ ها</string>
+    <string name="drawer_subtitle_help">کمک</string>
+    <string name="drawer_faq">سوالات متداول</string>
+    <string name="go_to_profile">رفتن به پروفایل</string>
+    <string name="version">نسخه</string>
+    <string name="try_again">تلاش مجدد</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
+    <string name="update_check_for_update">در حال بررسی برای به‌روزرسانی…</string>
+    <string name="update_no_updates_available">به روز رسانی در دسترس نیست</string>
+    <string name="compact_mode">حالت فشرده</string>
+    <string name="are_you_sure">مطمئن هستید؟</string>
+    <string name="yes">بله</string>
+    <string name="user_profile_error">نمی‌توان نمایه کاربر را به‌روزرسانی کرد:</string>
+    <string name="no_internet_user_profile">بدون اتصال به اینترنت بعداً دوباره امتحان کنید.</string>
+    <string name="user_profile_rpc_name">در حال استفاده از ریچ پرسنس کیزی</string>
+    <string name="user_profile_bio">درباره من</string>
+    <string name="user_profile_special_button">دکمه ویژه</string>
+    <string name="user_profile">نمایه کاربری</string>
+    <string name="logout">خروج</string>
+    <string name="custom_rpc_directory">دایرکتوری برای ذخیره تنظیمات RPC سفارشی</string>
+    <string name="select_directory">دایرکتوری را انتخاب کنید</string>
+    <string name="enter_details">وارد کردن جزئیات</string>
+    <string name="status_online">آنلاین</string>
+    <string name="status_idle">بی‌کار</string>
+    <string name="status_dnd">مزاحم نشوید</string>
+    <string name="status_invisible_offline">Invisible به صورت آفلاین نشان داده می‌شود</string>
+    <string name="status_offline">آفلاین</string>
+    <string name="notification_access">مجوز دسترسی به اطلاعیه</string>
+    <string name="post_notification">ارسال اعلان</string>
+    <string name="request_for_post_notification">اعطای مجوز برای نمایش اعلان</string>
+    <string name="storage_access">دسترسی به فضای ذخیره سازی</string>
+    <string name="start_app_now">اکنون برنامه را شروع کنید</string>
+    <string name="skip">پرش</string>
+    <string name="party_current">اندازه فعلی Party</string>
+    <string name="party_max">حداقل اندازه Party</string>
+    <string name="user_profile_party">(%1$d of %2$d)</string>
+    <string name="auto_scroll">اسکرول خودکار</string>
+    <string name="party_invalid_number">اندازه Party باید به صورت عدد وارد شود</string>
+    <string name="party_less_than_zero">اندازه Party باید بیشتر از صفر باشد</string>
+    <string name="party_greater_than_max">اندازه فعلی Party نباید بیشتر از حداکثر اندازه Party باشد</string>
+    <string name="party_max_cannot_be_empty">اندازه حداکثر Party نباید خالی باشد</string>
+    <string name="learn_more">بیشتر بدانید</string>
+    <string name="browse_files">مرور فایل‌ها</string>
+    <string name="upload_image">آپلود عکس</string>
+    <string name="save">ذخیره</string>
+    <string name="set_timestamps">تنظیم timestamp</string>
+    <string name="saved_config_toast">Saved \"%1$s\" successfully</string>
+    <string name="error_saving_config_toast">خطا در ذخیره کردن کانفیگ</string>
+    <string name="config_name">نام کانفیگ</string>
+    <string name="delete">حذف</string>
+    <string name="mandatory">اجباری</string>
+    <string name="optional">اختیاری</string>
+    <string name="general_settings">عمومی</string>
+    <string name="activity_playing_title">در حال بازی یک بازی</string>
+    <string name="activity_listening_title">در حال شنیدن %1$s</string>
+    <string name="activity_watching_title">در حال تماشای %1$s</string>
+    <string name="activity_competiting_title">در حال رقابت با %1$s</string>
+    <string name="activity_streaming_title">در حال پخش در %1$s</string>
+    <string name="delete_config_successfully_toast">%1$s با موفقیت حذف شد</string>
+    <string name="service_enabled">سرویس فعال شد</string>
+    <string name="no_internet_connection">عدم اتصال به اینترنت</string>
+    <string name="unknown_error">یک خطای غیرمنتظره رخ داد</string>
+    <string name="rpc_buttons">دکمه‌های RPC</string>
+    <string name="choose_rpc">انتخاب یک RPC</string>
+    <string name="off">خاموش</string>
+    <string name="time_elapsed">%1$s سپری شده</string>
+    <string name="time_left">%1$s باقی مانده</string>
+    <string name="config_name_empty">نام کانفیگ نباید خالی باشد</string>
+    <string name="restart">راه اندازی مجدد</string>
+    <string name="custom_rpc_running">RPC سفارشی در حال اجرا است</string>
+    <string name="use_imgur">Imgur به عنوان Image Proxy</string>
+    <string name="use_imgur_desc">از Imgur به عنوان Image Proxy جایگزین استفاده کنید.</string>
+    <string name="start_appDetection">شروع تشخیص برنامه</string>
+    <string name="start_media_rpc">شروع RPC رسانه</string>
+    <string name="start_manual_rpc">شروع RPC آزمایشی</string>
+    <string name="stop_rpc">توقف RPC</string>
+    <string name="stop">توقف</string>
+    <string name="start_appDetection_toast">تشخیص برنامه شروع شد</string>
+    <string name="start_media_rpc_toast">RPC رسانه شروع شد</string>
+    <string name="start_manual_rpc_toast">RPC آزمایشی شروع شد</string>
+    <string name="stop_rpc_toast">تمام سرویس‌ها توقف شد</string>
+    <string name="show_playback_state">نمایش وضعیت پخش</string>
+    <string name="copied_to_clipboard">در کلیپ بورد کپی شد</string>
+    <string name="application_id">شناسه برنامه</string>
+    <string name="custom_application_id">شناسه برنامه فعالیت سفارشی</string>
+    <string name="custom_application_id_desc">شناسه پیش‌فرض Discord Application را لغو می‌کند</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
+        Empty fields will use default behavior or be omitted."</string>
+    <string name="manual_rpc_detect_apps">اجازه دهید RPC آزمایشی برنامه‌های در حال اجرا را تشخیص دهد</string>
+    <string name="manual_rpc_detect_media">اجازه دهید RPC آزمایشی پخش رسانه را تشخیص دهد</string>
+    <string name="app_preferences">تنظیمات برنامه</string>
+    <string name="app_preferences_desc">انتخاب کنید کدام برنامه‌ها برای RPC آزمایشی فعال باشند</string>
+    <string name="completion_media_title">عنوان آهنگ/ویدیو</string>
+    <string name="completion_media_artist">هنرمند اصلی</string>
+    <string name="completion_app_name">نام برنامه شناسایی‌شده</string>
+    <string name="show_cover_art">نمایش کاور</string>
+    <string name="show_cover_art_desc">نمایش کاور آلبوم به‌عنوان تصویر بزرگ</string>
+    <string name="enable_manualRpc">فعال‌سازی RPC آزمایشی</string>
+    <string name="completion_media_author">نویسنده اصلی</string>
+    <string name="completion_media_album">نام آلبوم</string>
+    <string name="completion_media_album_artist">هنرمند آلبوم</string>
+    <string name="completion_media_duration">مدت‌زمان قطعه</string>
+    <string name="completion_media_writer">نویسنده متن</string>
+    <string name="completion_media_composer">آهنگ‌ساز</string>
+    <string name="completion_battery">سطح باتری</string>
+    <string name="completion_playback">وضعیت پخش</string>
+    <string name="imgur_client_id">شناسه مشتری Imgur</string>
+    <string name="set_imgur_client_id">تنظیم شناسه مشتری Imgur</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
+    <string name="show_song_as_title">نمایش آهنگ به‌عنوان عنوان</string>
+    <string name="use_youtube_button">افزودن دکمه رسانه</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="link_to_artist_channel">پیوند به کانال هنرمند</string>
+    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="manual_rpc_title_toggle">عنوان</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
+    <string name="title_source_song">نام آهنگ</string>
+    <string name="title_source_artist">هنرمند</string>
+    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
+    <string name="app_selection">انتخاب برنامه</string>
+    <string name="platform_none_desktop">هیچ (دسکتاپ)</string>
+    <string name="platform_desktop">دسکتاپ</string>
+    <string name="platform_web">وب</string>
+    <string name="platform_android">Android</string>
+    <string name="platform_ios">iOS</string>
+    <string name="platform_xbox">Xbox</string>
+    <string name="platform_playstation">Playstation</string>
+    <string name="platform_vr">VR</string>
+    <string name="timestamp_mode_default">رسانه / برنامه (پیش‌فرض)</string>
+    <string name="timestamp_mode_current">مانند زمان فعلی روز</string>
+    <string name="timestamp_mode_custom">سفارشی</string>
+    <string name="update_installing">در حال نصب…</string>
+    <string name="update_download_error">دانلود ناموفق بود. دوباره تلاش کنید.</string>
+
+    <string name="rpc_connection_method">روش اتصال</string>
+    <string name="rpc_connection_method_desc">انتخاب کنید که Kizzy چگونه به Discord متصل شود</string>
+    <string name="rpc_connection_method_gateway">دروازه (توکن ربات)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (حساب Discord شما)</string>
+    <string name="discord_oauth2_authorize">اتصال به Discord</string>
+    <string name="discord_oauth2_authorize_desc">اجازه دهید Kizzy فعالیت شما را در پروفایل Discord نمایش دهد</string>
+
+    <string name="console_include_spoofed">شامل کردن نسخه‌های جعلی</string>
+    <string name="auto_detect">خودکار · %1$s</string>
+    <string name="save_logs_to_file">ذخیره گزارش‌ها در فایل</string>
+    <string name="logs_saved_toast">گزارش‌ها در %1$s ذخیره شد</string>
+    <string name="discord_step3_content">روی وضعیت خود (زیر نام کاربری‌تان) ضربه بزنید و آنلاین، بی‌کار یا مزاحم نشوید را انتخاب کنید. ⚠️ از نامرئی استفاده نکنید — وقتی نامرئی هستید Discord فعالیت Kizzy را پنهان می‌کند.</string>
+    <string name="discord_setup_title">پیش از شروع</string>
+    <string name="console_auto_detect">تشخیص خودکار DroidDeck / Eden</string>
+    <string name="console_detected_hint">برای استفاده از این بازی در Console RPC ضربه بزنید</string>
+    <string name="discord_step2_content">گزینه "اشتراک فعالیت من" را پیدا کنید و آن را روشن کنید. در بخش "اشتراک فعالیت من"، گزینه "اشتراک در همه سرورها" را انتخاب کنید. تا "سرورهای من" اسکرول کنید و سرورهایی را که می‌خواهید وضعیت شما در آن‌ها دیده شود روشن کنید.</string>
+    <string name="discord_tip_content">برخی نسخه‌های موبایل Discord این کلید را پنهان می‌کنند. discord.com را در Chrome باز کنید → «سایت دسکتاپ» را فعال کنید → وارد شوید → تنظیمات (⚙️) → حریم خصوصی فعالیت → «اشتراک فعالیت من» را روشن کنید.</string>
+    <string name="discord_setup_desc">مطمئن شوید Discord اجازه می‌دهد فعالیت شما در پروفایلتان نمایش داده شود.</string>
+    <string name="auto_detect_activity_type_desc">برنامه‌های موسیقی به‌عنوان موسیقی و برنامه‌های ویدیو به‌عنوان ویدیو شناسایی می‌شوند، بنابراین دیگر YouTube Music به‌عنوان بازی نمایش داده نمی‌شود. نوعی که برای یک برنامه انتخاب شود همیشه اولویت دارد.</string>
+    <string name="auto_detect_activity_type">تشخیص خودکار نوع فعالیت</string>
+    <string name="logs_save_error">ذخیره گزارش‌ها ناموفق بود</string>
+    <string name="discord_tip_title">«اشتراک فعالیت من» را پیدا نمی‌کنید؟</string>
+    <string name="console_detected_in_game">در بازی</string>
+    <string name="rich_presence_active">Rich Presence فعال</string>
+    <string name="discord_step1_title">گام ۱: باز کردن تنظیمات حریم خصوصی</string>
+    <string name="console_detected">شناسایی شد</string>
+    <string name="discord_step2_title">گام ۲: روشن کردن اشتراک فعالیت</string>
+    <string name="discord_step1_content">برنامه Discord را باز کنید → روی آیکون «شما» (عکس پروفایل) ضربه بزنید → روی تنظیمات (⚙️) ضربه بزنید → تا پایین اسکرول کنید و روی «محتوا و شبکه‌های اجتماعی» (یا «حریم خصوصی فعالیت» در نسخه‌های قدیمی‌تر) ضربه بزنید.</string>
+    <string name="activity_type_fallback_desc">برای برنامه‌هایی که شناسایی نمی‌شوند و برای هر برنامه هنگام خاموش بودن تشخیص خودکار استفاده می‌شود.</string>
+    <string name="discord_step3_title">گام ۳: بررسی وضعیت آنلاین</string>
+
+    <string name="console_preset_games">بازی‌های از پیش تعیین‌شده</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">دسکتاپ</string>
+
+    <string name="rpc_tab_custom_settings">RPC سفارشی</string>
+    <string name="rpc_tab_console_presets">RPC کنسول</string>
+    <string name="rpc_tab_console_presets_desc">یک پیش‌تنظیم انتخاب کنید تا Console RPC به‌سرعت راه‌اندازی شود. سپس می‌توانید هر مقدار را در زبانه Custom RPC تنظیم کنید.</string>
+    <string name="rpc_tab_back_to_settings">بازگشت به تنظیمات Custom RPC</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>

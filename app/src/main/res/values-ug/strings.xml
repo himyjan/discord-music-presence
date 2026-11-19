@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy ياخشىلانغان</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+
+    <string name="activity_name">پائالىيەت ئىسمى</string>
+    <string name="activity_details">پائالىيەت تەپسىلاتلىرى</string>
+    <string name="activity_state">پائالىيەت ھالىتى</string>
+    <string name="activity_start_timestamps">باشلاش ۋاقىت بەلگىسى</string>
+    <string name="activity_stop_timestamps">توختاش ۋاقىت بەلگىسى</string>
+    <string name="activity_status_online_idle_dnd">پائالىيەت ھالىتى ("online", "idle", "dnd")</string>
+    <string name="activity_button1_text">پائالىيەت كۇنۇپكىسى 1 تېكىستى</string>
+    <string name="activity_button2_text">پائالىيەت كۇنۇپكىسى 2 تېكىستى</string>
+    <string name="activity_button1_url">كۇنۇپكا 1 URL</string>
+    <string name="activity_button2_url">كۇنۇپكا 2 URL</string>
+    <string name="activity_large_image">پائالىيەت چوڭ رەسىمى</string>
+    <string name="activity_small_image">پائالىيەت كىچىك رەسىمى</string>
+    <string name="activity_type">پائالىيەت تۈرى</string>
+    <string name="activity_platform">پائالىيەت سۇپىسى</string>
+    <string name="load_config">ھۆججەتلەردىن يۈكلەش</string>
+    <string name="save_config">سەپلىمىنى ساقلاش</string>
+    <string name="delete_configs">سەپلىمىنى ئۆچۈرۈش</string>
+    <string name="preview_rpc">RPC ئالدىن كۆرۈش</string>
+    <string name="select_a_config">سەپلىمە تاللاش</string>
+    <string name="login_with_discord">Discord بىلەن كىرىش</string>
+    <string name="github_readme">ئوقۇش (README)</string>
+    <string name="credits">يازغۇچىلار ۋە تۆھپىكارلار</string>
+    <string name="welcome">خۇش كەپسىز</string>
+    <string name="features">ئىقتىدارلىرى</string>
+    <string name="account">ھېسابات</string>
+    <string name="display">ئېكران</string>
+    <string name="about">ھەققىدە</string>
+    <string name="settings">تەڭشەكلەر</string>
+    <string name="language">تىل</string>
+    <string name="dark_theme">قاراڭغۇ كۆرۈنۈش</string>
+    <string name="privacy_policy">شەخسىيەت سىياسىتى</string>
+    <string name="cancel">ۋاز كېچىش</string>
+    <string name="confirm">جەزملەش</string>
+    <string name="save">ساقلاش</string>
+    <string name="delete">ئۆچۈرۈش</string>
+    <string name="search">ئىزدەش</string>
+    <string name="clear">تازىلاش</string>
+    <string name="exit">چىقىش</string>
+    <string name="logs">خاتىرىلەر (Logs)</string>
+    <string name="version">نەشرى</string>
+    <string name="try_again">قايتا سىناڭ</string>
+    <string name="yes">ھەئە</string>
+    <string name="logout">چىقىش</string>
+    <string name="skip">ئۆتكۈزۈش</string>
+    <string name="stop">توختىتىش</string>
+    <string name="restart">قايتا باشلاش</string>
+    <string name="no_internet_connection">ئىنتېرنېت ئۇلىنىشى يوق</string>
+    <string name="unknown_error">نامەلۇم خاتالىق كۆرۈلدى</string>
+    <string name="copied_to_clipboard">كۆچۈرۈلدى</string>
+
+    <string name="rpc_connection_method">ئۇلىنىش ئۇسۇلى</string>
+    <string name="rpc_connection_method_desc">Kizzy Discord قا ئۇلايدىغان ئۇسۇلنى تاللاڭ</string>
+    <string name="rpc_connection_method_gateway">Gateway (-bot توكىنى)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (سىزنىڭ Discord ھېساباتىڭىز)</string>
+    <string name="discord_oauth2_authorize">Discord قا ئۇلىنىش</string>
+    <string name="discord_oauth2_authorize_desc">Kizzy غا سىزنىڭ Discord پروفايلىڭىزدىكى ئېشغىلىڭىزنى كۆرسىتىشكە رۇخسەت بېرىڭ</string>
+
+    <string name="console_include_spoofed">يالغان قۇرۇلۇشلارنى قوشۇڭ</string>
+    <string name="auto_detect">ئاپتوماتىك · %1$s</string>
+    <string name="save_logs_to_file">خاتىرىلەرنى ھۆججەتكە ساقلاڭ</string>
+    <string name="logs_saved_toast">خاتىرىلەر %1$s غا ساقلاندى</string>
+    <string name="discord_step3_content">ھالىتىڭىزنى (ئىشلەتكۈچى نامىڭىزنىڭ ئاستىدا) بېسىڭ، Onlaيn، ئىشسىز ياكى مايلىماڭ دەپ تاللاڭ. ⚠️ ئادەتمەن كۆرۈنمەيدىغاننى ئىشلىتىڭ — سىز كۆرۈنمەيدىغان ۋاقتىڭىزدا Discord Kizzy ئىشلەتكەنلىكىنى يوشۇرىدۇ.</string>
+    <string name="discord_setup_title">باشلىاشتىن بۇرۇن</string>
+    <string name="console_auto_detect">DroidDeck / Eden نى ئاپتوماتىك تېپىش</string>
+    <string name="console_detected_hint">Console RPC ئۈچۈن بۇ ئويۇننى ئىشلىتىش ئۈچۈن بېسىڭ</string>
+    <string name="discord_step2_content">"مېنىڭ پائالىيىتىمنى ھەمبەھىرلەش" نى تېپىپ ئېچىڭ. "مېنىڭ پائالىيىتىمنى قەيەردە ھەمبەھىرلەيمەن" نىڭ ئاستىدا "ھەممىلەرگە ھەمبەھىرلەش" نى تاللاڭ. "مېنىڭ مۇلازىمېلىرىم" غىچە سۈرۈپ، ھالىتىڭىزنى كۆرەلەيدىغان مۇلازىمېلىرىنى ئېچىڭ.</string>
+    <string name="discord_tip_content">Discord نىڭ بەزى مۇباۋئال نەشرلىرى بۇ تۈگۈنى يوشۇرىدۇ. Chrome دا discord.com نى ئېچىپ → Desktop تور بېكىتىنى قوزغىتىڭ → كىرىڭ → تەڭشەكلەر (⚙️) → پائالىيەت مەخپىيەت → "مېنىڭ پائالىيىتىمنى ھەمبەھىرلەش" نى ئېچىڭ.</string>
+    <string name="discord_setup_desc">Discord نىڭ پائالىيىتىڭىزنى پروفىلىڭىزدا كۆرسىتىشىگە رۇخسەت بېرىشىنى جەزملەڭ.</string>
+    <string name="auto_detect_activity_type_desc">مۇسىقا ئەپلىرى مۇسىقا، سىنەما ئەپلىرى سىنەما دەپ تېپىلىدۇ، شۇڭا YouTube Music ئەمدى ئويۇن دەپ كۆرۈلمەيدۇ. بىرلا ئەپكە تاللانغان تۈر ھەمىشە ئالدىدا تۇرىدۇ.</string>
+    <string name="auto_detect_activity_type">پائالىيەت تۈرىنى ئاپتوماتىك تېپىش</string>
+    <string name="logs_save_error">خاتىرىلەرنى ساقلىغىلى بولمىدى</string>
+    <string name="discord_tip_title">"مېنىڭ پائالىيىتىمنى ھەمبەھىرلەش" تېپىلمىدىمۇ؟</string>
+    <string name="console_detected_in_game">ئويۇن ئىچىدە</string>
+    <string name="rich_presence_active">Rich Persistence ئاكتىپ</string>
+    <string name="discord_step1_title">1-قەدەم: مەخپىيەت تەڭشەكلىرىنى ئېچىڭ</string>
+    <string name="console_detected">تېپىلدى</string>
+    <string name="discord_step2_title">2-قەدەم: پائالىيەت ھەمبەھىرلەشنى ئېچىڭ</string>
+    <string name="discord_step1_content">Discord ئەپىنى ئېچىڭ → «سىز» (پروفىل رەسىمى) بەلگىسىنى بېسىڭ → تەڭشەكلەر (⚙️) نى بېسىڭ → تۆۋەلگە سۈرۈپ «مەزمۇن ۋە ئىجتىمائىي» (ياكى كونا نەشرلىرىدىكى «پائالىيەت مەخپىيىتى») نى بېسىڭ.</string>
+    <string name="activity_type_fallback_desc">تېپىلمىغان ئەپلەر ئۈچۈن ھەم ئاپتوماتىك تېپىش تاقالغاندا ھەر بىر ئەپ ئۈچۈن ئىشلىتىلىدۇ.</string>
+    <string name="discord_step3_title">3-قەدەم: ئونلايـن ھالىتىڭىزنى تەكشۈرۈڭ</string>
+
+    <string name="console_preset_games">ئالدىن بەلگىلەنگەن ئويۇنلار</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">ئۆز RPC</string>
+    <string name="rpc_tab_console_presets">كونسول RPC</string>
+    <string name="rpc_tab_console_presets_desc">Console RPC نى تېز تەڭشەش ئۈچۈن بىر تەڭشەك تاللاڭ. كېيىن Custom RPC تابىدىكى ھەر بىر قىممەتنى ئۆزگەرتەلەيسىز.</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC تەڭشەلىرىگە قايتىش</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>

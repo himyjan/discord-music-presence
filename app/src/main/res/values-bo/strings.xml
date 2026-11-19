@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+    <string name="activity_name">ལས་ཀྱི་མིང་།</string>
+    <string name="activity_details">ལས་ཀྱི་ཞིབ་ཏོན།</string>
+    <string name="activity_state">ལས་ཀྱི་གནས་ཚུལ།</string>
+    <string name="activity_start_timestamps">འགོ་ཚུལ་དུས་བྲང་ཐོག</string>
+    <string name="activity_stop_timestamps">བཀག་ཚུལ་དུས་བྲང་ཐོག</string>
+    <string name="activity_status_online_idle_dnd">Activity status ("online", "idle", "dnd")</string>
+    <string name="activity_button1_text">ལས་ཀྱི་མིང་བརྡ། ༡</string>
+    <string name="activity_button2_text">ལས་ཀྱི་མིང་བརྡ། ༢</string>
+    <string name="activity_button1_url">བརྡ། ༡ དྲིན་ཚིག</string>
+    <string name="activity_button2_url">བརྡ། ༢ དྲིན་ཚིག</string>
+    <string name="activity_large_image">ལས་ཀྱི་ཆེ་ཤོག་པའི་མདོན།</string>
+    <string name="activity_small_image">ལས་ཀྱི་ཕྱུག་ཤོག་པའི་མདོན།</string>
+    <string name="activity_type">ལས་ཀྱི་རིགས།</string>
+    <string name="activity_platform">ལས་ཀྱི་དྲང་རྫས།</string>
+    <string name="load_config">ཡིགེ་དང་ནས་ནང་།</string>
+    <string name="save_config">སྒྲ་གཞི་ཉེན།</string>
+    <string name="delete_configs">སྒྲ་གཞི་འཇིག</string>
+    <string name="preview_rpc">RPC མདོན་སྟོན་།</string>
+    <string name="select_a_config">སྒྲ་གཞི་གང་བསྟོད།</string>
+    <string name="login_with_discord">Discord དང་ལྟོས་འཛུལ།</string>
+    <string name="github_readme">README</string>
+    <string name="github_readme_desc">Github ཀླུང་གཞིའི་ཉིན་ཁང་ལྟ་བ།</string>
+    <string name="github_latest_release">"Latest release "</string>
+    <string name="github_latest_release_desc">གསར་བཟོའི་དངུལ་དང་དེ་སྟངས་ཀྱི་ཐོན་ཐང་ལྟ་བ།</string>
+    <string name="github_issue">Github issue</string>
+    <string name="github_issue_desc">ནོར་འཁྱུར་སྒྲོལ་བསྒྲུབ་ཆེན་པོ་ཡོད་ཅིག</string>
+    <string name="credits">བསྟོད་པ།</string>
+    <string name="credits_desc">བེད་སྤྱོད་ཟས་དང་མཛེས་ཤུག་པ་ལ་བསྟོད་པ།</string>
+    <string name="enable_artist_name">སྤྱོད་པའི་མིང་འཇུག</string>
+    <string name="enable_album_name">དཔལ་མའི་མིང་འཇུག</string>
+    <string name="show_app_icon">ཡིགེའི་མཛེས་སྟེན།</string>
+    <string name="enable_timestamps">དུས་བྲང་ཐོག་འཇུག</string>
+    <string name="timestamp_mode">དུས་བྲང་ཐོགའི་རྣམ་གཞི།</string>
+    <string name="start_timestamp_ms">འགོ་ཚུལ་དུས་བྲང་ཐོག (མིལིང་སྀར)།</string>
+    <string name="end_timestamp_ms">མཐའ་སྐར་དུས་བྲང་ཐོག (མིལིང་སྀར)།</string>
+    <string name="text_after_permission_denied">Storage access is important for this app to store
+        configs in public directories. Please grant the permission.</string>
+    <string name="request_for_storage_access">Storage permission required for config features to
+        work. Please grant the permission.</string>
+    <string name="grant_permission">ཁི་རོག་སྤིོད།</string>
+    <string name="use_low_res_icon">མངོན་ཟེན་མིང་ལྟའི་མདོན་བེད།</string>
+    <string name="use_low_res_icon_desc">Use a lower resolution app icon for displaying on RPC (turn
+        this on if the RPC is crashing). This setting will also be applied to Apps.</string>
+    <string name="delete_saved_icon_urls">ཉེན་ཟིན་བཀོག་པའི་སྒྲ་དྲགས་ཐོག་འཇིག</string>
+    <string name="delete_saved_icon_urls_desc">Delete app icon URLs saved in local files (Only use
+        this as needed as it will send images to Discord servers again, which will consume more
+        data)</string>
+    <string name="app_crashed">ཡིགེའི་མིང་བཀག</string>
+    <string name="share_crash_logs_desc">Please send the Logs in Discord channel with the following
+        stacktrace :</string>
+    <string name="share_crash_logs">ཐོན་ཐང་མཉེན་སྟེན།</string>
+    <string name="welcome">ཕེབས་པ་ལེགས།</string>
+    <string name="features">ནང་མཁན་།</string>
+    <string name="account">མིང་ཐོག</string>
+    <string name="display">མཚོགས།</string>
+    <string name="about">དོན་ལས</string>
+    <string name="settings">སྒྲ་གཞི།</string>
+    <string name="language">སྐད་ཡིག</string>
+    <string name="design_credits">རྒྱལ་དངོས་དཔལ་སྤྱོད་པ།</string>
+    <string name="enable_appsRpc">ཡིགེ་ངོས་འཛིན་འཇུག</string>
+    <string name="usage_access">བེད་སྤྱོད་ཁི་རོག་དགོས།</string>
+    <string name="usage_access_desc">ད་ལྟའི་ཡིགེ་ངོས་འཛིན་པའི་ཕྱི་དགོས་བེད་ཡོད་དེ་ཡིན་ལ་བེད་དགོས་འདུས།</string>
+    <string name="enable_mediaRpc">Media RPC འཇུག</string>
+    <string name="permission_required">ཁི་རོག་དགོས།</string>
+    <string name="enable_customRpc">Custom RPC འཇུག</string>
+    <string name="dark_theme">མཛེས་མདོགས།</string>
+    <string name="privacy_policy">ཉིད་ཀྱི་བསྡུས་བཅོས།</string>
+    <string name="privacy_policy_desc">ཉིད་ཀྱི་བསྡུས་བཅོས་ལྟ་བ།</string>
+    <string name="enable_console_rpc">Console RPC འཇུག</string>
+    <string name="rpc_settings_button_configs">Media དང་ AppDetection RPC ཀྱི་བརྡ་སྒྲ་གཞི།</string>
+    <string name="use_custom_buttons">ཁྱེད་ཀྱི་བརྡ་བརྡ་བེད།</string>
+    <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
+        RPC</string>
+    <string name="follow_system">ལྷུང་སྒྲོམ་ལ་བཟུང་།</string>
+    <string name="advance_settings">མཐོང་འཕྲི་མཚོལ།</string>
+    <string name="amoled">AMOLED མདོགས།</string>
+    <string name="dynamic_color">རྟོགས་འཕྲུགས་སྐར།</string>
+    <string name="dynamic_color_desc">ཕྱི་རྟེན་ཀྱི་སྐར་བེད།</string>
+    <string name="cancel">འདོར་བ།</string>
+    <string name="confirm">ངེས་འཛིན་བྱེད།</string>
+    <string name="primary_color">གཙོ་རྡོས།</string>
+    <string name="primary_color_hint">དཔལ་ན #666666 ཡིག 666666</string>
+    <string name="android_on">སྦྱོང</string>
+    <string name="android_off">བཀག</string>
+    <string name="setup">སྒྲ་འཇུག་བསྐྱེད།</string>
+    <string name="user_data_policy">འདི་ཡིགེ་འདི་ཡིགེས་ལ་ཡིགེ་བརྡ་ཁྱད་པའི་དོན་མི་འཇུག།</string>
+    <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
+        to make sure all the features of the app work.</string>
+    <string name="permission_granted">སྤུད་ཟིན</string>
+    <string name="permission_not_granted">སྤུད་མ་བྱས། སྤུད་རྒྱུར་གྱི་ཕུག</string>
+    <string name="activity_large_text">ལས་ཀྱི་ཆེ་ཡིག</string>
+    <string name="activity_small_text">ལས་ཀྱི་ཕྱུག་ཡིག</string>
+    <string name="contributors">མཛེས་ཤུག་པ།</string>
+    <string name="stream_url">སྒྲ་འབྲེལ་དྲིན་ཚིག</string>
+    <string name="stream_url_info">https://twitch.tv/ དང་ https://youtube.com/ གི་དྲིན་ཚིག་ཙམ་ཡིན་ལ་ལས་སྐྱེད།</string>
+    <string name="activity_button_max_character">ཡིག་གི་མང་ཉིན་ ༣༡ ལ་འདུས།</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC
+        from the last run RPC</string>
+    <string name="clear_all_fields">ཁྱད་ཐོན་ཚང་སྒྲ་སྐྱེད།</string>
+    <string name="share_config">སྒྲ་གཞི་མཉེན་སྟེན།</string>
+    <string name="change_log">དེ་སྟངས་ཀྱི་ཐོན་ཐང་།</string>
+    <string name="update">གསར་བྱོད།</string>
+    <string name="configs_directory">སྒྲ་གཞིའི་ཉིན་ཁང་།</string>
+    <string name="custom_activity_type">ལས་ཀྱི་རིགས་བཟོད་པ།</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental RPC only</string>
+    <string name="custom_activity_status">ལས་ཀྱི་ཚུལ་བཟོད་པ།</string>
+    <string name="custom_activity_status_desc">སྒྲ་སྒྲིལ་གྱི་ལས་ཀྱི་ཚུལ་གཙོར།</string>
+    <string name="search">བསྟོད།</string>
+    <string name="clear">སྒྲ་སྐྱེད།</string>
+    <string name="search_placeholder">བསྟོད…</string>
+    <string name="hide_on_pause">ཆུང་བསྟེན་གྱི་སྐབས RPC བསྦྲུབ</string>
+    <string name="idling_notification">ཐོག་མེད་པ…</string>
+    <string name="main_appDetection">ཡིགེ་ངོས་འཛིན།</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_customRpc">Custom RPC</string>
+    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
+    <string name="main_comingSoon">སྔོན་འགྲིམ།</string>
+    <string name="exit">འགྱོད</string>
+    <string name="logs">ཐོན་ཐང་།</string>
+    <string name="drawer_subtitle_help">ཕན་ཐོག</string>
+    <string name="drawer_faq">FAQ</string>
+    <string name="go_to_profile">དཔལ་བཤུས་ལ་འཕྲེང་།</string>
+    <string name="version">མཚན་སྤྱི།</string>
+    <string name="try_again">ཡང་བསྐྱོང་།</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
+    <string name="update_check_for_update">གསར་བྱོད་བསྟོན་བཞུགས…</string>
+    <string name="update_no_updates_available">གསར་བྱོད་མེད།</string>
+    <string name="compact_mode">བསྡུས་པའི་རྣམ་གཞི།</string>
+    <string name="are_you_sure">ཁྱེད་ངེས་བདེན་པ་ཡིན་ནམ།</string>
+    <string name="yes">ཡིན</string>
+    <string name="user_profile_error">ཡིགེ་སྤྱོད་མཚོན་གསར་བྱོད་མི་ཐུག།</string>
+    <string name="no_internet_user_profile">དབྱིངས་མེད། རྗེས་སང་དྲག་བསྐྱོད་ནས་བསྐྱོད་གྱི་དྲག་ལྟ།</string>
+    <string name="user_profile_rpc_name">KIZZY RICH PRESENCE བེད་སྤྱོད་གནས།</string>
+    <string name="user_profile_bio">ངང་གི་དོན་ལས།</string>
+    <string name="user_profile_special_button">ཆེད་ཐུབ་བརྡ་།</string>
+    <string name="user_profile">ཡིགེ་སྤྱོད་མཚོན།</string>
+    <string name="logout">ལས་འཕྲེང་།</string>
+    <string name="custom_rpc_directory">Custom RPC སྒྲ་གཞིའི་ཉིན་ཁང་།</string>
+    <string name="select_directory">ཉིན་ཁང་གང་བསྟོད།</string>
+    <string name="enter_details">ཞིབ་ཏོན་ཕུག</string>
+    <string name="status_online">དབྱིངས་ཡོད</string>
+    <string name="status_idle">ཐོག་མེད་པ…</string>
+    <string name="status_dnd">དེ་བསྟོད་མི་གནོད།</string>
+    <string name="status_invisible_offline">མི་མངོན་པར་གཙོད་ཀྱིས་ཕྱི་ཚད་འདུས།</string>
+    <string name="status_offline">དབྱིངས་མེད</string>
+    <string name="notification_access">བརྡ་འདུས་ཀྱི་ཁི་རོག།</string>
+    <string name="post_notification">བརྡ་འདུས་འཕྲོད།</string>
+    <string name="request_for_post_notification">བརྡ་འདུས་མཚོགས་པའི་ཁི་རོག་སྤུད།</string>
+    <string name="storage_access">ཉེན་ཁང་ཕྱིར་ཁི་རོག</string>
+    <string name="start_app_now">ཡིགེ་ད་ལྟར་འགོ་བྱེད།</string>
+    <string name="skip">འདའིང་།</string>
+    <string name="party_current">ཚོགས་མཚོགས་ཀྱི་ཆེན་ཚད།</string>
+    <string name="party_max">མང་ཤར་གྱི་ཚོགས་མཚོགས་ཀྱི་ཆེན་ཚད།</string>
+    <string name="user_profile_party">(%1$d of %2$d)</string>
+    <string name="auto_scroll">རང་འདོད་འཁོར་བ།</string>
+    <string name="party_invalid_number">ཚོགས་མཚོགས་ཀྱི་ཆེན་ཚད་ཚང་གྲངས་མཚོགས་དགོས།</string>
+    <string name="party_less_than_zero">ཚོགས་མཚོགས་ཀྱི་ཆེན་ཚད་གཅིག་ལས་འདུས་དགོས།</string>
+    <string name="party_greater_than_max">ཚོགས་མཚོགས་ཀྱི་ཆེན་ཚད་མངོན་ཚད་ལ་འདུས་མི་ཐུག</string>
+    <string name="party_max_cannot_be_empty">མང་ཤར་གྱི་ཚོགས་མཚོགས་ཀྱི་ཆེན་ཚད་སྒྲ་མེད་མི་ཐུག</string>
+    <string name="learn_more">དེ་ལྟར་ཤེས་པའི་ཕྱི་རྟོག</string>
+    <string name="browse_files">ཡིགེ་དང་ལྟ་བ།</string>
+    <string name="upload_image">མདོན་ཤོག་བཤུག</string>
+    <string name="save">ཉེན།</string>
+    <string name="set_timestamps">དུས་བྲང་ཐོག་བཟོད།</string>
+    <string name="saved_config_toast">Saved "%1$s" successfully</string>
+    <string name="error_saving_config_toast">སྒྲ་གཞི་ཉེན་སློག་མིན།</string>
+    <string name="config_name">སྒྲ་གཞིའི་མིང་།</string>
+    <string name="delete">འཇིག</string>
+    <string name="mandatory">ངེས་དགོས་པ།</string>
+    <string name="optional">དགོས་ཀྱང་གིས་ལྟ</string>
+    <string name="general_settings">སྤྱི་དོགས།</string>
+    <string name="activity_playing_title">རྩེ་བཞིག</string>
+    <string name="activity_listening_title">%1$s ལྟ་དགའི་གནས།</string>
+    <string name="activity_watching_title">%1$s ལྟ་བལྟ།</string>
+    <string name="activity_competiting_title">%1$s དང་འདུས་པ།</string>
+    <string name="activity_streaming_title">%1$s ལ་བཀོད་བཞུགས།</string>
+    <string name="delete_config_successfully_toast">%1$s ཡོང་སྒྲ་འཇིག་བྱུང་།</string>
+    <string name="service_enabled">ཞིབ་ཏོག་འཇུག</string>
+    <string name="no_internet_connection">དབྱིངས་མེད།</string>
+    <string name="unknown_error">མིན་འབྱུང་བའི་འཁྲུ་བྱུང་བཞུགས།</string>
+    <string name="rpc_buttons">RPC བརྡ་བརྡ།</string>
+    <string name="choose_rpc">RPC གང་བསྟོད།</string>
+    <string name="off">བཀག</string>
+    <string name="time_elapsed">%1$s འགྲོལ་བསྡུས</string>
+    <string name="time_left">%1$s ཀྱི་བསྡུས་ཆ།</string>
+    <string name="config_name_empty">སྒྲ་གཞིའི་མིང་སྒྲ་མེད་མི་ཐུག</string>
+    <string name="restart">གསར་བྱོད།</string>
+    <string name="custom_rpc_running">Custom RPC ལྟ་བྱུང་བཞུགས།</string>
+    <string name="use_imgur">མདོན་ཀྱི་མཛེས་སྤྱོད་མཛེས་ཆ་དང་Imgur</string>
+    <string name="use_imgur_desc">མདོན་ཀྱི་མཛེས་སྤྱོད་མཛེས་ཆ་དང་Imgur བེད།</string>
+    <string name="start_appDetection">ཡིགེ་ངོས་འཛིན་འགོ་བྱེད།</string>
+    <string name="start_media_rpc">Media RPC འགོ་བྱེད།</string>
+    <string name="start_manual_rpc">Manual RPC འགོ་བྱེད།</string>
+    <string name="stop_rpc">RPC བཀག</string>
+    <string name="stop">བཀག</string>
+    <string name="start_appDetection_toast">ཡིགེ་ངོས་འཛིན་འགོ་བྱུང་བཞུགས།</string>
+    <string name="start_media_rpc_toast">Media RPC འགོ་བྱུང་བཞུགས།</string>
+    <string name="start_manual_rpc_toast">Manual RPC འགོ་བྱུང་བཞུགས།</string>
+    <string name="stop_rpc_toast">ཞིབ་ཏོག་ཚང་བཀག</string>
+    <string name="show_playback_state">བཀོད་པའི་གནས་ཚུལ་སྟོན།</string>
+    <string name="copied_to_clipboard">ཀེར་བཤུག་ལས་བུད་ཡོད།</string>
+    <string name="application_id">ཡིགེའི་ངོ་མཚོང་།</string>
+    <string name="custom_application_id">Discord ཡིགེའི་ངོ་མཚོང་བཟོད་པ།</string>
+    <string name="custom_application_id_desc">སྒྲ་སྒྲིལ་གྱི་ Discord ཡིགེའི་ངོ་མཚོང་གཙོར།</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
+        Empty fields will use default behavior or be omitted."</string>
+    <string name="manual_rpc_detect_apps">Manual RPC ལྟ་བྱུང་གི་ཡིགེ་ངོས་འཛིན་ཆེན་པོ་ཡོད་ཅིག</string>
+    <string name="manual_rpc_detect_media">Manual RPC ལྟ་བྱུང་གི་མེད་ཀ་བཀོད་འཛིན་ཆེན་པོ་ཡོད་ཅིག</string>
+    <string name="app_preferences">ཡིགེའི་དོགས་ཅན།</string>
+    <string name="app_preferences_desc">Manual RPC ཀྱི་ཡིགེའི་དོགས་ཅན་གང་ཡིན་བཀག་པ་གཙོ།</string>
+    <string name="completion_media_title">གྲངས་/ལན་གྱི་མིང་།</string>
+    <string name="completion_media_artist">གཙོ་མའི་སྤྱོད་པ།</string>
+    <string name="completion_app_name">ངོས་འཛིན་པའི་ཡིགེའི་མིང་།</string>
+    <string name="show_cover_art">དཔལ་མའི་མདོན་སྟེན།</string>
+    <string name="show_cover_art_desc">དཔལ་མའི་མདོན་ཆེ་ཤོག་པའི་མདོན་ཏུ་སྟོན།</string>
+    <string name="enable_manualRpc">Manual RPC འཇུག</string>
+    <string name="completion_media_author">གཙོ་མའི་མཛད་པ།</string>
+    <string name="completion_media_album">དཔལ་མའི་མིང་།</string>
+    <string name="completion_media_album_artist">དཔལ་མའི་སྤྱོད་པ།</string>
+    <string name="completion_media_duration">གྲངས་ཀྱི་ཚད་ཆ།</string>
+    <string name="completion_media_writer">ཡིག་མཛད་པ།</string>
+    <string name="completion_media_composer">གསུམ་པ།</string>
+    <string name="completion_battery">བདུག་ཤོགའི་ཚད་ལམ།</string>
+    <string name="completion_playback">བཀོད་པའི་གནས་ཚུལ།</string>
+    <string name="imgur_client_id">Imgur ཀླུང་ཆེན་གི་ངོ་མཚོང་།</string>
+    <string name="set_imgur_client_id">Imgur ཀླུང་ཆེན་གི་ངོ་མཚོང་བཟོད།</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
+    <string name="show_song_as_title">གྲངས་ཀྱི་མིང་དྲ་སྟོན།</string>
+    <string name="use_youtube_button">མེད་ཡིགེའི་བརྡ་བརྡ་འདིག</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="link_to_artist_channel">སྤྱོད་པའི་ཁ་སྟེང་སྟེང་ལ་འདེ་བ།</string>
+    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="manual_rpc_title_toggle">མིང་།</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
+    <string name="title_source_song">གྲངས་ཀྱི་མིང་།</string>
+    <string name="title_source_artist">སྤྱོད་པ།</string>
+    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
+    <string name="app_selection">ཡིགེའི་འདེ་བསྟོད།</string>
+    <string name="platform_none_desktop">མེད། (ཀུན་པུཊོ)</string>
+    <string name="platform_desktop">ཀུན་པུཊོ</string>
+    <string name="platform_web">ཝེབ</string>
+    <string name="platform_android">Android</string>
+    <string name="platform_ios">iOS</string>
+    <string name="platform_xbox">Xbox</string>
+    <string name="platform_playstation">Playstation</string>
+    <string name="platform_vr">VR</string>
+    <string name="timestamp_mode_default">མེད་/ཡིགེ (ཕྱིར)།</string>
+    <string name="timestamp_mode_current">ད་ལྟའི་ཆ་ཚོད་དང་མཉམ།</string>
+    <string name="timestamp_mode_custom">བཟོད་པ།</string>
+    <string name="update_installing">བཅོས་འཇུག་བྱུང་བཞུགས།</string>
+    <string name="update_download_error">བེད་ཐོང་མ་གསོང་བཞུགས། ཡང་བསྐྱོང་།</string>
+
+    <string name="rpc_connection_method">སྒྲ་བཅོས་ཐབས།</string>
+    <string name="rpc_connection_method_desc">Kizzy ཀ Discord ལ་ཇི་ལྟར་སྒྲ་བཅོས་པ་མོས་རེད་གདམ།</string>
+    <string name="rpc_connection_method_gateway">Gateway (བོག་ཚིག)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (ཁྱོད་ཀྱི་Discord བོད།)</string>
+    <string name="discord_oauth2_authorize">Discord ལ་སྒྲ་བཅོས་བྱེད།</string>
+    <string name="discord_oauth2_authorize_desc">Kizzy ལ་ཁྱོད་ཀྱི་ལས་རིགས་དེ་ Discord བརྡའི་པོ་སྟེར་འཚོགས་པའི་ཁི་བཅོས་སྟོན།</string>
+
+    <string name="console_include_spoofed">ཁྱེད་ཚོགས་བསྒྱུར་བྱས་པའི་སྒྲིག་འབྱེད་བསྣ་བཞག</string>
+    <string name="auto_detect">རང་འདོད་ · %1$s</string>
+    <string name="save_logs_to_file">ཐོན་ཐང་ཡིག་ཆའི་ནང་ཞུགས</string>
+    <string name="logs_saved_toast">ཐོན་ཐང་ %1$s ལ་སློག་ཟིན</string>
+    <string name="discord_step3_content">ཁྱེད་ཀྱི་གནས་ཡིག (གཡོད་མིང་གི་འོད་མུར) ལ་བཤད་ནས་གསར་འགྱུར་གང་ལ་འཛུལ་དང་ལས་ནོར་བུའམ། ⚠️ མི་སྣང་བ་མི་བྱེད་པའི་ཕྱིར — ཁྱེད་མི་སྣང་བ་ཡོད་སྐབས Discord ཀ Kizzy གྱི་ལས་སྒྲིག་བསྡུས་པ་མི་ནང་མིན།</string>
+    <string name="discord_setup_title">མཐོང་འགྲོའི་གནང་སྔོན་ནས</string>
+    <string name="console_auto_detect">DroidDeck / Eden རང་འདོད་ངོས་འཛིན</string>
+    <string name="console_detected_hint">Console RPC ཆེད་དུ་འདི་གྲོགས་པ་བྱེད་པར་བཤད་ནས</string>
+    <string name="discord_step2_content">"ངའི་ལས་སྤྱོད་མཉམ་སྤྱོད" མཐའས་ནས་འཛུལ་ནས་ ON གང་འདང་བསྟེན། "ངའི་ལས་སྤྱོད་དེ་ས་དེ་མཉམ་མིན" ནང་ "སེར་གྲྭ་ཡོད་སོ་མང་ལ་སྤྱོད" འཛུལ། ངའི་སེར་གྲྭ་ལ་ཉལ་ནས་དེ་སེར་གྲྭ་སྟེ་ངའི་གནས་ཡོད་མི་དགོས་པའི་སེར་གྲྭ་སྟེ་ ON གང་འདང་བསྟེན།</string>
+    <string name="discord_tip_content">Discord ཀྱི་ཁ་མཐའ་ཡིག་གི་མིག་ཅན་འགྲགས་མིག་གིས་འདི་བཤད་པ་སྦས་བྱེད། Chrome ནང་ discord.com བཀོད་པའི་ནས་→ Desktop སྨྲིག སྟེ་འཇུག → ལྗོངས་སྤྱོད → སྒྲུབ་སྒྲིག (⚙️) → ལས་སྤྱོད་གི་མངོན་བཏང་སྤྲོད → "ངའི་ལས་སྤྱོད་མཉམ་སྤྱོད" ON གང་འདང་བསྟེན།</string>
+    <string name="discord_setup_desc">ཀླད་གསལ་དུ་བཤད། Discord ཀྱིས་ཁྱེད་ཀྱི་ལས་སྤྱོད་ཁྱེད་ཀྱི་ནང་ཁུག་ནས་སྟོན་མི་ཐུབ་པར་བཤད།</string>
+    <string name="auto_detect_activity_type_desc">སྒྲོག་ཡིག་ཀྱི་ཁ་དྲག་རྒྱན་སྒྲོག་ཡིག་ལྟར་འདོད་དག, ཝི་དེའོ་ཁ་དྲག་རྒྱན་ཝི་དེར་འདོད་དག, དེའི་ཕྱིར YouTube Music ནས་གྲོགས་པ་སྟེན་མི་མངོན། ཆེད་ཕྱིར་ཁ་གཅིག་ལ་བསྟོས་པའི་རིགས་མེད་ཀྱིས་གདོད་གཞོལ།</string>
+    <string name="auto_detect_activity_type">ལས་སྤྱོད་ཀྱི་རིགས་རང་འདོད་ངོས་འཛིན</string>
+    <string name="logs_save_error">ཐོན་ཐང་ཉེན་སློག་མི་ཐུབ</string>
+    <string name="discord_tip_title">"ངའི་ལས་སྤྱོད་མཉམ་སྤྱོད" མ་རྙེད་པ་ཡིན་ནམ།</string>
+    <string name="console_detected_in_game">གྲོགས་ཀྱི་ནང་</string>
+    <string name="rich_presence_active">Rich Presence སྤྲོད</string>
+    <string name="discord_step1_title">གནས་ཚིག་ 1: མངོན་བཏང་གི་སྒྲིག་གཞི་བཀོད་པ</string>
+    <string name="console_detected">ངོས་འཛིན་ཟིན</string>
+    <string name="discord_step2_title">གནས་ཚིག་ 2: ལས་སྤྱོད་མཉམ་སྤྱོད་སྟེ་འཇུག</string>
+    <string name="discord_step1_content">Discord ཁ་དྲག་རྒྱན་བཀོད་པའི་ནས་→ ཁྱེད་ཀྱི་ངང་ (ནང་ཁུག་པའི་མདོན) མཚོན་སྟེང་ལ་བཤད་པའི་ནས་→ སྒྲུབ་སྒྲིག (⚙️) ལ་བཤད་ནས་→ གྲོལ་དུ་ཉལ་ནས་དངོས་གྲོགས་དང་སྤྱོད་ཚོགས (ཡང་ན་གནས་ཚིག་ཟད་པའི་ཁ་དྲག་རྒྱན་ནས་ལས་སྤྱོད་ཀྱི་མངོན་བཏང་སྤྲོད) ལ་བཤད།</string>
+    <string name="activity_type_fallback_desc">ངོས་མི་འཛིན་པའི་ཁ་དྲག་རྒྱན་ལ་དེ་བཞིན་འོས། དེ་མིན་རང་འདོད་ངོས་འཛིན་སྟོང་བའི་སྐབས་སུ་ཁ་དྲག་རྒྱན་ཡོད་མི་ཚང་བའི་ཆ་སོང་ལ་བྱེད།</string>
+    <string name="discord_step3_title">གནས་ཚིག་ 3: ཁྱེད་ཀྱི་གནས་ཡིག་སྟོང་དུ་བལྟས</string>
+
+    <string name="console_preset_games">སྔོན་འགྲོའི་རྩེད་པའི་རྩེད་གཏོང་།</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">ཁྲོམ་མེད་རིགས་ཤིག་འདེད་ནས་Console RPC་མེད་དུ་བསྒྲུབ། Custom RPCའདུས་ནང་གི་ཚངས་ཚངས་ཞིག་རྗེད་ནས་བསྒྱུར་བྱེད་ཐུབ།</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC སྒྲོག་གཞིའི་སྟེར་ལོར་ལོག</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>

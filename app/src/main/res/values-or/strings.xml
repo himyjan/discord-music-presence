@@ -1,0 +1,352 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Enhanced</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+    <string name="activity_name">କାର୍ଯ୍ୟାକଳ ନାମ</string>
+    <string name="activity_details">କାର୍ଯ୍ୟାକଳ ବିବରଣୀ</string>
+    <string name="activity_state">କାର୍ଯ୍ୟାକଳ ସ୍ଥିତି</string>
+    <string name="activity_start_timestamps">ଆରମ୍ଭ ସମୟସୂଚି</string>
+    <string name="activity_stop_timestamps">ଅନ୍ତ୍ୟ ସମୟସୂଚି</string>
+    <string name="activity_status_online_idle_dnd">Activity status ("online", "idle", "dnd")</string>
+    <string name="activity_button1_text">କାର୍ଯ୍ୟାକଳ 1 ର ଲେଖା</string>
+    <string name="activity_button2_text">କାର୍ଯ୍ୟାକଳ 2 ର ଲେଖା</string>
+    <string name="activity_button1_url">ବଟନ୍ 1 URL</string>
+    <string name="activity_button2_url">ବଟନ୍ 2 URL</string>
+    <string name="activity_large_image">ବଡ଼ କାର୍ଯ୍ୟାକଳ ଛବି</string>
+    <string name="activity_small_image">ଛୋଟ କାର୍ଯ୍ୟାକଳ ଛବି</string>
+    <string name="activity_type">କାର୍ଯ୍ୟାକଳ ପ୍ରକାର</string>
+    <string name="activity_platform">କାର୍ଯ୍ୟାକଳ ପ୍ଲାଟଫର୍ମ</string>
+    <string name="load_config">ଫାଇଲରୁ ଲୋଡ କରନ୍ତୁ</string>
+    <string name="save_config">କନ୍ଫିଗରେସନ ସଞ୍ଚିତ କରନ୍ତୁ</string>
+    <string name="delete_configs">କନ୍ଫିଗରେସନ ମିଟାଅ</string>
+    <string name="preview_rpc">RPC ପ୍ରିୱ୍ୟୁ</string>
+    <string name="select_a_config">ଏକଟି କନ୍ଫିଗରେସନ ବାଛନ୍ତୁ</string>
+    <string name="login_with_discord">Discord ରେ ଲଗଇନ କରନ୍ତୁ</string>
+    <string name="github_readme">README</string>
+    <string name="github_readme_desc">Github ରିପୋଜ଼ଟରୀ ଦେଖନ୍ତୁ</string>
+    <string name="github_latest_release">"Latest release "</string>
+    <string name="github_latest_release_desc">ନୂଆ ସଂସର୍ସନ ଓ ପରିବର୍ତ୍ତନ ଲୌଗ ଖୋଜନ୍ତୁ</string>
+    <string name="github_issue">Github ସମସ୍ୟା</string>
+    <string name="github_issue_desc">ବଗ ରିପୋର୍ଟ କରିବା କିମ୍ବା ନୂଆ ବୈପଟିଗଲପ ପାଇଁ issue ଅନୁରୋଧ</string>
+    <string name="credits">ସମ୍ମାନ</string>
+    <string name="credits_desc">ବ୍ୟବହାର ହୋଇଥିବା ଲାଇବ୍ରେରୀ ଓ ଅଶରଣୀଦାତାଙ୍କୁ</string>
+    <string name="enable_artist_name">କଲାକାର ନାମ ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="enable_album_name">ଆଲବମ ନାମ ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="show_app_icon">ଆପ୍ ଆଇକନ ଦେଖାଅ</string>
+    <string name="enable_timestamps">ଟାଇମଷ୍ଟାମ୍ପ ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="timestamp_mode">ଟାଇମଷ୍ଟାମ୍ପ ମୋଡ</string>
+    <string name="start_timestamp_ms">ଆରମ୍ଭ ସମୟସୂଚି (ମିଲିସେକେଣ୍ଡରେ)</string>
+    <string name="end_timestamp_ms">ଅନ୍ତ୍ୟ ଟାଇମଷ୍ଟାମ୍ପ (ମିଲିସେକେଣ୍ଡରେ)</string>
+    <string name="text_after_permission_denied">Storage access is important for this app to store
+        configs in public directories. Please grant the permission.</string>
+    <string name="request_for_storage_access">Storage permission required for config features to
+        work. Please grant the permission.</string>
+    <string name="grant_permission">ଅନୁମତି ଦିଅ</string>
+    <string name="use_low_res_icon">କମ୍ ରେଜୋଲ୍ୟୁସନ୍ ଛବି ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="use_low_res_icon_desc">Use a lower resolution app icon for displaying on RPC (turn
+        this on if the RPC is crashing). This setting will also be applied to Apps.</string>
+    <string name="delete_saved_icon_urls">ସଞ୍ଚିତ ଆଇକନ ଲିଙ୍କ ମିଟାଅ</string>
+    <string name="delete_saved_icon_urls_desc">Delete app icon URLs saved in local files (Only use
+        this as needed as it will send images to Discord servers again, which will consume more
+        data)</string>
+    <string name="app_crashed">ଆପ୍ କ୍ରାସ୍ ହେଇଛି</string>
+    <string name="share_crash_logs_desc">Please send the Logs in Discord channel with the following
+        stacktrace :</string>
+    <string name="share_crash_logs">ଲଗ ଭାଗ କରନ୍ତୁ</string>
+    <string name="welcome">ସ୍ୱାଗତ ଛି</string>
+    <string name="features">ବୈପଟିଗଲପ</string>
+    <string name="account">ଖାତା</string>
+    <string name="display">ଦେଖାନ୍ତା</string>
+    <string name="about">ବିଷୟର</string>
+    <string name="settings">ସେଟିଙ୍ଗ</string>
+    <string name="language">ଭାଷା</string>
+    <string name="design_credits">ଡିଜାଇନ ସମ୍ମାନ</string>
+    <string name="enable_appsRpc">ଆପ ଚିହ୍ନଟ ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="usage_access">ବ୍ୟବହାର ପ୍ରବେଶ ଆବଶ୍ୟକ</string>
+    <string name="usage_access_desc">ବର୍ତ୍ତମାନ ଚଲୁଥିବା ଆପ ଖାଁଥିବା ପାଇଁ ଆପକୁ ବ୍ୟବହାର ପ୍ରବେଶ ଆବଶ୍ୟକ</string>
+    <string name="enable_mediaRpc">Media RPC ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="permission_required">ଅନୁମତି ଆବଶ୍ୟକ</string>
+    <string name="enable_customRpc">Custom RPC ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="dark_theme">ଗାଢ଼ ଥିମ</string>
+    <string name="privacy_policy">ଗୋପନୀୟତା ନୀତି</string>
+    <string name="privacy_policy_desc">ଗୋପନୀୟତା ନୀତି ଦେଖନ୍ତୁ</string>
+    <string name="enable_console_rpc">Console RPC ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="rpc_settings_button_configs">Media ଓ AppDetection RPC ପାଇଁ ବଟନ କନ୍ଫିଗରେସନ</string>
+    <string name="use_custom_buttons">ଆପଣଙ୍କ ବଟନ ବ୍ୟବହାର କରନ୍ତୁ</string>
+    <string name="use_custom_buttons_desc">Use Predefined buttons to show on Media and AppDetection
+        RPC</string>
+    <string name="follow_system">ସିଷ୍ଟମ ଅନୁସରଣ</string>
+    <string name="advance_settings">ଅଗାମୀ ସେଟିଙ୍ଗ</string>
+    <string name="amoled">AMOLED ଥିମ</string>
+    <string name="dynamic_color">ଡାଇନାମିକ ରଙ୍ଗ</string>
+    <string name="dynamic_color_desc">ଓଆର ଟେପିସ ରଙ୍ଗ ପ୍ରୟୋଗ କରନ୍ତୁ</string>
+    <string name="cancel">ବାତିଲ କରନ୍ତୁ</string>
+    <string name="confirm">ନିଶ୍ଚିତ କରନ୍ତୁ</string>
+    <string name="primary_color">ମୁଖ୍ୟ ରଙ୍ଗ</string>
+    <string name="primary_color_hint">ଉଦାହରଣ #666666 କିମ୍ବା 666666</string>
+    <string name="android_on">ଚାଲୁ</string>
+    <string name="android_off">ବନ୍ଦ</string>
+    <string name="setup">ସେଟଅପ</string>
+    <string name="user_data_policy">ଏହି ଆପ ବ୍ୟବହାରକାରଙ୍କ ଡାଟା ସଂଗ୍ରହ କରେ ନାହିଁ</string>
+    <string name="setup_desc">Before moving ahead it is recommended to perform the necessary actions
+        to make sure all the features of the app work.</string>
+    <string name="permission_granted">ଦେଇଛି</string>
+    <string name="permission_not_granted">ଦେଇନାହିଁ, ଅନୁମତି ଦେବା ପାଇଁ ଟ୍ୟାପ କରନ୍ତୁ</string>
+    <string name="activity_large_text">ବଡ଼ କାର୍ଯ୍ୟାକଳ ଲେଖା</string>
+    <string name="activity_small_text">ଛୋଟ କାର୍ଯ୍ୟାକଳ ଲେଖା</string>
+    <string name="contributors">ଅଶରଣୀଦାତା</string>
+    <string name="stream_url">ଷ୍ଟ୍ରିମ URL</string>
+    <string name="stream_url_info">https://twitch.tv/ ଓ https://youtube.com/ ଲିଙ୍କ ମାତ୍ର କାମ କରିବ।</string>
+    <string name="activity_button_max_character">ସର୍ବାଧିକ ଅକ୍ଷର ସୀମା 31</string>
+    <string name="set_previous_run_config_in_custom_rpc">Set Previous Run config to Custom RPC
+        Fields</string>
+    <string name="set_previous_run_config_in_custom_rpc_desc">Automatically set fields in custom RPC
+        from the last run RPC</string>
+    <string name="clear_all_fields">ସବୁ ଫିଲ୍ଡ ସଫା କରନ୍ତୁ</string>
+    <string name="share_config">କନ୍ଫିଗରେସନ ଭାଗ କରନ୍ତୁ</string>
+    <string name="change_log">ପରିବର୍ତ୍ତନ ଲେଖା</string>
+    <string name="update">ଅପଡେଟ</string>
+    <string name="configs_directory">କନ୍ଫିଗରେସନ ଡାଇରେକ୍ଟୋରୀ</string>
+    <string name="custom_activity_type">କସ୍ଟମାଇଜଡ କାର୍ଯ୍ୟାକଳ ପ୍ରକାର</string>
+    <string name="custom_activity_type_desc">Overrides the default activity type. Works for media
+        and experimental RPC only</string>
+    <string name="custom_activity_status">କସ୍ଟମାଇଜଡ କାର୍ଯ୍ୟାକଳ ସ୍ଥିତି</string>
+    <string name="custom_activity_status_desc">ମୂଳ କାର୍ଯ୍ୟାକଳ ସ୍ଥିତି ଅତିକ୍ରମ କରେ</string>
+    <string name="search">ଖୋଜନ୍ତୁ</string>
+    <string name="clear">ସଫା କରନ୍ତୁ</string>
+    <string name="search_placeholder">ଖୋଜନ୍ତୁ…</string>
+    <string name="hide_on_pause">ବନ୍ଦ ସମୟରେ RPC ଲୁକାଅ</string>
+    <string name="idling_notification">କୁଛୁ ନହିଁ…</string>
+    <string name="main_appDetection">ଆପ ଚିହ୍ନଟ</string>
+    <string name="main_appDetection_details">Kizzy allows you to share your current activity on
+        Discord by detecting what app you\'re using on your device.</string>
+    <string name="main_mediaRpc">Media RPC</string>
+    <string name="main_mediaRpc_details">Kizzy allows you to share your current media activity on
+        Discord, such as the song or video you\'re currently listening to or watching.</string>
+    <string name="main_customRpc">Custom RPC</string>
+    <string name="main_consoleRpc">Console RPC</string>
+    <string name="main_consoleRpc_details">Kizzy allows you to use some predefined presets to set
+        your presence on Discord.</string>
+    <string name="main_ManualRpc">Manual RPC</string>
+    <string name="main_ManualRpc_details">Manual RPC is a feature in Kizzy that
+        constantly switches between Apps RPC and Media RPC.</string>
+    <string name="main_customRpc_details">Kizzy allows you to create your own fully customisable
+        rich presence for Discord.</string>
+    <string name="main_comingSoon">ଶୀଘ୍ରିଆ</string>
+    <string name="exit">ବାହାର</string>
+    <string name="logs">ଲଗ</string>
+    <string name="drawer_subtitle_help">ସାହାଯ୍ୟ</string>
+    <string name="drawer_faq">FAQ</string>
+    <string name="go_to_profile">ପ୍ରୋଫାଇଲକୁ ଯାଆ</string>
+    <string name="version">ସଂସର୍ସନ</string>
+    <string name="try_again">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</string>
+    <string name="request_for_notification_access">Notification Access is needed for app to extract
+        media information.</string>
+    <string name="update_check_for_update">ଅପଡେଟ ଯାଞ୍ଚ ହେଉଛି…</string>
+    <string name="update_no_updates_available">କୌଣସି ଅପଡେଟ ଉପଲବ୍ଧ ନାହିଁ</string>
+    <string name="compact_mode">ସଙ୍କୁଚିତ ମୋଡ</string>
+    <string name="are_you_sure">ଆପଣ ନିଶ୍ଚିତ କି?</string>
+    <string name="yes">ହଁ</string>
+    <string name="user_profile_error">ବ୍ୟବହାରକାର ପ୍ରୋଫାଇଲ ଅପଡେଟ ହେବ ନାହିଁ:</string>
+    <string name="no_internet_user_profile">ଇଣ୍ଟରନେଟ ସନ୍ନିଧାନ ନାହିଁ। ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+    <string name="user_profile_rpc_name">KIZZY RICH PRESENCE ବ୍ୟବହାର କରୁଛି</string>
+    <string name="user_profile_bio">ମୁଇ ବିଷୟରେ</string>
+    <string name="user_profile_special_button">ବିଶେଷ ବଟନ</string>
+    <string name="user_profile">ବ୍ୟବହାରକାର ପ୍ରୋଫାଇଲ</string>
+    <string name="logout">ଲଗଆଉଟ</string>
+    <string name="custom_rpc_directory">Custom RPC କନ୍ଫିଗରେସନ ସଞ୍ଚରିବା ଡାଇରେକ୍ଟୋରୀ</string>
+    <string name="select_directory">ଡାଇରେକ୍ଟୋରୀ ବାଛନ୍ତୁ</string>
+    <string name="enter_details">ବିବରଣୀ ଲେଖନ୍ତୁ</string>
+    <string name="status_online">Online</string>
+    <string name="status_idle">କୁଛୁ ନହିଁ…</string>
+    <string name="status_dnd">ବିଜ୍ଞପ୍ତି ଦେବ ନାହିଁ</string>
+    <string name="status_invisible_offline">ଅଦ୍ରଶ୍ୟ ଏବଂ offline ଭାବେ ଦେଖାଯାଇଛି</string>
+    <string name="status_offline">Offline</string>
+    <string name="notification_access">ବିଜ୍ଞପ୍ତି ଅନୁମତି</string>
+    <string name="post_notification">ବିଜ୍ଞପ୍ତି ପୋଷ୍ଟ କରନ୍ତୁ</string>
+    <string name="request_for_post_notification">ବିଜ୍ଞପ୍ତି ଦେଖାଇବା ପାଇଁ ଅନୁମତି ଦିଅ</string>
+    <string name="storage_access">ଷ୍ଟୋରେଜ ପ୍ରବେଶ</string>
+    <string name="start_app_now">ବର୍ତ୍ତମାନ ଆପ ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="skip">ଛାଡ଼ନ୍ତୁ</string>
+    <string name="party_current">ବର୍ତ୍ତମାନ ପାର୍ଟି ଆକାର</string>
+    <string name="party_max">ସର୍ବାଧିକ ପାର୍ଟି ଆକାର</string>
+    <string name="user_profile_party">(%1$d of %2$d)</string>
+    <string name="auto_scroll">ସ୍ୱତନ୍ତ୍ର ସ୍କ୍ରୋଲ</string>
+    <string name="party_invalid_number">ପାର୍ଟି ଆକାର ପୂର୍ଣ୍ଣ ସଂଖ୍ୟା ହେବ ଆବଶ୍ୟକ</string>
+    <string name="party_less_than_zero">ପାର୍ଟି ଆକାର ଶୂନ୍ୟରୁ ବଡ଼ ହେବ ଆବଶ୍ୟକ</string>
+    <string name="party_greater_than_max">ବର୍ତ୍ତମାନ ପାର୍ଟି ଆକାର ସର୍ବାଧିକ ଆକାରକୁ ଅତିକ୍ରମ କରିବ ନାହିଁ</string>
+    <string name="party_max_cannot_be_empty">ସର୍ବାଧିକ ପାର୍ଟି ଆକାର ଖାଲି ହେବ ନାହିଁ</string>
+    <string name="learn_more">ହୋର ଜାଣନ୍ତୁ</string>
+    <string name="browse_files">ଫାଇଲ୍ ଦେଖନ୍ତୁ</string>
+    <string name="upload_image">ଛବି ଅପଲୋଡ କରନ୍ତୁ</string>
+    <string name="save">ସଞ୍ଚିତ କରନ୍ତୁ</string>
+    <string name="set_timestamps">ଟାଇମଷ୍ଟାମ୍ପ ସେଟ କରନ୍ତୁ</string>
+    <string name="saved_config_toast">Saved "%1$s" successfully</string>
+    <string name="error_saving_config_toast">କନ୍ଫିଗରେସନ ସଞ୍ଚରିବାରେ ତ୍ରୁଟ</string>
+    <string name="config_name">କନ୍ଫିଗରେସନ ନାମ</string>
+    <string name="delete">ମିଟାଅ</string>
+    <string name="mandatory">ଆବଶ୍ୟକ</string>
+    <string name="optional">ଇଚ୍ଛାଧୀନ</string>
+    <string name="general_settings">ସାଧାରଣ</string>
+    <string name="activity_playing_title">ଖେଲ ଖେଲୁଛନ୍ତି</string>
+    <string name="activity_listening_title">%1$s ଶୁଣୁଛନ୍ତି</string>
+    <string name="activity_watching_title">%1$s ଦେଖୁଛନ୍ତି</string>
+    <string name="activity_competiting_title">%1$s ସହ ପର୍ଯ୍ୟାଧ କରୁଛନ୍ତି</string>
+    <string name="activity_streaming_title">%1$s ରେ ଷ୍ଟ୍ରିମିଂ କରୁଛନ୍ତି</string>
+    <string name="delete_config_successfully_toast">%1$s ସଫଳପଥିବେ ମିଟାଯାଇଛି</string>
+    <string name="service_enabled">ସେବା ସକ୍ରିୟ</string>
+    <string name="no_internet_connection">ଇଣ୍ଟରନେଟ ସନ୍ନିଧାନ ନାହିଁ</string>
+    <string name="unknown_error">ଅଣାକ୍ଷିତ ତ୍ରୁଟି ଘଟିଛି</string>
+    <string name="rpc_buttons">RPC ବଟନ</string>
+    <string name="choose_rpc">ଏକଟି RPC ବାଛନ୍ତୁ</string>
+    <string name="off">ବନ୍ଦ</string>
+    <string name="time_elapsed">%1$s ବୀତି ଗଲା</string>
+    <string name="time_left">%1$s ବାକୀ</string>
+    <string name="config_name_empty">କନ୍ଫିଗରେସନ ନାମ ଖାଲି ହେବ ନାହିଁ</string>
+    <string name="restart">ପୁଣି ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="custom_rpc_running">Custom RPC ଚାଲୁଛି</string>
+    <string name="use_imgur">ଛବି ପ୍ରକ୍ସି ଭାବେ Imgur</string>
+    <string name="use_imgur_desc">ଛବି ବିକଳ୍ପ ପ୍ରକ୍ସି ଭାବେ Imgur ବ୍ୟବହାର କରନ୍ତୁ।</string>
+    <string name="start_appDetection">ଆପ ଚିହ୍ନଟ ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="start_media_rpc">Media RPC ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="start_manual_rpc">Manual RPC ଆରମ୍ଭ କରନ୍ତୁ</string>
+    <string name="stop_rpc">RPC ଥମାଅ</string>
+    <string name="stop">ଥମାଅ</string>
+    <string name="start_appDetection_toast">ଆପ ଚିହ୍ନଟ ଆରମ୍ଭ ହେଇଛି</string>
+    <string name="start_media_rpc_toast">Media RPC ଆରମ୍ଭ ହେଇଛି</string>
+    <string name="start_manual_rpc_toast">Manual RPC ଆରମ୍ଭ ହେଇଛି</string>
+    <string name="stop_rpc_toast">ସବୁ ସେବା ଥମାଇଛନ୍ତି</string>
+    <string name="show_playback_state">ପ୍ଲେବ୍ୟ ସ୍ଥିତି ଦେଖାଅ</string>
+    <string name="copied_to_clipboard">କ୍ଲିପବୋର୍ଡରେ କପି ହେଇଛି</string>
+    <string name="application_id">ଆପ୍ ID</string>
+    <string name="custom_application_id">କସ୍ଟମାଇଜଡ Discord ଆପ ID</string>
+    <string name="custom_application_id_desc">ମୂଳ Discord ଆପ ID ଅତିକ୍ରମ କରେ</string>
+    <string name="use_a_vpn_desc">Discord login may not work in your country without a VPN/DPI.
+        Please use a VPN/DPI to proceed.</string>
+    <string name="rpc_templates_note">"Use placeholders like \'{{\'app_name}}\'\', \'{{\'media_title}}\'\', etc.
+        Empty fields will use default behavior or be omitted."</string>
+    <string name="manual_rpc_detect_apps">Manual RPC ଚାଲୁଥିବା ଆପ ଚିହ୍ନଟ କରିବାକୁ ଅନୁମତି ଦିଅ</string>
+    <string name="manual_rpc_detect_media">Manual RPC ମିଡିଆ ପ୍ଲେବ୍ୟ ଚିହ୍ନଟ କରିବାକୁ ଅନୁମତି ଦିଅ</string>
+    <string name="app_preferences">ଆପ୍ ପ୍ରାବନ୍ଧ</string>
+    <string name="app_preferences_desc">Manual RPC ପାଇଁ କେଉଁ ଆପଗୁ ସକ୍ରିୟ କରିବେ ବାଛନ୍ତା</string>
+    <string name="completion_media_title">ଗୀତ/ଭିଡିଓ ନାମ</string>
+    <string name="completion_media_artist">ମୁଖ୍ୟ କଲାକାର</string>
+    <string name="completion_app_name">ଚିହ୍ନଟ ହୋଇଥିବା ଆପର ନାମ</string>
+    <string name="show_cover_art">କଭରାର୍ଟ ଦେଖାଅ</string>
+    <string name="show_cover_art_desc">ଆଲବମ କଭରାର୍ଟ ବଡ଼ ଛବି ଭାବେ ଦେଖାଅ</string>
+    <string name="enable_manualRpc">Manual RPC ସକ୍ରିୟ କରନ୍ତୁ</string>
+    <string name="completion_media_author">ମୁଖ୍ୟ ଲେଖକ</string>
+    <string name="completion_media_album">ଆଲବମର ନାମ</string>
+    <string name="completion_media_album_artist">ଆଲବମର କଲାକାର</string>
+    <string name="completion_media_duration">ଗୀତର ଅବଧି</string>
+    <string name="completion_media_writer">ଗୀତ ଲେଖକ</string>
+    <string name="completion_media_composer">ସଙ୍ଗୀତକାର</string>
+    <string name="completion_battery">ବ୍ୟାଟେରୀ ସ୍ତର</string>
+    <string name="completion_playback">ପ୍ଲେବ୍ୟ ସ୍ଥିତି</string>
+    <string name="imgur_client_id">Imgur କ୍ଲାଇଣ୍ଟ ID</string>
+    <string name="set_imgur_client_id">Imgur କ୍ଲାଇଣ୍ଟ ID ସେଟ କରନ୍ତୁ</string>
+    <string name="set_imgur_client_id_desc">If images aren\'t showing using Imgur, you can try
+        setting your own Client ID</string>
+    <string name="show_song_as_title">ଗୀତକୁ ଶୀର୍ଷକ ଭାବେ ଦେଖାଅ</string>
+    <string name="use_youtube_button">ମିଡିଆ ବଟନ ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="use_youtube_button_desc">Automatically add a clickable button (YouTube, Spotify,
+        Apple Music, Deezer, SoundCloud, StreetVoice, YMusic) when playing media</string>
+    <string name="link_to_artist_channel">କଲାକାର ଚ୍ୟାନେଲ ପାଇଁ ଲିଙ୍କ</string>
+    <string name="link_to_artist_channel_desc">Button links to artist channel instead of track/video</string>
+    <string name="manual_rpc_title_toggle">ଶୀର୍ଷକ</string>
+    <string name="manual_rpc_title_toggle_desc">Show song info in the activity title instead
+        of app name</string>
+    <string name="title_source_song">ଗୀତର ନାମ</string>
+    <string name="title_source_artist">କଲାକାର</string>
+    <string name="type_to_insert_variable">Type \'{{\' to insert a variable</string>
+    <string name="app_selection">ଆପ୍ ବାଛବା</string>
+    <string name="platform_none_desktop">କୌଣସି ନାହିଁ (ଡେସ୍କଟପ)</string>
+    <string name="platform_desktop">ଡେସ୍କଟପ</string>
+    <string name="platform_web">ୱେବ</string>
+    <string name="platform_android">Android</string>
+    <string name="platform_ios">iOS</string>
+    <string name="platform_xbox">Xbox</string>
+    <string name="platform_playstation">Playstation</string>
+    <string name="platform_vr">VR</string>
+    <string name="timestamp_mode_default">ମିଡିଆ / ଆପ (ଡିଫାଲ୍ଟ)</string>
+    <string name="timestamp_mode_current">ଆଜିର ବର୍ତ୍ତମାନ ସମୟ ସମାନ</string>
+    <string name="timestamp_mode_custom">କସ୍ଟମ</string>
+    <string name="update_installing">ଇନଷ୍ଟଲ ହେଉଛି…</string>
+    <string name="update_download_error">ଡାଉନଲୋଡ ବିଫଳ। ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ।</string>
+
+    <string name="rpc_connection_method">ସଂଯୋଗ ପଦ୍ଧତି</string>
+    <string name="rpc_connection_method_desc">ଚାରୁ କି Kizzy Discord ସହ କିପରେ ଯୋଡ଼ିବ ବାଛି ବାହାର ବାଛନ୍ତା ଚାରୁ କରନ୍ତୁ</string>
+    <string name="rpc_connection_method_gateway">Gateway (ବୋଟ ଟୋକନ)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (ଆପଣଙ୍କ Discord ଖାତା)</string>
+    <string name="discord_oauth2_authorize">Discord ସହ ଯୋଡ଼ନ୍ତୁ</string>
+    <string name="discord_oauth2_authorize_desc">ଆପଣଙ୍କ Discord ପ୍ରୋଫାଇଲରେ ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳପ ଦେଖାଇବାକୁ Kizzy କୁ ଅନୁମତି ଦିଅନ୍ତୁ</string>
+
+    <string name="console_include_spoofed">ଫଲ-ବିଲ୍ଡ ଅନ୍ତର୍ଭାଗ କରନ୍ତୁ</string>
+    <string name="auto_detect">ସ୍ୱତନ୍ତ · %1$s</string>
+    <string name="save_logs_to_file">ଲଗ୍ ଫାଇଲରେ ସଞ୍ଚିତ କରନ୍ତୁ</string>
+    <string name="logs_saved_toast">ଲଗ୍ %1$s ରେ ସଞ୍ଚିତ ହେଲା</string>
+    <string name="discord_step3_content">ଆପଣଙ୍କ ସ୍ଟାଟସ (ବ୍ୟାମରେଙ୍କ ନାମ ତଳେ) ଉପରେ ଟାପ କରନ୍ତୁ ଏବଂ ଅନଲାଇନ, କୁଛି ନାହିଁ କିମ୍ବା ଅନୁରୋଧ ନକରନ୍ତୁ ବାଛନ୍ତୁ। ⚠️ ଅଦୃଶ୍ୟ ସ୍ଥିତିକୁ ବ୍ୟବହାର କରନ୍ତୁ ନାହିଁ — ଅଦୃଶ୍ୟ ଥିବା ବେଳେ Discord ଆପଣଙ୍କ Kizzy କାର୍ଯ୍ୟକଳାପ ଲୁକାଇ ଦେଇଛି।</string>
+    <string name="discord_setup_title">ଆରମ୍ଭ କରିବା ପୂର୍ବରୁ</string>
+    <string name="console_auto_detect">DroidDeck / Eden ସ୍ୱତନ୍ତ ଚିହ୍ନଟ</string>
+    <string name="console_detected_hint">Console RPC ପାଇଁ ଏହି ଖେଳାଟି ବ୍ୟବହାର କରିବାକୁ ଟାପ କରନ୍ତୁ</string>
+    <string name="discord_step2_content">"ମୋ କାର୍ଯ୍ୟକଳା ଅଂଶ କରନ୍ତୁ" ଖୋଜ କରି ON କରନ୍ତୁ। "ମୁଁ କିଏଠି କାର୍ଯ୍ୟକଳା ଅଂଶ କରେଉଁ" ତଳେ "ସବୁ ସର୍ଭରରେ ଅଂଶ କରନ୍ତୁ" ବାଛନ୍ତୁ। "ମୋ ସର୍ଭର" ପାଇଁ ସ୍କ୍ରୋଲ କରି ଆପଣଙ୍କ ସ୍ଟାଟସ ଦେଖା ଯାଇଥିବା ସର୍ଭରଗୁଡ଼ ON କରନ୍ତୁ।</string>
+    <string name="discord_tip_content">Discord ର କିଛି ମୋବାଇଲ୍ ସଂସ୍କରଣ ଏହି ଟୋଗଲକୁ ଲୁକାଏ। Chrome ରେ discord.com ଖୋଲନ୍ତୁ → Desktop site ଚାଲୁ କରନ୍ତୁ → ଲଗ ଇନ କରନ୍ତୁ → ସେଟିଙ୍ସ (⚙️) → Activity Privacy → "ମୋ କାର୍ଯ୍ୟକଳା ଅଂଶ କରନ୍ତୁ" ON କରନ୍ତୁ।</string>
+    <string name="discord_setup_desc">Discord ଆପଣଙ୍କ କାର୍ଯ୍ୟକଳା ପ୍ରୋଫାଇଲରେ ଦେଖାଇବାକୁ ଅନୁମତି ଦେଉଛି ବା ନା ନିଶ୍ଚିତ କରନ୍ତୁ।</string>
+    <string name="auto_detect_activity_type_desc">ସଙ୍ଗୀତ ଆପ୍ ସଙ୍ଗୀତ ଭାବେ ଏବଂ ଭିଡିଓ ଆପ୍ ଭିଡିଓ ଭାବେ ଚିହ୍ନଟ ହୁଏ, ତେଣୁ YouTube Music ଆଉ ଖେଳା ଭାବେ ଦେଖାଯାଇନି। ଗୋଟିଏ ଆପ୍ ପାଇଁ ବାଛିଥିବା ପ୍ରକାର ସର୍ବଦା ପ୍ରାଥମିକତା ଧରେ।</string>
+    <string name="auto_detect_activity_type">କାର୍ଯ୍ୟକଳା ପ୍ରକାର ସ୍ୱତନ୍ତ ଚିହ୍ନଟ</string>
+    <string name="logs_save_error">ଲଗ୍ ସଞ୍ଚିତ କରିବାରେ ବିଫଳ</string>
+    <string name="discord_tip_title">"ମୋ କାର୍ଯ୍ୟକଳା ଅଂଶ କରନ୍ତୁ" ମିଳୁନାହିଁ?</string>
+    <string name="console_detected_in_game">ଖେଳା ଭିତରେ</string>
+    <string name="rich_presence_active">Rich Presence ସକ୍ରିୟ</string>
+    <string name="discord_step1_title">ପଦ 1: ଗୋପନୀୟତା ସେଟିଙ୍ସ ଖୋଲନ୍ତୁ</string>
+    <string name="console_detected">ଚିହ୍ନଟ ହେଲା</string>
+    <string name="discord_step2_title">ପଦ 2: କାର୍ଯ୍ୟକଳା ଅଂଶ କରିବା ON କରନ୍ତୁ</string>
+    <string name="discord_step1_content">Discord ଆପ୍ ଖୋଲନ୍ତୁ → ଆପଣଙ୍କ "ଆପଣ" (ପ୍ରୋଫାଇଲ ଫଟୋ) ଆଇକନଟି ଟାପ କରନ୍ତୁ → ସେଟିଙ୍ସ (⚙️) ଟାପ କରନ୍ତୁ → ତଳେ ସ୍କ୍ରୋଲ କରି "କଣ୍ଟେଣ୍ଟ ଓ ସୋସିଆଲ" (କିମ୍ବା ପୁରାଣା ଆପ୍ ସଂସ୍କରଣରେ "Activity Privacy") ଟାପ କରନ୍ତୁ।</string>
+    <string name="activity_type_fallback_desc">ଚିହ୍ନଟ ହେବା ନଥିବା ଆପ୍‌ଗୁ ଏବଂ ସ୍ୱତନ୍ତ ଚିହ୍ନଟ ବନ୍ଦ ଥିବା ସମସ୍ତ ଆପ୍ ପାଇଁ ବ୍ୟବହାର ହୁଏ।</string>
+    <string name="discord_step3_title">ପଦ 3: ଆପଣଙ୍କ ଅନଲାଇନ ସ୍ଟାଟସ ଯାଞ୍ଚ କରନ୍ତୁ</string>
+
+    <string name="console_preset_games">ପୂର୍ବ-ସେଟ ଗେମ୍</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Custom RPC</string>
+    <string name="rpc_tab_console_presets">Console RPC</string>
+    <string name="rpc_tab_console_presets_desc">ଏକ ପ୍ରିସେଟ ବାଛନ୍ତୁ Console RPC ଶ୍ରୁଗମ ସେଟ୍ କରିବାକୁ। ପରେ Custom RPC ଟ୍ୟାବରେ ପ୍ରତ୍ୟେକ ମୂଲ୍ୟ ସାଧିକରିପାରିବେ।</string>
+    <string name="rpc_tab_back_to_settings">Custom RPC ସେଟିଙ୍ଗକୁ ଫେରନ୍ତୁ</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>

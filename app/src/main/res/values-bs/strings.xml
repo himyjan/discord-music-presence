@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Kizzy</string>
+    <string name="app_name_full">Kizzy Poboljšano</string>
+    <string name="qs_tile_label">Kizzy Quickie</string>
+
+    <string name="activity_name">Naziv aktivnosti</string>
+    <string name="activity_details">Detalji aktivnosti</string>
+    <string name="activity_state">Stanje aktivnosti</string>
+    <string name="load_config">Učitaj iz datoteka</string>
+    <string name="save_config">Spremi konfiguraciju</string>
+    <string name="delete_configs">Obriši konfiguraciju</string>
+    <string name="preview_rpc">Pregled RPC-a</string>
+    <string name="select_a_config">Odaberi konfiguraciju</string>
+    <string name="login_with_discord">Prijavi se putem Discorda</string>
+    <string name="github_readme">PROČITAJME (README)</string>
+    <string name="credits">Zasluge</string>
+    <string name="welcome">Dobrodošli</string>
+    <string name="features">Značajke</string>
+    <string name="account">Račun</string>
+    <string name="display">Prikaz</string>
+    <string name="about">O aplikaciji</string>
+    <string name="settings">Postavke</string>
+    <string name="language">Jezik</string>
+    <string name="dark_theme">Tamna tema</string>
+    <string name="privacy_policy">Politika privatnosti</string>
+    <string name="cancel">Otkaži</string>
+    <string name="confirm">Potvrdi</string>
+    <string name="save">Spremi</string>
+    <string name="delete">Obriši</string>
+    <string name="search">Pretraži</string>
+    <string name="clear">Očisti</string>
+    <string name="exit">Izađi</string>
+    <string name="logs">Zapisnici (Logs)</string>
+    <string name="version">Verzija</string>
+    <string name="try_again">Pokušaj ponovo</string>
+    <string name="yes">Da</string>
+    <string name="logout">Odjavi se</string>
+    <string name="skip">Preskoči</string>
+    <string name="stop">Zaustavi</string>
+    <string name="restart">Ponovo pokreni</string>
+    <string name="no_internet_connection">Nema internetske veze</string>
+    <string name="unknown_error">Došlo je do neočekivane greške</string>
+    <string name="copied_to_clipboard">Kopirano u međuspremnik</string>
+
+    <string name="rpc_connection_method">Način povezivanja</string>
+    <string name="rpc_connection_method_desc">Odaberite kako se Kizzy povezuje sa Discordom</string>
+    <string name="rpc_connection_method_gateway">Gateway (bot token)</string>
+    <string name="rpc_connection_method_oauth2">OAuth (vaš Discord nalog)</string>
+    <string name="discord_oauth2_authorize">Poveži se sa Discordom</string>
+    <string name="discord_oauth2_authorize_desc">Dozvolite Kizzy-ju da prikaže vašu aktivnost na vašem Discord profilu</string>
+
+    <string name="console_include_spoofed">Uključi lažne verzije</string>
+    <string name="auto_detect">Automatski · %1$s</string>
+    <string name="save_logs_to_file">Sačuvaj logove u datoteku</string>
+    <string name="logs_saved_toast">Logovi su sačuvani u %1$s</string>
+    <string name="discord_step3_content">Dodirnite svoju Status (ispod korisničkog imena) i odaberite Na mreži, Bes posla ili Ne uznemiravaj. ⚠️ Nemojte koristiti Nevidljivo — Discord skriva Kizzy aktivnost kada ste Nevidljivi.</string>
+    <string name="discord_setup_title">Prije nego što počnete</string>
+    <string name="console_auto_detect">Automatsko otkrivanje DroidDeck / Eden</string>
+    <string name="console_detected_hint">Dodirnite da biste ovu igru koristili za Console RPC</string>
+    <string name="discord_step2_content">Pronađite Dijeli moju aktivnost i uključite ga. Pod Gdje dijelim aktivnost odaberite Dijeli na svim serverima. Skrolujte do Moji serveri i uključite servere na kojima želite da vam status bude vidljiv.</string>
+    <string name="discord_tip_content">Neke mobilne verzije Discorda skrivaju ovaj prekidač. Otvorite discord.com u Chromu → omogućite Desktop stranicu → prijavite se → Postavke (⚙️) → Privatnost aktivnosti → uključite Dijeli moju aktivnost.</string>
+    <string name="discord_setup_desc">Provjerite da Discord dopušta prikaz vaše aktivnosti na vašem profilu.</string>
+    <string name="auto_detect_activity_type_desc">Muzičke aplikacije prepoznaju se kao muzika, a video aplikacije kao video, pa se YouTube Music više ne prikazuje kao igra. Vrsta odabrana za pojedinu aplikaciju uvijek ima prednost.</string>
+    <string name="auto_detect_activity_type">Automatsko otkrivanje vrste aktivnosti</string>
+    <string name="logs_save_error">Čuvanje logova nije uspjelo</string>
+    <string name="discord_tip_title">Ne možete pronaći "Dijeli moju aktivnost"?</string>
+    <string name="console_detected_in_game">U igri</string>
+    <string name="rich_presence_active">Rich Presence aktivan</string>
+    <string name="discord_step1_title">Korak 1: Otvorite postavke privatnosti</string>
+    <string name="console_detected">Otkriveno</string>
+    <string name="discord_step2_title">Korak 2: Uključite dijeljenje aktivnosti</string>
+    <string name="discord_step1_content">Otvorite aplikaciju Discord → dodirnite svoju ikonu Vi (slika profila) → dodirnite Postavke (⚙️) → skrolujte dolje i dodirnite Sadržaj i društvene mreže (ili Privatnost aktivnosti na starijim verzijama aplikacije).</string>
+    <string name="activity_type_fallback_desc">Koristi se za aplikacije koje nisu prepoznate i za svaku aplikaciju kada je automatsko otkrivanje isključeno.</string>
+    <string name="discord_step3_title">Korak 3: Provjerite svoju mrežnu prisutnost</string>
+
+    <string name="console_preset_games">Predefinirane igre</string>
+
+    <string name="console_preset_xbox">Xbox</string>
+
+    <string name="console_preset_playstation">PlayStation</string>
+
+    <string name="console_preset_nintendo">Nintendo</string>
+
+    <string name="console_preset_desktop">Desktop</string>
+
+    <string name="rpc_tab_custom_settings">Prilagođeni RPC</string>
+    <string name="rpc_tab_console_presets">Konzolni RPC</string>
+    <string name="rpc_tab_console_presets_desc">Odaberite preset za brzo postavljanje Console RPC-a. Svaku vrijednost možete kasnije podesiti na kartici Custom RPC.</string>
+    <string name="rpc_tab_back_to_settings">Nazad na postavke Custom RPC-a</string>
+
+    <string name="console_preset_android">Android</string>
+    <string name="console_preset_applied">Preset applied</string>
+    <string name="console_preset_delete_desc">The preset will be removed from the list. Built-in presets cannot be deleted.</string>
+    <string name="console_preset_delete_title">Delete preset?</string>
+    <string name="console_preset_embedded">Embedded</string>
+    <string name="console_preset_droideck">DroidDeck</string>
+    <string name="console_preset_eden">Eden (Switch)</string>
+    <string name="console_preset_edit">Edit preset</string>
+    <string name="console_preset_ios">iOS</string>
+    <string name="console_preset_name">Preset name</string>
+    <string name="console_preset_new">New preset</string>
+    <string name="console_preset_ps4">PlayStation 4</string>
+    <string name="console_preset_ps5">PlayStation 5</string>
+    <string name="console_preset_samsung">Samsung</string>
+    <string name="console_presets_title">Presets</string>
+    <string name="console_options_title">Console RPC options</string>
+
+    <string name="discord_oauth2_client_id_desc">Optional: Enter your Discord Application ID (Client ID) from https://discord.com/developers/applications. Leave empty to use Gateway connection instead.</string>
+    <string name="lastfm_settings_title">Last.fm Scrobbling</string>
+    <string name="lastfm_enabled">Enable Last.fm</string>
+    <string name="lastfm_api_key">API Key</string>
+    <string name="lastfm_secret">Secret</string>
+    <string name="lastfm_username">Username</string>
+    <string name="lastfm_password">Password</string>
+    <string name="lastfm_show_timestamps">Show Timestamps</string>
+    <string name="lastfm_show_cover_art">Show Cover Art</string>
+    <string name="lastfm_show_party_current">Show Party Current Size</string>
+    <string name="lastfm_show_party_max">Show Party Max Size</string>
+</resources>
