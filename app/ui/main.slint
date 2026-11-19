@@ -275,7 +275,7 @@ export component MainWindow inherits Window {
     background: AppTheme.bg;
 
     // ---- persisted / shared state (kept for Rust workers) ----
-    in-out property<string> application-id: "";
+    in-out property<string> application-id: "1571063796418744412";
     in-out property<string> rpc-mode: "Custom RPC";
     in-out property<string> activity-name: "Music Presence";
     in-out property<string> activity-details: "Listening to music";
@@ -740,7 +740,7 @@ export component MainWindow inherits Window {
                                     Text { text: "Discord account"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
                                     Text { text: "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your profile or send activity."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                                     Field { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Discord application ID"; enabled: !root.oauth-connecting; }
-                                    Text { text: "Register http://127.0.0.1:49153/oauth/callback as an OAuth2 redirect URI."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: "Uses Kizzy Enhanced's OAuth app by default; you can enter your own Client ID. Callback: kizzy://oauth2/callback."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                     HorizontalLayout {
                                         spacing: 10px;
                                         if (!root.oauth-connected && !root.oauth-connecting): PrimaryButton {

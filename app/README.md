@@ -18,14 +18,16 @@ the system tray and updates are not implemented.
   store; there is no plaintext fallback.
 - **OAuth2 account sign-in:** Opens Discord in the system browser and uses
   authorization code with PKCE and the `identify` scope to show a profile
-  preview with the display name, username, user ID, avatar and banner. In the
-  Discord Developer Portal, register
-  `http://127.0.0.1:49153/oauth/callback` as a redirect URI. OAuth2 is separate
-  from bot login and does not update a user's personal activity. The saved
-  access and refresh tokens are stored in the operating system credential
-  store; logout attempts to revoke the token and clears the local session,
-  reporting any credential-store or revocation errors. If the browser does not
-  open automatically, the app displays the authorization URL to copy or reopen.
+  preview with the display name, username, user ID, avatar and banner. It uses
+  Kizzy Enhanced's OAuth Client ID by default; enter your own Client ID to
+  override it. The redirect URI is `kizzy://oauth2/callback`. On first sign-in,
+  the app registers a per-user OS URL handler for `kizzy://`; this can replace
+  an existing default handler for that scheme. The handler relays the callback
+  to the running app. OAuth2 is separate from bot login and does not update a user's
+  personal activity. The saved access and refresh tokens are stored in the
+  operating system credential store; logout attempts to revoke the token and
+  clears the local session, reporting any credential-store or revocation
+  errors.
 
 OAuth2 credentials are not bot tokens and are never passed to the bot Gateway.
 Personal Rich Presence uses Discord desktop IPC; bot activity uses a bot token.
@@ -84,11 +86,11 @@ The release profile uses size-oriented optimization and link-time optimization.
 Measure the generated package and runtime resource use on each target before
 making performance claims.
 
-## GitHub prereleases
+## GitHub releases
 
 Pushing a tag like `slint-v0.1.0` runs the multi-platform release workflow and
-publishes a prerelease with archives for each target below. Running the
-workflow manually builds the archives without publishing a release.
+publishes a stable GitHub release with archives for each target below. Running
+the workflow manually builds the archives without publishing a release.
 
 ## Current targets
 

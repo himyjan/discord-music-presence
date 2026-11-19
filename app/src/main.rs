@@ -2,6 +2,7 @@ mod bot_gateway;
 mod discord_rpc;
 mod media_detector;
 mod oauth;
+mod oauth_protocol;
 mod presence;
 mod scrobbling;
 mod token_store;
@@ -24,6 +25,11 @@ use std::{
 slint::include_modules!();
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
+    if let Some(callback_uri) = oauth_protocol::callback_argument() {
+        oauth_protocol::forward_callback(&callback_uri).map_err(std::io::Error::other)?;
+        return Ok(());
+    }
+
     let window = MainWindow::new()?;
     if let Err(error) = restore_saved_token(&window) {
         window.set_gateway_status(error.into());

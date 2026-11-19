@@ -16,14 +16,15 @@ use std::{
 use url::Url;
 use zeroize::{Zeroize, Zeroizing};
 
-use crate::MainWindow;
+use crate::{MainWindow, oauth_protocol};
 
 #[cfg(target_os = "macos")]
 use std::process::Command as ProcessCommand;
 
 const SERVICE: &str = "app.musicpresence.discord";
 const ACCOUNT: &str = "oauth2-identity-session";
-const REDIRECT_URI: &str = "http://127.0.0.1:49153/oauth/callback";
+const DEFAULT_CLIENT_ID: &str = "1571063796418744412";
+const REDIRECT_URI: &str = "kizzy://oauth2/callback";
 const AUTHORIZE_URL: &str = "https://discord.com/oauth2/authorize";
 const TOKEN_URL: &str = "https://discord.com/api/v10/oauth2/token";
 const USER_URL: &str = "https://discord.com/api/v10/users/@me";
@@ -177,7 +178,11 @@ fn login(
     ui: &slint::Weak<MainWindow>,
 ) -> Result<(Session, ProfileImages), String> {
     set_authorization_url(ui, String::new());
-    let client_id = client_id.trim();
+    let client_id = if client_id.trim().is_empty() {
+        DEFAULT_CLIENT_ID
+    } else {
+        client_id.trim()
+    };
     if client_id.is_empty() || !client_id.bytes().all(|byte| byte.is_ascii_digit()) {
         return Err("Enter the numeric Discord Application ID first.".into());
     }
@@ -187,6 +192,7 @@ fn login(
     listener
         .set_nonblocking(true)
         .map_err(|error| format!("Could not prepare OAuth callback listener: {error}"))?;
+    oauth_protocol::register_handler()?;
 
     let state = random_hex(32)?;
     let verifier = random_hex(32)?;
@@ -289,11 +295,11 @@ fn receive_callback(
         match listener.accept() {
             Ok((mut stream, _)) => match read_callback_request(&mut stream) {
                 Ok(Some(path)) => {
-                    if path != "/oauth/callback" && !path.starts_with("/oauth/callback?") {
+                    if path != "/oauth/relay" && !path.starts_with("/oauth/relay?") {
                         respond(&mut stream, 404, "Not found.")?;
                         continue;
                     }
-                    let result = parse_callback(&path, expected_state);
+                    let result = parse_relay_callback(&path, expected_state);
                     let (status, message) = match &result {
                         Ok(_) => (200, "Discord login complete. You can close this tab."),
                         Err(_) => (400, "Discord login failed. Return to the app for details."),
@@ -381,6 +387,33 @@ fn parse_callback(path: &str, expected_state: &str) -> Result<String, String> {
     }
     code.filter(|value| !value.is_empty())
         .ok_or_else(|| "Discord did not return an authorization code.".into())
+}
+
+fn parse_relay_callback(path: &str, expected_state: &str) -> Result<String, String> {
+    let relay_url = Url::parse(&format!("http://127.0.0.1{path}"))
+        .map_err(|_| "The OAuth callback relay request was invalid.".to_string())?;
+    if relay_url.path() != "/oauth/relay" {
+        return Err("The OAuth callback relay path was invalid.".into());
+    }
+
+    let callback_uri = relay_url
+        .query_pairs()
+        .find_map(|(key, value)| (key == "uri").then(|| value.into_owned()))
+        .ok_or_else(|| "The OAuth callback relay URL was missing.".to_string())?;
+    let callback_url = Url::parse(&callback_uri)
+        .map_err(|_| "Discord returned an invalid OAuth callback URL.".to_string())?;
+    if callback_url.scheme() != "kizzy"
+        || callback_url.host_str() != Some("oauth2")
+        || callback_url.path() != "/callback"
+    {
+        return Err("Discord returned an unexpected OAuth callback URL.".into());
+    }
+
+    let callback_path = format!(
+        "/oauth/callback?{}",
+        callback_url.query().unwrap_or_default()
+    );
+    parse_callback(&callback_path, expected_state)
 }
 
 fn post_form(url: &str, form: &[(&str, &str)]) -> Result<TokenResponse, String> {
@@ -825,7 +858,7 @@ fn set_authorization_url(ui: &slint::Weak<MainWindow>, authorization_url: String
 
 #[cfg(test)]
 mod tests {
-    use super::{Session, decode_png, parse_callback, profile_initials};
+    use super::{Session, decode_png, parse_callback, parse_relay_callback, profile_initials};
 
     #[test]
     fn validates_state_issuer_and_authorization_code() {
@@ -847,6 +880,23 @@ mod tests {
         assert!(
             parse_callback(
                 "/oauth/callback?code=auth-code&state=state-1&iss=https%3A%2F%2Fevil.example",
+                "state-1"
+            )
+            .is_err()
+        );
+    }
+
+    #[test]
+    fn validates_relayed_kizzy_callback() {
+        let relay_path = "/oauth/relay?uri=kizzy%3A%2F%2Foauth2%2Fcallback%3Fcode%3Dauth-code%26state%3Dstate-1%26iss%3Dhttps%253A%252F%252Fdiscord.com";
+        assert_eq!(
+            parse_relay_callback(relay_path, "state-1")
+                .expect("valid Kizzy callback should succeed"),
+            "auth-code"
+        );
+        assert!(
+            parse_relay_callback(
+                "/oauth/relay?uri=https%3A%2F%2Fevil.example%2Fcallback%3Fcode%3Da",
                 "state-1"
             )
             .is_err()
