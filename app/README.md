@@ -94,7 +94,8 @@ Running the workflow manually builds packages without publishing a release.
 
 The Linux x86-64 release includes `.AppImage`, `.deb` and `.rpm` packages.
 macOS ARM64 and x86-64 releases include `.dmg` images. Windows x86-64 is
-distributed as a portable `.zip` containing the executable and this README.
+distributed as portable `.zip` and maximum-compression `.7z` archives containing
+the executable and this README.
 The macOS app and Windows executable are unsigned; macOS may require opening
 the app through Finder's **Open** command to approve it.
 The shared SVG is used for the in-app logo, native window icons where

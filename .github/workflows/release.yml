@@ -143,7 +143,7 @@ jobs:
             -imagekey zlib-level=9 \
             "$assets/music-presence-${GITHUB_REF_NAME}-${ASSET}.dmg"
 
-      - name: Package Windows ZIP
+      - name: Package Windows archives
         if: runner.os == 'Windows'
         env:
           TARGET: ${{ matrix.target }}
@@ -159,6 +159,15 @@ jobs:
           Compress-Archive -Path "$package/*" `
             -DestinationPath "$assets/music-presence-$env:GITHUB_REF_NAME-$env:ASSET.zip" `
             -CompressionLevel Optimal
+          $sevenZip = Join-Path $env:ProgramFiles '7-Zip\7z.exe'
+          if (-not (Test-Path $sevenZip)) {
+            throw "7-Zip executable not found at $sevenZip"
+          }
+          $archive7z = Join-Path $assets "music-presence-$env:GITHUB_REF_NAME-$env:ASSET.7z"
+          & $sevenZip a -t7z -mx=9 -m0=lzma2 -mmt=on $archive7z "$package\*"
+          if ($LASTEXITCODE -ne 0) {
+            throw "7-Zip failed with exit code $LASTEXITCODE"
+          }
 
       - name: Upload packages
         uses: actions/upload-artifact@v7
