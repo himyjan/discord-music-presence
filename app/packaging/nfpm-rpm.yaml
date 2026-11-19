@@ -1,0 +1,34 @@
+name: music-presence
+arch: amd64
+platform: linux
+version: __VERSION__
+release: "1"
+section: sound
+priority: optional
+maintainer: Music Presence contributors
+description: Desktop music presence and Discord Rich Presence
+license: Unspecified
+contents:
+  - src: app/target/x86_64-unknown-linux-gnu/release/music-presence
+    dst: /usr/bin/music-presence
+    file_info:
+      mode: 0755
+  - src: app/packaging/music-presence.desktop
+    dst: /usr/share/applications/music-presence.desktop
+  - src: app/packaging/music-presence.svg
+    dst: /usr/share/icons/hicolor/scalable/apps/music-presence.svg
+  - src: app/README.md
+    dst: /usr/share/doc/music-presence/README.md
+depends:
+  - glibc
+  - fontconfig
+  - libX11
+  - libxcb
+  - libxkbcommon
+  - libxkbcommon-x11
+  - libwayland-client
+  - libwayland-cursor
+  - mesa-libEGL
+  - mesa-libGL
+rpm:
+  group: Applications/Multimedia

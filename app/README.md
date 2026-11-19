@@ -89,13 +89,18 @@ making performance claims.
 ## GitHub releases
 
 Pushing a tag like `slint-v0.1.0` runs the multi-platform release workflow and
-publishes a stable GitHub release with archives for each target below. Running
-the workflow manually builds the archives without publishing a release.
+publishes a stable GitHub release with native packages for each target below.
+Running the workflow manually builds packages without publishing a release.
+
+The Linux x86-64 release includes `.AppImage`, `.deb` and `.rpm` packages.
+macOS ARM64 and x86-64 releases include `.dmg` images. Windows x86-64 is
+distributed as a portable `.zip` containing the executable and this README.
+The macOS app and Windows executable are unsigned; macOS may require opening
+the app through Finder's **Open** command to approve it.
 
 ## Current targets
 
-The project is configured for the platforms currently distributed by Music
-Presence: Windows x86-64, macOS ARM64 and x86-64, and Linux x86-64. The release
-workflow builds on native runners for each listed target. Each build still
-needs runtime and feature validation on its target platform, including the
-platform credential store used for encrypted token persistence.
+The project is configured for Windows x86-64, macOS ARM64 and x86-64, and Linux
+x86-64. The release workflow builds on native runners for each target. Each
+build still needs runtime and feature validation on its target platform,
+including the platform credential store used for encrypted token persistence.

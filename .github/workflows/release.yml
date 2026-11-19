@@ -1,4 +1,4 @@
-name: Slint Preview Release
+name: Slint Release
 
 on:
   push:
@@ -20,22 +20,18 @@ jobs:
           - os: xcode-27
             target: aarch64-apple-darwin
             label: macOS 27 ARM64
-            executable: ""
             asset: macos-arm64
           - os: macos-26-intel
             target: x86_64-apple-darwin
             label: macOS 26 x86-64
-            executable: ""
             asset: macos-x86_64
           - os: windows-2025
             target: x86_64-pc-windows-msvc
             label: Windows x86-64
-            executable: ".exe"
             asset: windows-x86_64
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             target: x86_64-unknown-linux-gnu
             label: Linux x86-64
-            executable: ""
             asset: linux-x86_64
 
     steps:
@@ -54,6 +50,24 @@ jobs:
             libxkbcommon-x11-dev \
             pkg-config
 
+      - name: Install nFPM
+        if: runner.os == 'Linux'
+        run: |
+          set -euo pipefail
+          version=2.49.0
+          archive="nfpm_${version}_Linux_x86_64.tar.gz"
+          base_url="https://github.com/goreleaser/nfpm/releases/download/v${version}"
+          curl --fail --location --silent --show-error --retry 3 \
+            "$base_url/$archive" --output "$RUNNER_TEMP/$archive"
+          curl --fail --location --silent --show-error --retry 3 \
+            "$base_url/checksums.txt" --output "$RUNNER_TEMP/nfpm-checksums.txt"
+          (
+            cd "$RUNNER_TEMP"
+            grep -E "[[:space:]]${archive}$" nfpm-checksums.txt | sha256sum --check
+          )
+          tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" nfpm
+          echo "$RUNNER_TEMP" >> "$GITHUB_PATH"
+
       - name: Install Rust toolchain
         uses: dtolnay/rust-toolchain@stable
         with:
@@ -68,32 +82,74 @@ jobs:
         working-directory: app
         run: cargo build --locked --release --target "${{ matrix.target }}"
 
-      - name: Package release archive
-        shell: bash
+      - name: Package Linux formats
+        if: runner.os == 'Linux'
         env:
-          ASSET: music-presence-${{ github.ref_name }}-${{ matrix.asset }}.tar.gz
-          EXECUTABLE: ${{ matrix.executable }}
           TARGET: ${{ matrix.target }}
+        run: bash app/packaging/package-linux.sh
+
+      - name: Package macOS disk image
+        if: runner.os == 'macOS'
+        env:
+          TARGET: ${{ matrix.target }}
+          ASSET: ${{ matrix.asset }}
+        shell: bash
         run: |
           set -euo pipefail
-          if [[ "$RUNNER_OS" == "Windows" ]]; then
-            runner_temp="$(cygpath -u "$RUNNER_TEMP")"
-          else
-            runner_temp="$RUNNER_TEMP"
-          fi
-          package_root="$runner_temp/package"
-          package_dir="$package_root/music-presence"
-          mkdir -p "$package_dir"
-          cp "app/target/$TARGET/release/music-presence$EXECUTABLE" \
-            "$package_dir/music-presence$EXECUTABLE"
-          cp app/README.md "$package_dir/README.md"
-          tar -czf "$runner_temp/$ASSET" -C "$package_root" music-presence
+          version="$(awk -F '"' '/^version = / { print $2; exit }' app/Cargo.toml)"
+          assets="$RUNNER_TEMP/release-assets"
+          app_bundle="$RUNNER_TEMP/Music Presence.app"
+          staging="$RUNNER_TEMP/dmg-staging"
+          mkdir -p "$assets" "$app_bundle/Contents/MacOS" "$app_bundle/Contents/Resources" "$staging"
+          cp "app/target/$TARGET/release/music-presence" "$app_bundle/Contents/MacOS/music-presence"
+          cp app/README.md "$app_bundle/Contents/Resources/README.md"
+          cat > "$app_bundle/Contents/Info.plist" <<PLIST
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key><string>music-presence</string>
+            <key>CFBundleIdentifier</key><string>com.musicpresence.desktop</string>
+            <key>CFBundleName</key><string>Music Presence</string>
+            <key>CFBundleDisplayName</key><string>Music Presence</string>
+            <key>CFBundlePackageType</key><string>APPL</string>
+            <key>CFBundleShortVersionString</key><string>$version</string>
+            <key>CFBundleVersion</key><string>$version</string>
+            <key>NSHighResolutionCapable</key><true/>
+          </dict>
+          </plist>
+          PLIST
+          cp -R "$app_bundle" "$staging/"
+          ln -s /Applications "$staging/Applications"
+          hdiutil create \
+            -volname "Music Presence" \
+            -srcfolder "$staging" \
+            -ov \
+            -format UDZO \
+            "$assets/music-presence-${GITHUB_REF_NAME}-${ASSET}.dmg"
 
-      - name: Upload build archive
+      - name: Package Windows ZIP
+        if: runner.os == 'Windows'
+        env:
+          TARGET: ${{ matrix.target }}
+          ASSET: ${{ matrix.asset }}
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $assets = Join-Path $env:RUNNER_TEMP 'release-assets'
+          $package = Join-Path $env:RUNNER_TEMP 'music-presence'
+          New-Item -ItemType Directory -Force -Path $assets, $package | Out-Null
+          Copy-Item "app/target/$env:TARGET/release/music-presence.exe" $package
+          Copy-Item app/README.md $package
+          Compress-Archive -Path "$package/*" `
+            -DestinationPath "$assets/music-presence-$env:GITHUB_REF_NAME-$env:ASSET.zip" `
+            -CompressionLevel Optimal
+
+      - name: Upload packages
         uses: actions/upload-artifact@v7
         with:
           name: release-${{ matrix.asset }}
-          path: ${{ runner.temp }}/music-presence-${{ github.ref_name }}-${{ matrix.asset }}.tar.gz
+          path: ${{ runner.temp }}/release-assets/*
           if-no-files-found: error
           retention-days: 3
 
@@ -106,7 +162,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Download build archives
+      - name: Download packages
         uses: actions/download-artifact@v7
         with:
           path: dist
@@ -121,5 +177,5 @@ jobs:
           prerelease: false
           make_latest: true
           generate_release_notes: true
-          files: dist/*.tar.gz
+          files: dist/*
           fail_on_unmatched_files: true

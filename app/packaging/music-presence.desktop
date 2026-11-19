@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Music Presence
+Comment=Desktop music presence and Discord Rich Presence
+Exec=music-presence %u
+TryExec=music-presence
+Icon=music-presence
+Terminal=false
+Categories=AudioVideo;Player;
+MimeType=x-scheme-handler/kizzy;
