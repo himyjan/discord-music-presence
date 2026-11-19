@@ -265,6 +265,25 @@ fn score(media: &DetectedMedia) -> u32 {
     value
 }
 
+#[cfg(any(target_os = "linux", test))]
+fn prefer_playing_media(
+    candidates: impl IntoIterator<Item = DetectedMedia>,
+) -> Option<DetectedMedia> {
+    let mut paused_session = None;
+    for candidate in candidates {
+        if candidate.playing {
+            return Some(candidate);
+        }
+        paused_session.get_or_insert(candidate);
+    }
+    paused_session
+}
+
+#[cfg(any(target_os = "linux", test))]
+fn mpris_duration_seconds(microseconds: i64) -> u64 {
+    (microseconds / 1_000_000).max(0) as u64
+}
+
 fn run(program: &str, args: &[&str]) -> Option<String> {
     let output = ProcessCommand::new(program).args(args).output().ok()?;
     if !output.status.success() {
@@ -296,40 +315,93 @@ fn osascript(script: &str) -> Option<String> {
 
 #[cfg(target_os = "macos")]
 fn native_now_playing() -> Option<DetectedMedia> {
-    use objc2_foundation::{NSNumber, NSString};
-    use objc2_media_player::MPNowPlayingInfoCenter;
+    use block2::{Block, RcBlock};
+    use dispatch2::{DispatchQoS, DispatchQueue, GlobalQueueIdentifier};
+    use objc2::runtime::NSObject;
+    use objc2_foundation::{NSDictionary, NSNumber, NSString};
+    use std::ffi::c_void;
+    use std::sync::{OnceLock, mpsc};
 
-    let center = unsafe { MPNowPlayingInfoCenter::defaultCenter() };
-    let info = unsafe { center.nowPlayingInfo() }?;
+    type GetNowPlayingInfo = unsafe extern "C" fn(*mut c_void, *mut Block<dyn Fn(*mut c_void)>);
 
-    let get_string = |key: &str| -> Option<String> {
-        let key = NSString::from_str(key);
-        let value = info.objectForKey(&key)?;
-        value.downcast_ref::<NSString>().map(|text| text.to_string())
+    static MEDIA_REMOTE: OnceLock<Option<libloading::Library>> = OnceLock::new();
+    let library = MEDIA_REMOTE.get_or_init(|| unsafe {
+        libloading::Library::new(
+            "/System/Library/PrivateFrameworks/MediaRemote.framework/MediaRemote",
+        )
+        .ok()
+    });
+    let library = library.as_ref()?;
+    let get_info = unsafe {
+        library
+            .get::<GetNowPlayingInfo>(b"MRMediaRemoteGetNowPlayingInfo\0")
+            .ok()?
     };
-    let get_number = |key: &str| -> Option<f64> {
-        let key = NSString::from_str(key);
-        let value = info.objectForKey(&key)?;
-        value.downcast_ref::<NSNumber>().map(|number| number.as_f64())
-    };
 
-    let title = clean_title(&get_string("title").unwrap_or_default());
+    let (sender, receiver) = mpsc::sync_channel(1);
+    let callback: RcBlock<dyn Fn(*mut c_void)> = RcBlock::new(move |dictionary: *mut c_void| {
+        if dictionary.is_null() {
+            let _ = sender.send(None);
+            return;
+        }
+
+        let info = unsafe { &*dictionary.cast::<NSDictionary<NSString, NSObject>>() };
+        let get_string = |keys: &[&str]| -> String {
+            keys.iter()
+                .find_map(|key| {
+                    let key = NSString::from_str(key);
+                    info.objectForKey(&key)
+                        .and_then(|value| value.downcast_ref::<NSString>().map(|s| s.to_string()))
+                })
+                .unwrap_or_default()
+        };
+        let get_number = |keys: &[&str]| -> Option<f64> {
+            keys.iter().find_map(|key| {
+                let key = NSString::from_str(key);
+                info.objectForKey(&key)
+                    .and_then(|value| value.downcast_ref::<NSNumber>().map(|n| n.as_f64()))
+            })
+        };
+        let snapshot = (
+            get_string(&["kMRMediaRemoteNowPlayingInfoTitle", "title"]),
+            get_string(&["kMRMediaRemoteNowPlayingInfoArtist", "artist"]),
+            get_string(&["kMRMediaRemoteNowPlayingInfoAlbum", "albumTitle", "album"]),
+            get_number(&["kMRMediaRemoteNowPlayingInfoDuration", "playbackDuration"])
+                .unwrap_or(0.0),
+            get_number(&["kMRMediaRemoteNowPlayingInfoElapsedTime", "elapsedTime"]).unwrap_or(0.0),
+            get_number(&["kMRMediaRemoteNowPlayingInfoPlaybackRate", "playbackRate"])
+                .unwrap_or(0.0),
+        );
+        let _ = sender.send(Some(snapshot));
+    });
+    let queue = DispatchQueue::global_queue(GlobalQueueIdentifier::QualityOfService(
+        DispatchQoS::UserInitiated,
+    ));
+    unsafe {
+        get_info(
+            dispatch2::DispatchRetained::as_ptr(&queue).as_ptr().cast(),
+            RcBlock::as_ptr(&callback),
+        );
+    }
+
+    let (raw_title, artist, album, duration, position, playback_rate) =
+        receiver.recv_timeout(Duration::from_millis(750)).ok()??;
+    let title = clean_title(&raw_title);
     if title.is_empty() {
         return None;
     }
-    let duration = get_number("playbackDuration").unwrap_or(0.0).max(0.0) as u64;
-    let position = get_number("elapsedTime").unwrap_or(0.0).max(0.0) as u64;
-    let playing = get_number("playbackRate").unwrap_or(0.0) > 0.0;
+    let duration = duration.max(0.0) as u64;
+    let position = position.max(0.0) as u64;
 
     Some(DetectedMedia {
         source: "Now Playing".into(),
         app: "System".into(),
         title,
-        artist: get_string("artist").unwrap_or_default(),
-        album: get_string("albumTitle").unwrap_or_default(),
+        artist,
+        album,
         duration_seconds: duration,
         position_seconds: position.min(duration),
-        playing,
+        playing: playback_rate > 0.0,
         ..DetectedMedia::default()
     })
 }
@@ -353,7 +425,15 @@ fn native_now_playing() -> Option<DetectedMedia> {
     }
     let artist = properties
         .Artist()
+        .ok()
         .map(|value| value.to_string_lossy())
+        .filter(|value| !value.is_empty())
+        .or_else(|| {
+            properties
+                .AlbumArtist()
+                .ok()
+                .map(|value| value.to_string_lossy())
+        })
         .unwrap_or_default();
     let album = properties
         .AlbumTitle()
@@ -420,49 +500,68 @@ fn native_now_playing() -> Option<DetectedMedia> {
         .call_method(Some("org.freedesktop.DBus"), "/org/freedesktop/DBus", Some("org.freedesktop.DBus"), "ListNames", &())
         .ok()?;
     let names: Vec<String> = names.body().deserialize().ok()?;
-    let service = names
+    let mut candidates = Vec::new();
+    for service in names
         .into_iter()
-        .find(|name| name.starts_with("org.mpris.MediaPlayer2."))?;
+        .filter(|name| name.starts_with("org.mpris.MediaPlayer2."))
+    {
+        let Ok(proxy) = MprisPlayerProxyBlocking::new(&connection, service.as_str()) else {
+            continue;
+        };
+        let Ok(metadata) = proxy.metadata() else {
+            continue;
+        };
+        let Ok(dict) = metadata.downcast_ref::<zvariant::Dict<'_, '_>>() else {
+            continue;
+        };
+        let lookup = |key: &str| -> Option<String> {
+            let value = dict.get::<&str, Value<'_>>(&key).ok().flatten()?;
+            match value {
+                Value::Str(text) => Some(text.to_string()),
+                Value::I64(number) => Some(number.to_string()),
+                Value::U64(number) => Some(number.to_string()),
+                Value::Array(array) => array
+                    .iter()
+                    .find_map(|value| value.downcast_ref::<String>().ok()),
+                _ => None,
+            }
+        };
 
-    let proxy = MprisPlayerProxyBlocking::new(&connection, service.as_str()).ok()?;
-    let metadata = proxy.metadata().ok()?;
-    let dict = metadata.downcast_ref::<zvariant::Dict<'_, '_>>().ok()?;
-    let lookup = |key: &str| -> Option<String> {
-        let value = dict.get::<&str, Value<'_>>(&key).ok().flatten()?;
-        match value {
-            Value::Str(text) => Some(text.to_string()),
-            Value::Array(array) => array
-                .iter()
-                .find_map(|value| value.downcast_ref::<String>().ok()),
-            _ => None,
+        let title = clean_title(&lookup("xesam:title").unwrap_or_default());
+        if title.is_empty() {
+            continue;
         }
-    };
-
-    let title = clean_title(&lookup("xesam:title").unwrap_or_default());
-    if title.is_empty() {
-        return None;
+        let duration = lookup("mpris:length")
+            .and_then(|value| value.parse::<i64>().ok())
+            .map(mpris_duration_seconds)
+            .unwrap_or(0);
+        let position = proxy.position().unwrap_or(0).max(0) as u64 / 1_000_000;
+        let playback_status = proxy.playback_status().unwrap_or_default();
+        if playback_status != "Playing" && playback_status != "Paused" {
+            continue;
+        }
+        let playing = playback_status == "Playing";
+        let artist = lookup("xesam:artist")
+            .or_else(|| lookup("xesam:albumArtist"))
+            .unwrap_or_default();
+        let album = lookup("xesam:album").unwrap_or_default();
+        let media = DetectedMedia {
+            source: "Now Playing".into(),
+            app: service
+                .trim_start_matches("org.mpris.MediaPlayer2.")
+                .to_string(),
+            title,
+            artist,
+            album,
+            artwork_url: lookup("mpris:artUrl").unwrap_or_default(),
+            duration_seconds: duration,
+            position_seconds: position.min(duration),
+            playing,
+            ..DetectedMedia::default()
+        };
+        candidates.push(media);
     }
-    let duration = lookup("mpris:length")
-        .and_then(|value| value.parse::<i64>().ok())
-        .map(|micros| (micros / 1_000_000).max(0) as u64)
-        .unwrap_or(0);
-    let position = proxy.position().unwrap_or(0).max(0) as u64 / 1_000_000;
-    let playing = proxy.playback_status().map(|s| s == "Playing").unwrap_or(false);
-
-    Some(DetectedMedia {
-        source: "Now Playing".into(),
-        app: service
-            .trim_start_matches("org.mpris.MediaPlayer2.")
-            .to_string(),
-        title,
-        artist: lookup("xesam:artist").unwrap_or_default(),
-        album: lookup("xesam:album").unwrap_or_default(),
-        artwork_url: lookup("mpris:artUrl").unwrap_or_default(),
-        duration_seconds: duration,
-        position_seconds: position.min(duration),
-        playing,
-        ..DetectedMedia::default()
-    })
+    prefer_playing_media(candidates)
 }
 
 #[cfg(not(any(target_os = "macos", target_os = "windows", target_os = "linux")))]
@@ -662,7 +761,9 @@ fn player_apps() -> Option<DetectedMedia> {
 
 #[cfg(test)]
 mod tests {
-    use super::{detect_all, score, Settings};
+    use super::{
+        detect_all, mpris_duration_seconds, prefer_playing_media, score, Settings,
+    };
     use crate::presence::DetectedMedia;
 
     #[test]
@@ -690,5 +791,32 @@ mod tests {
             ..DetectedMedia::default()
         };
         assert!(score(&linked) > score(&bare));
+    }
+
+    #[test]
+    fn playing_mpris_session_takes_precedence_over_paused_session() {
+        let paused = DetectedMedia {
+            app: "paused-player".into(),
+            title: "Paused track".into(),
+            playing: false,
+            ..DetectedMedia::default()
+        };
+        let playing = DetectedMedia {
+            app: "playing-player".into(),
+            title: "Playing track".into(),
+            playing: true,
+            ..DetectedMedia::default()
+        };
+
+        assert_eq!(
+            prefer_playing_media([paused, playing.clone()]),
+            Some(playing)
+        );
+    }
+
+    #[test]
+    fn mpris_duration_converts_microseconds_and_clamps_negative_values() {
+        assert_eq!(mpris_duration_seconds(125_000_000), 125);
+        assert_eq!(mpris_duration_seconds(-1), 0);
     }
 }

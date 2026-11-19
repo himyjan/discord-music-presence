@@ -18,9 +18,6 @@ use zeroize::{Zeroize, Zeroizing};
 
 use crate::{MainWindow, oauth_protocol};
 
-#[cfg(target_os = "macos")]
-use std::process::Command as ProcessCommand;
-
 const SERVICE: &str = "app.musicpresence.discord";
 const ACCOUNT: &str = "oauth2-identity-session";
 const DEFAULT_CLIENT_ID: &str = "1571063796418744412";
@@ -34,23 +31,9 @@ const MAX_PROFILE_IMAGE_BYTES: u64 = 4 * 1024 * 1024;
 const MAX_PROFILE_IMAGE_DIMENSION: u32 = 2048;
 
 pub fn open_authorization_url(url: &str) -> Result<(), String> {
-    #[cfg(target_os = "macos")]
-    {
-        let status = ProcessCommand::new("/usr/bin/open")
-            .arg(url)
-            .status()
-            .map_err(|error| format!("Could not launch the macOS URL handler: {error}"))?;
-        if status.success() {
-            Ok(())
-        } else {
-            Err(format!("The macOS URL handler exited with {status}."))
-        }
-    }
-
-    #[cfg(not(target_os = "macos"))]
-    {
-        webbrowser::open(url).map_err(|error| format!("Could not open the system browser: {error}"))
-    }
+    webbrowser::open(url).map(|_| ()).map_err(|error| {
+        format!("Could not open the system browser automatically: {error}")
+    })
 }
 
 #[derive(Serialize, Deserialize)]

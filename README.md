@@ -89,6 +89,10 @@ automatically detect playback from:
 Press **Detect now** for a single scan, or enable **Auto-detect** to keep the
 connected Discord activity in sync. When a full tab URL is unavailable, a
 canonical search link is generated from the window title instead.
+Native session detection uses Windows SMTC and Linux MPRIS. On macOS it reads
+the system Now Playing session through Apple's private MediaRemote framework;
+availability can vary by macOS version and by whether the player publishes
+Now Playing metadata.
 
 Detected links are also attached to the Rich Presence **details** and **state**
 text and to the large image asset (Discord Social SDK field URLs), so the title,

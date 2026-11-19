@@ -316,6 +316,7 @@ export component MainWindow inherits Window {
     in-out property<string> gateway-status: "Not logged in";
     in-out property<bool> gateway-connected: false;
     in-out property<bool> gateway-connecting: false;
+    in-out property<int> connection-method-index: 0;
     in-out property<string> oauth-status: "Not signed in";
     in-out property<bool> oauth-connected: false;
     in-out property<bool> oauth-connecting: false;
@@ -729,9 +730,24 @@ export component MainWindow inherits Window {
                             spacing: 18px;
                             Card {
                                 VerticalLayout { spacing: 10px;
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Activity connection method"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Desktop Rich Presence is the default and needs no token. Bot Gateway is optional and requires a bot token."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    ComboBox {
+                                        model: [
+                                            AppLocalization.translate(AppLocalization.current_locale, "Discord desktop Rich Presence"),
+                                            AppLocalization.translate(AppLocalization.current_locale, "Discord bot Gateway")
+                                        ];
+                                        current-index <=> root.connection-method-index;
+                                        enabled: !root.connected && !root.connecting && !root.gateway-connected && !root.gateway-connecting;
+                                    }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Discord Application ID"); value <=> root.application-id; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Numeric Discord application ID"); enabled: !root.connected && !root.connecting && !root.oauth-connecting; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "This ID is used for desktop Rich Presence and browser OAuth. Leave the default to use the built-in OAuth application."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                }
+                            }
+                            if (root.connection-method-index == 0): Card {
+                                VerticalLayout { spacing: 10px;
                                     Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord desktop Rich Presence"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Uses local IPC and a public Application ID — no Discord login required."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Application ID"); value <=> root.application-id; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Numeric Discord application ID"); enabled: !root.connected && !root.connecting; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Connects to the running Discord desktop app through local IPC. No browser login or account token is needed to publish activity."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                                     HorizontalLayout {
                                         spacing: 10px;
                                         if (!root.connected && !root.connecting): PrimaryButton {
@@ -755,11 +771,10 @@ export component MainWindow inherits Window {
                                     }
                                 }
                             }
-                            Card {
+                            if (root.connection-method-index == 1): Card {
                                 VerticalLayout { spacing: 10px;
                                     Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord bot Gateway"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Logs in as a bot and changes the bot's activity. Tokens are encrypted and stored in the OS credential store."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Use personal-account OAuth2 instead"); clicked => { root.navigate("Profile"); } }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Optional bot-only connection. Browser OAuth signs in for profile details and cannot replace a bot token or change a personal account's activity."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                                     Field { label: AppLocalization.translate(AppLocalization.current_locale, "Bot token"); value <=> root.gateway-token; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Discord bot token"); enabled: !root.gateway-connected && !root.gateway-connecting; }
                                     ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Remember bot token (encrypted)"); checked <=> root.remember-gateway-token; toggled => {} }
                                     HorizontalLayout {
@@ -783,6 +798,35 @@ export component MainWindow inherits Window {
                                         }
                                         Text { text: root.gateway-status; color: root.gateway-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
                                     }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord account browser sign-in"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Opens Discord in your system browser and loads your account profile using OAuth. This is separate from the selected activity connection method."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        if (!root.oauth-has-session && !root.oauth-connecting): PrimaryButton {
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Sign in with Discord");
+                                            clicked => {
+                                                root.oauth-connecting = true;
+                                                root.oauth-status = "Opening browser…";
+                                                root.oauth-login-requested();
+                                            }
+                                        }
+                                        if (root.oauth-connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Cancel"); clicked => { root.oauth-status = "Canceling…"; root.oauth-cancel-requested(); } }
+                                        if (root.oauth-connecting && root.oauth-authorize-url != ""): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open sign-in link"); clicked => { root.oauth-open-authorize-url-requested(); } }
+                                        if (root.oauth-has-session && !root.oauth-connecting): SecondaryButton {
+                                            label: AppLocalization.translate(AppLocalization.current_locale, "Logout");
+                                            clicked => {
+                                                root.oauth-connecting = true;
+                                                root.oauth-status = "Signing out…";
+                                                root.oauth-logout-requested();
+                                            }
+                                        }
+                                        Text { text: root.oauth-status; color: root.oauth-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
+                                    }
+                                    if (root.oauth-connecting && root.oauth-authorize-url != ""): Field { label: AppLocalization.translate(AppLocalization.current_locale, "Sign-in link"); value <=> root.oauth-authorize-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, ""); }
                                 }
                             }
                         }

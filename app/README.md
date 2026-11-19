@@ -8,16 +8,20 @@ the system tray and updates are not implemented.
 
 ## Discord connections
 
+- **Activity connection method:** The Connections page defaults to Desktop
+  Rich Presence and lets you switch to the optional Bot Gateway method.
 - **Desktop Rich Presence:** Connects through Discord's local IPC using a
   public Application ID. Discord desktop must be running; no account token or
-  login is required.
-- **Bot Gateway:** Logs in as a Discord bot and updates the bot's activity.
+  browser login is required to publish activity.
+- **Bot Gateway:** Select this method to log in as a Discord bot and update the
+  bot's activity.
   This does not change a user's personal profile. Login and logout are
   supported. If "Remember bot token" is enabled, AES-256-GCM encrypted token
   data and its key are stored separately in the operating system credential
   store; there is no plaintext fallback.
-- **OAuth2 account sign-in:** Opens Discord in the system browser and uses
-  authorization code with PKCE and the `identify` scope to show a profile
+- **OAuth2 account sign-in:** Available directly from Connections and Profile.
+  It opens Discord in the system browser and uses authorization code with PKCE
+  and the `identify` scope to show a profile
   preview with the display name, username, user ID, avatar and banner. It uses
   Kizzy Enhanced's OAuth Client ID by default; enter your own Client ID to
   override it. The redirect URI is `kizzy://oauth2/callback`. On first sign-in,
