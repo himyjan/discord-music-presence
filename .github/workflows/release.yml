@@ -156,12 +156,14 @@ jobs:
           New-Item -ItemType Directory -Force -Path $assets, $package | Out-Null
           Copy-Item "app/target/$env:TARGET/release/music-presence.exe" $package
           Copy-Item app/README.md $package
-          Compress-Archive -Path "$package/*" `
-            -DestinationPath "$assets/music-presence-$env:GITHUB_REF_NAME-$env:ASSET.zip" `
-            -CompressionLevel Optimal
           $sevenZip = Join-Path $env:ProgramFiles '7-Zip\7z.exe'
           if (-not (Test-Path $sevenZip)) {
             throw "7-Zip executable not found at $sevenZip"
+          }
+          $archiveZip = Join-Path $assets "music-presence-$env:GITHUB_REF_NAME-$env:ASSET.zip"
+          & $sevenZip a -tzip -mx=9 -mm=Deflate $archiveZip "$package\*"
+          if ($LASTEXITCODE -ne 0) {
+            throw "7-Zip ZIP compression failed with exit code $LASTEXITCODE"
           }
           $archive7z = Join-Path $assets "music-presence-$env:GITHUB_REF_NAME-$env:ASSET.7z"
           & $sevenZip a -t7z -mx=9 -m0=lzma2 -mmt=on $archive7z "$package\*"
