@@ -10,6 +10,130 @@ const TEXT_LIMIT: usize = 128;
 const BUTTON_LABEL_LIMIT: usize = 32;
 const BUTTON_URL_LIMIT: usize = 512;
 
+/// A snapshot of what the desktop detector currently sees playing.
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct DetectedMedia {
+    /// Detection backend that produced this snapshot ("Now Playing", "Browser", "Spotify", ...).
+    pub source: String,
+    /// Application or browser that owns the playback.
+    pub app: String,
+    pub title: String,
+    pub artist: String,
+    pub album: String,
+    pub duration_seconds: u64,
+    pub position_seconds: u64,
+    pub playing: bool,
+    /// Human-readable status message for the UI.
+    pub status: String,
+    /// Canonical item URL (video / track), when known.
+    pub video_url: String,
+    /// Canonical channel / artist URL, when known.
+    pub channel_url: String,
+    /// Short site label used for the activity name and button text.
+    pub site: String,
+    /// Whether the detected item is video (Watching) rather than audio (Listening).
+    pub watching: bool,
+}
+
+impl DetectedMedia {
+    pub fn is_empty(&self) -> bool {
+        self.title.trim().is_empty() && self.artist.trim().is_empty()
+    }
+}
+
+/// Build a Discord activity from an auto-detected media snapshot.
+///
+/// `activity_type_override` accepts "Listening" / "Watching"; anything else
+/// falls back to the media's own `watching` hint.
+pub fn presence_from_detected(
+    media: &DetectedMedia,
+    activity_type_override: &str,
+    show_album: bool,
+) -> Result<PresenceDraft, String> {
+    if media.title.trim().is_empty() && media.artist.trim().is_empty() {
+        return Err("No media detected yet.".into());
+    }
+
+    let name = if !media.site.trim().is_empty() {
+        media.site.trim().to_string()
+    } else if !media.app.trim().is_empty() {
+        media.app.trim().to_string()
+    } else {
+        "Music Presence".to_string()
+    };
+
+    let mut state_parts = Vec::new();
+    if !media.artist.trim().is_empty() {
+        state_parts.push(media.artist.trim().to_string());
+    }
+    if show_album && !media.album.trim().is_empty() {
+        state_parts.push(media.album.trim().to_string());
+    }
+    if !media.playing {
+        state_parts.push("Paused".to_string());
+    }
+    let state = state_parts.join(" · ");
+
+    let activity_type = match activity_type_override {
+        "Listening" => 2,
+        "Watching" => 3,
+        "Playing" => 0,
+        _ if media.watching => 3,
+        _ => 2,
+    };
+
+    let (button1_label, button1_url) = if media.video_url.trim().is_empty() {
+        (String::new(), String::new())
+    } else {
+        let label = if media.site.eq_ignore_ascii_case("youtube music") {
+            "Open in YouTube Music".to_string()
+        } else if media.site.eq_ignore_ascii_case("spotify") {
+            "Open in Spotify".to_string()
+        } else if media.site.is_empty() {
+            "Open media".to_string()
+        } else {
+            format!("Open in {}", media.site)
+        };
+        (label, media.video_url.trim().to_string())
+    };
+
+    let (button2_label, button2_url) = if media.channel_url.trim().is_empty() {
+        (String::new(), String::new())
+    } else {
+        let label = if media.watching {
+            "Visit channel"
+        } else {
+            "View artist"
+        };
+        (label.to_string(), media.channel_url.trim().to_string())
+    };
+
+    let draft = PresenceDraft {
+        name,
+        details: media.title.trim().to_string(),
+        state,
+        activity_type,
+        playing: media.playing,
+        position_seconds: media.position_seconds,
+        duration_seconds: media.duration_seconds,
+        large_image: String::new(),
+        large_text: String::new(),
+        button1_label: truncate_button_label(button1_label),
+        button1_url,
+        button2_label: truncate_button_label(button2_label),
+        button2_url,
+    };
+    draft.validate()?;
+    Ok(draft)
+}
+
+fn truncate_button_label(label: String) -> String {
+    if label.chars().count() <= 32 {
+        return label;
+    }
+    label.chars().take(32).collect()
+}
+
 #[derive(Clone, Debug)]
 pub struct PresenceDraft {
     pub name: String,
@@ -226,7 +350,7 @@ fn nonempty(value: &str) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::{PresenceDraft, youtube_music_search_url};
+    use super::{DetectedMedia, PresenceDraft, presence_from_detected, youtube_music_search_url};
 
     fn draft() -> PresenceDraft {
         PresenceDraft {
@@ -261,6 +385,36 @@ mod tests {
         let mut invalid = draft();
         invalid.duration_seconds = u64::MAX;
         assert!(invalid.validate().is_err());
+    }
+
+    #[test]
+    fn detected_media_builds_links_and_watching_type() {
+        let media = DetectedMedia {
+            source: "Browser".into(),
+            app: "Chrome".into(),
+            title: "Never Gonna Give You Up".into(),
+            artist: "Rick Astley".into(),
+            album: "Whenever You Need Somebody".into(),
+            duration_seconds: 212,
+            position_seconds: 30,
+            playing: true,
+            video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ".into(),
+            channel_url: "https://www.youtube.com/@RickAstley".into(),
+            site: "YouTube".into(),
+            watching: true,
+            status: "ok".into(),
+        };
+        let presence = presence_from_detected(&media, "Auto", true).expect("valid presence");
+        assert_eq!(presence.name, "YouTube");
+        assert_eq!(presence.activity_type, 3);
+        assert_eq!(presence.state, "Rick Astley · Whenever You Need Somebody");
+        assert_eq!(presence.button1_label, "Open in YouTube");
+        assert_eq!(presence.button2_label, "Visit channel");
+        assert!(presence.button1_url.contains("dQw4w9WgXcQ"));
+
+        let listening = presence_from_detected(&media, "Listening", false).unwrap();
+        assert_eq!(listening.activity_type, 2);
+        assert_eq!(listening.state, "Rick Astley");
     }
 
     #[test]
