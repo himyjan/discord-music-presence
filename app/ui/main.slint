@@ -291,6 +291,10 @@ export component MainWindow inherits Window {
     in-out property<bool> media-playing: true;
     in-out property<string> large-image: "";
     in-out property<string> large-text: "";
+    in-out property<string> details-url: "";
+    in-out property<string> state-url: "";
+    in-out property<string> large-url: "";
+    in-out property<string> small-url: "";
     in-out property<string> button1-label: "";
     in-out property<string> button1-url: "";
     in-out property<string> button2-label: "";
@@ -554,8 +558,20 @@ export component MainWindow inherits Window {
                                     Text { text: "Artwork"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
                                     HorizontalLayout {
                                         spacing: 8px;
-                                        Field { label: "Large image key"; value <=> root.large-image; placeholder: "Optional asset key"; }
+                                        Field { label: "Large image key or image URL"; value <=> root.large-image; placeholder: "Optional asset key"; }
                                         Field { label: "Hover text"; value <=> root.large-text; placeholder: "Optional"; }
+                                    }
+                                    Text { text: "Clickable field URLs (Discord Social SDK)"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    Text { text: "Makes the details line, state line and image assets clickable in Discord."; color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Details URL"; value <=> root.details-url; placeholder: "https://…"; }
+                                        Field { label: "State URL"; value <=> root.state-url; placeholder: "https://…"; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Large image URL"; value <=> root.large-url; placeholder: "https://…"; }
+                                        Field { label: "Small image URL"; value <=> root.small-url; placeholder: "https://…"; }
                                     }
                                     Text { text: "Buttons"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
                                     HorizontalLayout {

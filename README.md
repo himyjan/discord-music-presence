@@ -90,6 +90,11 @@ Press **Detect now** for a single scan, or enable **Auto-detect** to keep the
 connected Discord activity in sync. When a full tab URL is unavailable, a
 canonical search link is generated from the window title instead.
 
+Detected links are also attached to the Rich Presence **details** and **state**
+text and to the large image asset (Discord Social SDK field URLs), so the title,
+artist/channel and artwork are clickable in Discord. The **Activity** page has
+matching fields for manual activities.
+
 ### Keep optional processing off
 
 Animated artwork is disabled by default. Leave it disabled if you do not need

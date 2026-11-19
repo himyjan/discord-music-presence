@@ -454,6 +454,7 @@ fn native_now_playing() -> Option<DetectedMedia> {
         title,
         artist: lookup("xesam:artist").unwrap_or_default(),
         album: lookup("xesam:album").unwrap_or_default(),
+        artwork_url: lookup("mpris:artUrl").unwrap_or_default(),
         duration_seconds: duration,
         position_seconds: position.min(duration),
         playing,

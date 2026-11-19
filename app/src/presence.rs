@@ -29,6 +29,8 @@ pub struct DetectedMedia {
     pub video_url: String,
     /// Canonical channel / artist URL, when known.
     pub channel_url: String,
+    /// External artwork image URL, when the backend exposes one.
+    pub artwork_url: String,
     /// Short site label used for the activity name and button text.
     pub site: String,
     /// Whether the detected item is video (Watching) rather than audio (Listening).
@@ -116,8 +118,16 @@ pub fn presence_from_detected(
         playing: media.playing,
         position_seconds: media.position_seconds,
         duration_seconds: media.duration_seconds,
-        large_image: String::new(),
-        large_text: String::new(),
+        large_image: media.artwork_url.trim().to_string(),
+        large_text: media.album.trim().to_string(),
+        details_url: media.video_url.trim().to_string(),
+        state_url: media.channel_url.trim().to_string(),
+        large_url: if media.artwork_url.trim().is_empty() {
+            String::new()
+        } else {
+            media.video_url.trim().to_string()
+        },
+        small_url: String::new(),
         button1_label: truncate_button_label(button1_label),
         button1_url,
         button2_label: truncate_button_label(button2_label),
@@ -145,6 +155,14 @@ pub struct PresenceDraft {
     pub duration_seconds: u64,
     pub large_image: String,
     pub large_text: String,
+    /// Clickable URL for the `details` line (Discord Social SDK field URLs).
+    pub details_url: String,
+    /// Clickable URL for the `state` line.
+    pub state_url: String,
+    /// Clickable URL for the large image asset.
+    pub large_url: String,
+    /// Clickable URL for the small image asset.
+    pub small_url: String,
     pub button1_label: String,
     pub button1_url: String,
     pub button2_label: String,
@@ -168,6 +186,10 @@ impl PresenceDraft {
 
         validate_button(&self.button1_label, &self.button1_url)?;
         validate_button(&self.button2_label, &self.button2_url)?;
+        validate_link_url("Details URL", &self.details_url)?;
+        validate_link_url("State URL", &self.state_url)?;
+        validate_link_url("Large image URL", &self.large_url)?;
+        validate_link_url("Small image URL", &self.small_url)?;
 
         if self.position_seconds > self.duration_seconds && self.duration_seconds > 0 {
             return Err("Playback position cannot exceed the track duration.".into());
@@ -201,15 +223,26 @@ impl PresenceDraft {
         if !self.details.trim().is_empty() {
             activity = activity.details(self.details.trim());
         }
+        if !self.details_url.trim().is_empty() {
+            activity = activity.details_url(self.details_url.trim());
+        }
         if !self.state.trim().is_empty() {
             activity = activity.state(self.state.trim());
         }
+        if !self.state_url.trim().is_empty() {
+            activity = activity.state_url(self.state_url.trim());
+        }
         if !self.large_image.trim().is_empty() {
-            activity = activity.assets(
-                Assets::new()
-                    .large_image(self.large_image.trim())
-                    .large_text(self.large_text.trim()),
-            );
+            let mut assets = Assets::new()
+                .large_image(self.large_image.trim())
+                .large_text(self.large_text.trim());
+            if !self.large_url.trim().is_empty() {
+                assets = assets.large_url(self.large_url.trim());
+            }
+            if !self.small_url.trim().is_empty() {
+                assets = assets.small_url(self.small_url.trim());
+            }
+            activity = activity.assets(assets);
         }
 
         let buttons = [
@@ -267,10 +300,10 @@ impl PresenceDraft {
         let assets = (!self.large_image.trim().is_empty()).then(|| ActivityAssets {
             large_image: Some(self.large_image.trim().to_owned()),
             large_text: nonempty(&self.large_text),
-            large_url: None,
+            large_url: nonempty(&self.large_url),
             small_image: None,
             small_text: None,
-            small_url: None,
+            small_url: nonempty(&self.small_url),
             invite_cover_image: None,
         });
 
@@ -280,7 +313,7 @@ impl PresenceDraft {
             buttons,
             created_at: None,
             details: nonempty(&self.details),
-            details_url: None,
+            details_url: nonempty(&self.details_url),
             emoji: None,
             flags: None,
             id: None,
@@ -290,7 +323,7 @@ impl PresenceDraft {
             party: None,
             secrets: None,
             state: nonempty(&self.state),
-            state_url: None,
+            state_url: nonempty(&self.state_url),
             timestamps,
             url: None,
             status_display_type: None,
@@ -337,6 +370,20 @@ fn validate_button(label: &str, url: &str) -> Result<(), String> {
     Ok(())
 }
 
+fn validate_link_url(field: &str, url: &str) -> Result<(), String> {
+    let url = url.trim();
+    if url.is_empty() {
+        return Ok(());
+    }
+    if url.len() > BUTTON_URL_LIMIT {
+        return Err(format!("{field} must be {BUTTON_URL_LIMIT} characters or fewer."));
+    }
+    if !(url.starts_with("https://") || url.starts_with("http://")) {
+        return Err(format!("{field} must use HTTP or HTTPS."));
+    }
+    Ok(())
+}
+
 fn unix_seconds() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -363,6 +410,10 @@ mod tests {
             duration_seconds: 180,
             large_image: String::new(),
             large_text: String::new(),
+            details_url: String::new(),
+            state_url: String::new(),
+            large_url: String::new(),
+            small_url: String::new(),
             button1_label: "Open in YouTube Music".into(),
             button1_url: "https://music.youtube.com/watch?v=abc".into(),
             button2_label: String::new(),
@@ -400,6 +451,7 @@ mod tests {
             playing: true,
             video_url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ".into(),
             channel_url: "https://www.youtube.com/@RickAstley".into(),
+            artwork_url: "https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg".into(),
             site: "YouTube".into(),
             watching: true,
             status: "ok".into(),
@@ -411,6 +463,20 @@ mod tests {
         assert_eq!(presence.button1_label, "Open in YouTube");
         assert_eq!(presence.button2_label, "Visit channel");
         assert!(presence.button1_url.contains("dQw4w9WgXcQ"));
+
+        // Media links are also attached to the details/state text and artwork.
+        assert_eq!(presence.details_url, media.video_url);
+        assert_eq!(presence.state_url, media.channel_url);
+        assert_eq!(presence.large_image, media.artwork_url);
+        assert_eq!(presence.large_url, media.video_url);
+        let ipc = serde_json::to_value(presence.ipc_activity()).unwrap();
+        assert_eq!(ipc["details_url"], "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        assert_eq!(ipc["state_url"], "https://www.youtube.com/@RickAstley");
+        assert_eq!(ipc["assets"]["large_url"], "https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+        let gateway = presence.gateway_activity();
+        assert_eq!(gateway.details_url.as_deref(), Some(media.video_url.as_str()));
+        assert_eq!(gateway.state_url.as_deref(), Some(media.channel_url.as_str()));
+        assert_eq!(gateway.assets.unwrap().large_url.as_deref(), Some(media.video_url.as_str()));
 
         let listening = presence_from_detected(&media, "Listening", false).unwrap();
         assert_eq!(listening.activity_type, 2);
