@@ -1,9 +1,11 @@
 mod bot_gateway;
 mod discord_rpc;
+mod media_detector;
 mod oauth;
 mod presence;
 mod scrobbling;
 mod token_store;
+mod urls;
 
 use bot_gateway::Command as GatewayCommand;
 use discord_rpc::Command as RpcCommand;
@@ -61,6 +63,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let scrobble_worker = thread::Builder::new()
         .name("music-scrobbling".into())
         .spawn(move || scrobbling::run_worker(scrobble_rx, scrobble_ui))?;
+
+    let (detector_tx, detector_rx) = mpsc::channel();
+    let detector_ui = window.as_weak();
+    let detector_rpc_tx = rpc_tx.clone();
+    let detector_gateway_tx = gateway_tx.clone();
+    let detector_scrobble_tx = scrobble_tx.clone();
+    let detector_worker = thread::Builder::new()
+        .name("media-detector".into())
+        .spawn(move || {
+            media_detector::run_worker(
+                detector_rx,
+                detector_ui,
+                detector_rpc_tx,
+                detector_gateway_tx,
+                detector_scrobble_tx,
+            )
+        })?;
 
     let connect_tx = rpc_tx.clone();
     let connect_scrobble_tx = scrobble_tx.clone();
@@ -357,6 +376,60 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    let detect_now_tx = detector_tx.clone();
+    let detect_now_ui = window.as_weak();
+    window.on_detect_now_requested(move || {
+        let Some(window) = detect_now_ui.upgrade() else {
+            return;
+        };
+        let _ = detect_now_tx.send(media_detector::Control::Configure(detector_settings_from_ui(
+            &window,
+        )));
+        if let Err(error) = detect_now_tx.send(media_detector::Control::DetectNow) {
+            window.set_detection_status(format!("Could not start detection: {error}").into());
+        }
+    });
+
+    let auto_detect_tx = detector_tx.clone();
+    let auto_detect_ui = window.as_weak();
+    window.on_auto_detect_changed(move |enabled| {
+        let Some(window) = auto_detect_ui.upgrade() else {
+            return;
+        };
+        let _ = auto_detect_tx.send(media_detector::Control::Configure(detector_settings_from_ui(
+            &window,
+        )));
+        let control = if enabled {
+            media_detector::Control::Start
+        } else {
+            media_detector::Control::Stop
+        };
+        if let Err(error) = auto_detect_tx.send(control) {
+            window.set_detection_status(format!("Could not change auto-detect: {error}").into());
+        }
+    });
+
+    let detector_settings_tx = detector_tx.clone();
+    let detector_settings_ui = window.as_weak();
+    window.on_detector_settings_changed(move || {
+        if let Some(window) = detector_settings_ui.upgrade() {
+            let _ = detector_settings_tx
+                .send(media_detector::Control::Configure(detector_settings_from_ui(&window)));
+        }
+    });
+
+    let open_url_ui = window.as_weak();
+    window.on_open_url_requested(move |url| {
+        if url.trim().is_empty() {
+            return;
+        }
+        if let Err(error) = webbrowser::open(url.as_str())
+            && let Some(window) = open_url_ui.upgrade()
+        {
+            window.set_detection_status(format!("Could not open link: {error}").into());
+        }
+    });
+
     let run_result = window.run();
     drop(window);
     oauth_stopping.store(true, Ordering::Relaxed);
@@ -364,6 +437,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     drop(gateway_tx);
     drop(oauth_tx);
     drop(scrobble_tx);
+    drop(detector_tx);
 
     if rpc_worker.join().is_err() {
         eprintln!("Discord Rich Presence worker stopped unexpectedly");
@@ -377,9 +451,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     if scrobble_worker.join().is_err() {
         eprintln!("Scrobbling worker stopped unexpectedly");
     }
+    if detector_worker.join().is_err() {
+        eprintln!("Media detector worker stopped unexpectedly");
+    }
 
     run_result?;
     Ok(())
+}
+
+fn detector_settings_from_ui(window: &MainWindow) -> media_detector::Settings {
+    media_detector::Settings {
+        native: window.get_detect_native(),
+        browser: window.get_detect_browser(),
+        players: window.get_detect_players(),
+        auto_update: window.get_auto_detect(),
+        activity_type: window.get_media_activity_type().to_string(),
+        show_album: window.get_media_show_album(),
+        hide_paused: window.get_media_hide_paused(),
+    }
 }
 
 fn restore_saved_token(window: &MainWindow) -> Result<(), String> {

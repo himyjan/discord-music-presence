@@ -1,13 +1,280 @@
-import { Button, CheckBox, ComboBox, LineEdit, ScrollView } from "std-widgets.slint";
+// Music Presence — Discord-branded desktop UI.
+// Palette mirrors Discord's own dark/light surfaces (see discord.com/branding)
+// and the tokens shipped with Kizzy Enhanced.
 
+import { LineEdit, ScrollView } from "std-widgets.slint";
+
+// ---------------------------------------------------------------------------
+// Theme tokens
+// ---------------------------------------------------------------------------
+global AppTheme {
+    in-out property<bool> dark: true;
+
+    // Surfaces
+    out property<color> bg: root.dark ? #313338 : #ffffff;
+    out property<color> sidebar: root.dark ? #2b2d31 : #f2f3f5;
+    out property<color> topbar: root.dark ? #313338 : #ffffff;
+    out property<color> card: root.dark ? #232428 : #f2f3f5;
+    out property<color> card-hover: root.dark ? #2e3035 : #e3e5e8;
+    out property<color> input: root.dark ? #1e1f22 : #ffffff;
+    out property<color> border: root.dark ? #3f4147 : #d9dadd;
+    out property<color> track: root.dark ? #3f4147 : #d9dadd;
+
+    // Text
+    out property<color> text: root.dark ? #f2f3f5 : #2e3338;
+    out property<color> muted: root.dark ? #b5bac1 : #4e5058;
+    out property<color> subtle: root.dark ? #949ba4 : #6d6f78;
+
+    // Brand / status
+    out property<color> accent: #5865f2;
+    out property<color> accent-hover: #4752c4;
+    out property<color> green: root.dark ? #23a55a : #248046;
+    out property<color> yellow: root.dark ? #f0b232 : #c8912b;
+    out property<color> red: root.dark ? #f23f43 : #da373c;
+    out property<color> on-brand: #ffffff;
+}
+
+// ---------------------------------------------------------------------------
+// Reusable pieces
+// ---------------------------------------------------------------------------
+component NavItem inherits Rectangle {
+    in property<string> label;
+    in property<string> icon;
+    in property<string> page;
+    in-out property<string> current-page;
+    callback navigate(string);
+
+    height: 42px;
+    border-radius: 8px;
+    background: root.current-page == root.page
+        ? (AppTheme.dark ? #404249 : #e3e5e8)
+        : transparent;
+
+    HorizontalLayout {
+        spacing: 12px;
+        padding-left: 12px;
+        padding-right: 8px;
+        Text {
+            text: root.icon;
+            color: root.current-page == root.page ? AppTheme.text : AppTheme.muted;
+            font-size: 17px;
+            width: 22px;
+            vertical-alignment: center;
+        }
+        Text {
+            text: root.label;
+            color: root.current-page == root.page ? AppTheme.text : AppTheme.muted;
+            font-size: 14px;
+            font-weight: root.current-page == root.page ? 600 : 400;
+            vertical-alignment: center;
+        }
+    }
+    TouchArea {
+        clicked => { root.navigate(root.page); }
+    }
+}
+
+component PrimaryButton inherits Rectangle {
+    in property<string> label;
+    in property<bool> active: true;
+    callback clicked();
+    height: 38px;
+    min-width: 120px;
+    border-radius: 8px;
+    background: root.active ? AppTheme.accent : AppTheme.track;
+    Text {
+        text: root.label;
+        color: root.active ? AppTheme.on-brand : AppTheme.subtle;
+        font-size: 14px;
+        font-weight: 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    TouchArea {
+        enabled: root.active;
+        clicked => { root.clicked(); }
+    }
+}
+
+component SecondaryButton inherits Rectangle {
+    in property<string> label;
+    in property<bool> active: true;
+    callback clicked();
+    height: 38px;
+    min-width: 96px;
+    border-radius: 8px;
+    background: root.active ? AppTheme.card-hover : transparent;
+    border-width: 1px;
+    border-color: AppTheme.border;
+    Text {
+        text: root.label;
+        color: root.active ? AppTheme.text : AppTheme.subtle;
+        font-size: 14px;
+        font-weight: 500;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    TouchArea {
+        enabled: root.active;
+        clicked => { root.clicked(); }
+    }
+}
+
+component Switch inherits Rectangle {
+    in-out property<bool> checked;
+    in property<bool> enabled: true;
+    callback toggled();
+    width: 44px;
+    height: 24px;
+    border-radius: 12px;
+    background: !root.enabled ? AppTheme.border : (root.checked ? AppTheme.accent : AppTheme.track);
+    Rectangle {
+        x: root.checked ? 23px : 3px;
+        y: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 9px;
+        background: AppTheme.on-brand;
+        animate x { duration: 120ms; }
+    }
+    TouchArea {
+        enabled: root.enabled;
+        clicked => { root.checked = !root.checked; root.toggled(); }
+    }
+}
+
+component ToggleRow inherits Rectangle {
+    in property<string> title;
+    in property<string> subtitle;
+    in-out property<bool> checked;
+    in property<bool> enabled: true;
+    callback toggled();
+    height: root.subtitle.is-empty ? 46px : 62px;
+    HorizontalLayout {
+        spacing: 12px;
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            Text {
+                text: root.title;
+                color: root.enabled ? AppTheme.text : AppTheme.subtle;
+                font-size: 14px;
+                font-weight: 500;
+                vertical-alignment: center;
+            }
+            if !root.subtitle.is-empty: Text {
+                text: root.subtitle;
+                color: AppTheme.muted;
+                font-size: 12px;
+                wrap: word-wrap;
+            }
+        }
+        Switch {
+            checked <=> root.checked;
+            enabled: root.enabled;
+            toggled => { root.toggled(); }
+        }
+    }
+}
+
+component Card inherits Rectangle {
+    in property<length> card-padding: 18px;
+    background: AppTheme.card;
+    border-radius: 12px;
+    border-width: 1px;
+    border-color: AppTheme.border;
+    VerticalLayout {
+        padding: root.card-padding;
+        spacing: 12px;
+        @children
+    }
+}
+
+component Field inherits VerticalLayout {
+    in property<string> label;
+    in-out property<string> value;
+    in property<string> placeholder;
+    in property<bool> secret: false;
+    in property<bool> enabled: true;
+    spacing: 6px;
+    Text {
+        text: root.label;
+        color: AppTheme.muted;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    LineEdit {
+        text <=> root.value;
+        placeholder-text: root.placeholder;
+        enabled: root.enabled;
+        input-type: root.secret ? InputType.password : InputType.text;
+    }
+}
+
+component FeatureCard inherits Rectangle {
+    in property<string> icon;
+    in property<string> title;
+    in property<string> description;
+    in property<string> page;
+    in-out property<string> current-page;
+    callback navigate(string);
+    height: 132px;
+    border-radius: 14px;
+    background: AppTheme.card;
+    border-width: 1px;
+    border-color: AppTheme.border;
+    VerticalLayout {
+        padding: 16px;
+        spacing: 6px;
+        Text { text: root.icon; color: AppTheme.accent; font-size: 24px; }
+        Text { text: root.title; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+        Text {
+            text: root.description;
+            color: AppTheme.muted;
+            font-size: 12px;
+            wrap: word-wrap;
+        }
+    }
+    TouchArea {
+        clicked => { root.navigate(root.page); }
+    }
+}
+
+component StatusPill inherits Rectangle {
+    in property<string> label;
+    in property<color> dot;
+    height: 26px;
+    border-radius: 13px;
+    background: AppTheme.card-hover;
+    HorizontalLayout {
+        spacing: 8px;
+        padding-left: 10px;
+        padding-right: 10px;
+        Rectangle {
+            width: 8px; height: 8px; border-radius: 4px;
+            background: root.dot;
+        }
+        Text {
+            text: root.label;
+            color: AppTheme.text;
+            font-size: 12px;
+            vertical-alignment: center;
+        }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Main window
+// ---------------------------------------------------------------------------
 export component MainWindow inherits Window {
     title: "Music Presence";
-    preferred-width: 860px;
-    preferred-height: 900px;
-    min-width: 640px;
+    preferred-width: 1100px;
+    preferred-height: 780px;
+    min-width: 880px;
     min-height: 620px;
-    background: #11131a;
+    background: AppTheme.bg;
 
+    // ---- persisted / shared state (kept for Rust workers) ----
     in-out property<string> application-id: "";
     in-out property<string> rpc-mode: "Custom RPC";
     in-out property<string> activity-name: "Music Presence";
@@ -40,7 +307,7 @@ export component MainWindow inherits Window {
     in-out property<bool> oauth-connecting: false;
     in-out property<bool> oauth-has-session: false;
     in-out property<string> oauth-authorize-url: "";
-    in-out property<string> current-page: "Activity";
+    in-out property<string> current-page: "Home";
     in-out property<bool> oauth-profile-loaded: false;
     in-out property<string> oauth-display-name: "";
     in-out property<string> oauth-username: "";
@@ -69,6 +336,23 @@ export component MainWindow inherits Window {
     in-out property<bool> scrobble-librefm-pending: false;
     in-out property<string> scrobble-librefm-status: "Not connected";
 
+    // ---- auto-detection state ----
+    in-out property<string> media-source: "";
+    in-out property<string> detected-app: "";
+    in-out property<string> detected-site: "";
+    in-out property<string> media-video-url: "";
+    in-out property<string> media-channel-url: "";
+    in-out property<string> detection-status: "Idle — press Detect now";
+    in-out property<bool> detecting: false;
+    in-out property<bool> auto-detect: false;
+    in-out property<bool> detect-native: true;
+    in-out property<bool> detect-browser: true;
+    in-out property<bool> detect-players: true;
+    in-out property<string> media-activity-type: "Auto";
+    in-out property<bool> media-show-album: true;
+    in-out property<bool> media-hide-paused: false;
+
+    // ---- callbacks (wired in Rust) ----
     callback connect-requested();
     callback disconnect-requested();
     callback presence-update-requested();
@@ -87,719 +371,505 @@ export component MainWindow inherits Window {
     callback scrobble-librefm-authorize-requested();
     callback scrobble-librefm-finish-requested();
     callback scrobble-librefm-disconnect-requested();
+    callback detect-now-requested();
+    callback auto-detect-changed(bool);
+    callback detector-settings-changed();
+    callback open-url-requested(string);
 
-    ScrollView {
-        width: parent.width;
-        height: parent.height;
-        vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
+    // Helper: navigate + share current page with nav items.
+    function navigate(page: string) {
+        root.current-page = page;
+    }
 
-        VerticalLayout {
-            width: parent.width;
-            padding: 28px;
-            spacing: 18px;
-
+    HorizontalLayout {
+        // ------------------------- Sidebar -------------------------
+        Rectangle {
+            width: 232px;
+            background: AppTheme.sidebar;
             VerticalLayout {
-                spacing: 4px;
-                Text {
-                    text: "Music Presence";
-                    color: #f4f5f8;
-                    font-size: 24px;
-                    font-weight: 700;
-                }
-                Text {
-                    text: "Custom or media Rich Presence for Discord";
-                    color: #a4a8b5;
-                    font-size: 14px;
-                }
-            }
-
-            HorizontalLayout {
+                padding: 16px;
                 spacing: 10px;
-                Button {
-                    text: "Manual RPC";
-                    clicked => {
-                        root.current-page = "Activity";
-                    }
-                }
-                Button {
-                    text: "Discord OAuth2";
-                    clicked => {
-                        root.current-page = "Profile";
-                    }
-                }
-                Button {
-                    text: "Scrobbling";
-                    clicked => {
-                        root.current-page = "Scrobbling";
-                    }
-                }
-            }
-
-            if (root.current-page == "Activity"): VerticalLayout {
-                spacing: 18px;
-
-                Rectangle {
-                    background: #191c25;
-                    border-radius: 16px;
-
-                VerticalLayout {
-                    padding: 20px;
-                    spacing: 12px;
-
-                    Text {
-                        text: "Manual RPC";
-                        color: #f4f5f8;
-                        font-size: 18px;
-                        font-weight: 700;
-                    }
-
-                    ComboBox {
-                        model: ["Custom RPC", "Media RPC"];
-                        current-value <=> root.rpc-mode;
-                    }
-
-                    if (root.rpc-mode == "Custom RPC"): VerticalLayout {
-                        spacing: 10px;
-                        Text {
-                            text: "Manually set the activity name, details, state, and type.";
-                            color: #a4a8b5;
-                            font-size: 13px;
-                            wrap: word-wrap;
-                        }
-                        LineEdit {
-                            text <=> root.activity-name;
-                            placeholder-text: "Activity name";
-                        }
-                        LineEdit {
-                            text <=> root.activity-details;
-                            placeholder-text: "Details";
-                        }
-                        LineEdit {
-                            text <=> root.activity-state;
-                            placeholder-text: "State";
-                        }
-                        ComboBox {
-                            model: ["Playing", "Listening", "Watching", "Competing"];
-                            current-value <=> root.activity-type;
-                        }
-                    }
-
-                    if (root.rpc-mode == "Media RPC"): VerticalLayout {
-                        spacing: 10px;
-                        Text {
-                            text: "Enter media metadata manually. Automatic player detection is not implemented yet.";
-                            color: #a4a8b5;
-                            font-size: 13px;
-                            wrap: word-wrap;
-                        }
-                        LineEdit {
-                            text <=> root.media-title;
-                            placeholder-text: "Track or video title";
-                        }
-                        LineEdit {
-                            text <=> root.media-artist;
-                            placeholder-text: "Artist or channel";
-                        }
-                        LineEdit {
-                            text <=> root.media-album;
-                            placeholder-text: "Album or playlist";
-                        }
-                        ComboBox {
-                            model: ["Song", "Music video", "Album", "Playlist", "Channel"];
-                            current-value <=> root.media-kind;
-                        }
-                        HorizontalLayout {
-                            spacing: 8px;
-                            LineEdit {
-                                text <=> root.media-duration;
-                                placeholder-text: "Duration (seconds)";
-                            }
-                            LineEdit {
-                                text <=> root.media-position;
-                                placeholder-text: "Position (seconds)";
-                            }
-                        }
-                        CheckBox {
-                            text: "Playing (turn off to show Paused and hide the RPC timeline; this does not control playback)";
-                            checked <=> root.media-playing;
-                        }
-                    }
-
-                    Text {
-                        text: "Artwork asset key (optional)";
-                        color: #d3d6df;
-                        font-size: 13px;
-                    }
-                    HorizontalLayout {
-                        spacing: 8px;
-                        LineEdit {
-                            text <=> root.large-image;
-                            placeholder-text: "Large image key";
-                        }
-                        LineEdit {
-                            text <=> root.large-text;
-                            placeholder-text: "Image hover text";
-                        }
-                    }
-
-                    Text {
-                        text: "RPC link buttons (up to 2)";
-                        color: #d3d6df;
-                        font-size: 13px;
-                    }
-                    HorizontalLayout {
-                        spacing: 8px;
-                        LineEdit {
-                            text <=> root.button1-label;
-                            placeholder-text: "Button 1 label";
-                        }
-                        LineEdit {
-                            text <=> root.button1-url;
-                            placeholder-text: "Button 1 URL";
-                        }
-                    }
-                    HorizontalLayout {
-                        spacing: 8px;
-                        LineEdit {
-                            text <=> root.button2-label;
-                            placeholder-text: "Button 2 label";
-                        }
-                        LineEdit {
-                            text <=> root.button2-url;
-                            placeholder-text: "Button 2 URL";
-                        }
-                    }
-                    HorizontalLayout {
-                        spacing: 10px;
-                        Button {
-                            text: "Auto-fill YouTube Music link";
-                            clicked => {
-                                root.generate-youtube-music-link();
-                            }
-                        }
-                        Button {
-                            text: "Update connected presence";
-                            enabled: root.connected || root.gateway-connected;
-                            clicked => {
-                                root.presence-update-requested();
-                            }
-                        }
-                    }
-                    Text {
-                        text: "The generated YouTube Music URL opens a search for the selected media type; it is not guaranteed to resolve to a canonical item URL.";
-                        color: #818797;
-                        font-size: 12px;
-                        wrap: word-wrap;
-                    }
-                }
-            }
-
-            Rectangle {
-                background: #191c25;
-                border-radius: 16px;
-
-                VerticalLayout {
-                    padding: 20px;
+                HorizontalLayout {
                     spacing: 10px;
-                    Text {
-                        text: "Discord desktop Rich Presence";
-                        color: #f4f5f8;
-                        font-size: 18px;
-                        font-weight: 700;
+                    Rectangle {
+                        width: 34px; height: 34px; border-radius: 17px;
+                        background: AppTheme.accent;
+                        Text { text: "♫"; color: AppTheme.on-brand; font-size: 20px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
                     }
-                    Text {
-                        text: "Uses local IPC and a public Application ID. No Discord account login is needed.";
-                        color: #a4a8b5;
-                        font-size: 13px;
-                        wrap: word-wrap;
-                    }
-                    LineEdit {
-                        text <=> root.application-id;
-                        placeholder-text: "Discord Application ID";
-                        enabled: !root.connected && !root.connecting;
-                    }
-                    HorizontalLayout {
-                        spacing: 10px;
-                        if (!root.connected && !root.connecting): Button {
-                            text: "Connect";
-                            clicked => {
-                                root.connecting = true;
-                                root.connection-status = "Connecting...";
-                                root.connect-requested();
-                            }
-                        }
-                        if (root.connecting): Button {
-                            text: "Connecting...";
-                            enabled: false;
-                        }
-                        if (root.connected): Button {
-                            text: "Disconnect";
-                            clicked => {
-                                root.connecting = true;
-                                root.connection-status = "Disconnecting...";
-                                root.disconnect-requested();
-                            }
-                        }
-                        Text {
-                            text: root.connection-status;
-                            color: root.connected ? #72d49a : #a4a8b5;
-                            vertical-alignment: center;
-                        }
-                    }
-                }
-            }
-
-            Rectangle {
-                background: #191c25;
-                border-radius: 16px;
-
-                VerticalLayout {
-                    padding: 20px;
-                    spacing: 10px;
-                    Text {
-                        text: "Discord bot Gateway";
-                        color: #f4f5f8;
-                        font-size: 18px;
-                        font-weight: 700;
-                    }
-                    Text {
-                        text: "Logs in as a bot and updates the bot's activity, not your personal Discord profile. Bot tokens are encrypted with AES-256-GCM and the key is kept in the OS credential store.";
-                        color: #a4a8b5;
-                        font-size: 13px;
-                        wrap: word-wrap;
-                    }
-                    Button {
-                        text: "Open personal-account OAuth2 sign-in";
-                        clicked => {
-                            root.current-page = "Profile";
-                        }
-                    }
-                    LineEdit {
-                        text <=> root.gateway-token;
-                        input-type: InputType.password;
-                        placeholder-text: "Discord bot token";
-                        enabled: !root.gateway-connected && !root.gateway-connecting;
-                    }
-                    CheckBox {
-                        text: "Remember bot token (encrypted)";
-                        checked <=> root.remember-gateway-token;
-                    }
-                    HorizontalLayout {
-                        spacing: 10px;
-                        if (!root.gateway-connected && !root.gateway-connecting): Button {
-                            text: "Login";
-                            clicked => {
-                                root.gateway-connecting = true;
-                                root.gateway-status = "Connecting as bot...";
-                                root.gateway-login-requested();
-                            }
-                        }
-                        if (root.gateway-connecting): Button {
-                            text: "Connecting...";
-                            enabled: false;
-                        }
-                        if (root.gateway-connected): Button {
-                            text: "Logout";
-                            clicked => {
-                                root.gateway-connecting = true;
-                                root.gateway-status = "Logging out...";
-                                root.gateway-logout-requested();
-                            }
-                        }
-                        Text {
-                            text: root.gateway-status;
-                            color: root.gateway-connected ? #72d49a : #a4a8b5;
-                            vertical-alignment: center;
-                            wrap: word-wrap;
-                        }
-                    }
-                }
-                }
-
-                if (root.current-page == "Profile"): VerticalLayout {
-                spacing: 18px;
-
-                Rectangle {
-                    background: #191c25;
-                    border-radius: 16px;
-
                     VerticalLayout {
-                        padding: 20px;
-                        spacing: 12px;
+                        spacing: 0px;
+                        Text { text: "Music Presence"; color: AppTheme.text; font-size: 15px; font-weight: 700; vertical-alignment: center; }
+                        Text { text: "Rich Presence for Discord"; color: AppTheme.muted; font-size: 11px; }
+                    }
+                }
+                Rectangle { height: 6px; }
+                NavItem { icon: "⌂"; label: "Home"; page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "✎"; label: "Activity"; page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "♫"; label: "Media RPC"; page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "▦"; label: "App Detection"; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "⚡"; label: "Connections"; page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "☺"; label: "Profile"; page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "↻"; label: "Scrobbling"; page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "⚙"; label: "Settings"; page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                Rectangle { vertical-stretch: 1; }
+                Rectangle {
+                    background: AppTheme.card;
+                    border-radius: 10px;
+                    VerticalLayout {
+                        padding: 12px; spacing: 6px;
+                        Text { text: "STATUS"; color: AppTheme.subtle; font-size: 10px; font-weight: 700; }
+                        StatusPill {
+                            label: root.connected ? "Desktop RPC: Connected" : "Desktop RPC: Offline";
+                            dot: root.connected ? AppTheme.green : AppTheme.subtle;
+                        }
+                        StatusPill {
+                            label: root.gateway-connected ? "Bot gateway: Online" : "Bot gateway: Offline";
+                            dot: root.gateway-connected ? AppTheme.green : AppTheme.subtle;
+                        }
+                        StatusPill {
+                            label: root.oauth-connected ? "Discord: Signed in" : "Discord: Not signed in";
+                            dot: root.oauth-connected ? AppTheme.green : AppTheme.subtle;
+                        }
+                        StatusPill {
+                            label: root.auto-detect ? "Auto-detect: On" : "Auto-detect: Off";
+                            dot: root.auto-detect ? AppTheme.green : AppTheme.yellow;
+                        }
+                    }
+                }
+            }
+        }
+
+        // ------------------------- Main column -------------------------
+        Rectangle {
+            background: AppTheme.bg;
+            VerticalLayout {
+                // Top bar
+                Rectangle {
+                    height: 60px;
+                    background: AppTheme.topbar;
+                    HorizontalLayout {
+                        padding-left: 24px; padding-right: 24px; spacing: 12px;
                         Text {
-                            text: "Discord account";
-                            color: #f4f5f8;
+                            text: root.current-page == "Home" ? "Overview"
+                                : root.current-page == "Activity" ? "Activity"
+                                : root.current-page == "Media" ? "Media RPC"
+                                : root.current-page == "Apps" ? "App Detection"
+                                : root.current-page == "Connections" ? "Connections"
+                                : root.current-page == "Profile" ? "Discord Profile"
+                                : root.current-page == "Scrobbling" ? "Scrobbling"
+                                : "Settings";
+                            color: AppTheme.text;
                             font-size: 18px;
                             font-weight: 700;
+                            vertical-alignment: center;
                         }
-                        Text {
-                            text: "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your Discord profile or send activity.";
-                            color: #a4a8b5;
-                            font-size: 13px;
-                            wrap: word-wrap;
+                        Rectangle { horizontal-stretch: 1; }
+                        StatusPill {
+                            label: root.detecting ? "Scanning…" : (root.media-source.is-empty ? "No media" : root.media-source);
+                            dot: root.detecting ? AppTheme.yellow : (root.media-source.is-empty ? AppTheme.subtle : AppTheme.green);
                         }
-                        LineEdit {
-                            text <=> root.application-id;
-                            placeholder-text: "Discord Application ID";
-                            enabled: !root.oauth-connecting;
-                        }
-                        Text {
-                            text: "Register http://127.0.0.1:49153/oauth/callback as an OAuth2 redirect URI for this application.";
-                            color: #818797;
-                            font-size: 12px;
-                            wrap: word-wrap;
-                        }
-                        HorizontalLayout {
-                            spacing: 10px;
-                            if (!root.oauth-connected && !root.oauth-connecting): Button {
-                                text: "Login with Discord";
-                                clicked => {
-                                    root.oauth-connecting = true;
-                                    root.oauth-status = "Opening browser...";
-                                    root.oauth-login-requested();
-                                }
-                            }
-                            if (root.oauth-connecting): Button {
-                                text: "Cancel";
-                                clicked => {
-                                    root.oauth-status = "Canceling browser sign-in...";
-                                    root.oauth-cancel-requested();
-                                }
-                            }
-                            if (root.oauth-connecting && root.oauth-authorize-url != ""): Button {
-                                text: "Open Discord sign-in link";
-                                clicked => {
-                                    root.oauth-open-authorize-url-requested();
-                                }
-                            }
-                            if (root.oauth-has-session && !root.oauth-connecting): Button {
-                                text: "Logout";
-                                clicked => {
-                                    root.oauth-connecting = true;
-                                    root.oauth-status = "Signing out...";
-                                    root.oauth-logout-requested();
-                                }
-                            }
-                            Text {
-                                text: root.oauth-status;
-                                color: root.oauth-connected ? #72d49a : #a4a8b5;
-                                vertical-alignment: center;
-                                wrap: word-wrap;
-                            }
-                        }
-                        if (root.oauth-connecting && root.oauth-authorize-url != ""): VerticalLayout {
-                            spacing: 6px;
-                            Text {
-                                text: "If the browser did not open, copy this link into a browser or open it again:";
-                                color: #818797;
-                                font-size: 12px;
-                                wrap: word-wrap;
-                            }
-                            LineEdit {
-                                text <=> root.oauth-authorize-url;
-                                read-only: true;
-                            }
+                        SecondaryButton {
+                            label: AppTheme.dark ? "☾ Dark" : "☀ Light";
+                            min-width: 104px;
+                            clicked => { AppTheme.dark = !AppTheme.dark; }
                         }
                     }
                 }
 
-                if (root.oauth-profile-loaded): Rectangle {
-                    background: #191c25;
-                    border-radius: 16px;
-
+                // Scrolling page area
+                ScrollView {
+                    vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
                     VerticalLayout {
-                        padding: 18px;
-                        spacing: 12px;
-                        Text {
-                            text: "Profile preview";
-                            color: #f4f5f8;
-                            font-size: 18px;
-                            font-weight: 700;
-                        }
-                        Rectangle {
-                            height: 140px;
-                            background: root.oauth-accent-color;
-                            border-radius: 12px;
-                            if (root.oauth-has-banner): Image {
-                                source: root.oauth-banner;
-                                width: parent.width;
-                                height: parent.height;
-                                image-fit: ImageFit.cover;
-                            }
-                        }
-                        HorizontalLayout {
-                            spacing: 14px;
-                            if (root.oauth-has-avatar): Image {
-                                source: root.oauth-avatar;
-                                width: 84px;
-                                height: 84px;
-                                image-fit: ImageFit.cover;
-                            }
-                            if (!root.oauth-has-avatar): Rectangle {
-                                width: 84px;
-                                height: 84px;
-                                border-radius: 42px;
-                                background: #5865f2;
-                                Text {
-                                    text: root.oauth-initials;
-                                    color: #ffffff;
-                                    font-size: 26px;
-                                    font-weight: 700;
-                                    horizontal-alignment: center;
-                                    vertical-alignment: center;
-                                }
-                            }
-                            VerticalLayout {
-                                spacing: 3px;
-                                Text {
-                                    text: root.oauth-display-name;
-                                    color: #f4f5f8;
-                                    font-size: 22px;
-                                    font-weight: 700;
-                                }
-                                Text {
-                                    text: root.oauth-username;
-                                    color: #b7bac4;
-                                    font-size: 14px;
-                                }
-                            }
-                        }
-                        Text {
-                            text: "User ID: " + root.oauth-user-id;
-                            color: #d3d6df;
-                            font-size: 13px;
-                        }
-                        Text {
-                            text: root.oauth-profile-art-status;
-                            color: #818797;
-                            font-size: 12px;
-                            wrap: word-wrap;
-                        }
-                        Text {
-                            text: "Preview only; profile changes, bio, server roles, and current Discord presence are not fetched.";
-                            color: #818797;
-                            font-size: 12px;
-                            wrap: word-wrap;
-                        }
-                    }
-                }
+                        padding: 24px;
+                        padding-bottom: 40px;
+                        spacing: 18px;
 
-                if (!root.oauth-profile-loaded): Rectangle {
-                    background: #191c25;
-                    border-radius: 16px;
-                    Text {
-                        text: "Sign in to load a preview of your Discord display name, username, avatar, and profile banner.";
-                        color: #a4a8b5;
-                        wrap: word-wrap;
-                        x: 20px;
-                        y: 20px;
-                        width: parent.width - 40px;
-                    }
-                }
-                }
-
-                if (root.current-page == "Scrobbling"): VerticalLayout {
-                    spacing: 18px;
-
-                    Text {
-                        text: "Scrobbling";
-                        color: #f4f5f8;
-                        font-size: 20px;
-                        font-weight: 700;
-                    }
-                    Text {
-                        text: "Scrobble manually entered songs from the Manual RPC page. A listen is submitted after half the track or four minutes, whichever comes first.";
-                        color: #a4a8b5;
-                        font-size: 13px;
-                        wrap: word-wrap;
-                    }
-
-                    Rectangle {
-                        background: #191c25;
-                        border-radius: 16px;
-                        VerticalLayout {
-                            padding: 20px;
-                            spacing: 10px;
-                            Text {
-                                text: "Last.fm";
-                                color: #f4f5f8;
-                                font-size: 18px;
-                                font-weight: 700;
-                            }
-                            Text {
-                                text: "Enter your Last.fm API key and secret. The session is stored in the OS credential store.";
-                                color: #a4a8b5;
-                                font-size: 13px;
-                                wrap: word-wrap;
-                            }
-                            LineEdit {
-                                text <=> root.scrobble-lastfm-api-key;
-                                placeholder-text: "Last.fm API key";
-                                enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy;
-                            }
-                            LineEdit {
-                                text <=> root.scrobble-lastfm-api-secret;
-                                input-type: InputType.password;
-                                placeholder-text: "Last.fm API secret";
-                                enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy;
+                        // ===================== HOME =====================
+                        if (root.current-page == "Home"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: "Everything you need to broadcast what you play."; color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            HorizontalLayout {
+                                spacing: 14px;
+                                FeatureCard { icon: "♫"; title: "Media RPC"; description: "Auto-detect your music and videos, with video and channel links."; page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "▦"; title: "App Detection"; description: "Choose which players and browsers feed your status."; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                             }
                             HorizontalLayout {
-                                spacing: 10px;
-                                if (!root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): Button {
-                                    text: "Authorize Last.fm";
-                                    clicked => {
-                                        root.scrobble-lastfm-busy = true;
-                                        root.scrobble-lastfm-status = "Opening browser...";
-                                        root.scrobble-lastfm-authorize-requested();
-                                    }
-                                }
-                                if (root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy): Button {
-                                    text: "Finish sign-in";
-                                    clicked => {
-                                        root.scrobble-lastfm-busy = true;
-                                        root.scrobble-lastfm-status = "Finishing authorization...";
-                                        root.scrobble-lastfm-finish-requested();
-                                    }
-                                }
-                                if (root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): Button {
-                                    text: "Disconnect";
-                                    clicked => {
-                                        root.scrobble-lastfm-busy = true;
-                                        root.scrobble-lastfm-disconnect-requested();
-                                    }
-                                }
-                                if (root.scrobble-lastfm-busy): Button {
-                                    text: "Working...";
-                                    enabled: false;
-                                }
-                                Text {
-                                    text: root.scrobble-lastfm-status;
-                                    color: root.scrobble-lastfm-connected ? #72d49a : #a4a8b5;
-                                    vertical-alignment: center;
-                                    wrap: word-wrap;
+                                spacing: 14px;
+                                FeatureCard { icon: "✎"; title: "Activity"; description: "Hand-craft a custom or media Rich Presence."; page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "⚡"; title: "Connections"; description: "Connect Discord desktop, bot gateway, and OAuth."; page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                            }
+                            HorizontalLayout {
+                                spacing: 14px;
+                                FeatureCard { icon: "☺"; title: "Profile"; description: "Preview the Discord account details OAuth can share."; page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "↻"; title: "Scrobbling"; description: "Forward plays to Last.fm, ListenBrainz, and Libre.fm."; page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 8px;
+                                    Text { text: "Quick start"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: "1. Open Media RPC and press Detect now.  2. Turn on Auto-detect to keep Discord in sync.  3. Add your Application ID under Connections and connect."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                                 }
                             }
                         }
-                    }
 
-                    Rectangle {
-                        background: #191c25;
-                        border-radius: 16px;
-                        VerticalLayout {
-                            padding: 20px;
-                            spacing: 10px;
-                            Text {
-                                text: "ListenBrainz";
-                                color: #f4f5f8;
-                                font-size: 18px;
-                                font-weight: 700;
-                            }
-                            Text {
-                                text: "Paste a user token from listenbrainz.org/settings. It is stored in the OS credential store.";
-                                color: #a4a8b5;
-                                font-size: 13px;
-                                wrap: word-wrap;
-                            }
-                            LineEdit {
-                                text <=> root.scrobble-listenbrainz-token;
-                                input-type: InputType.password;
-                                placeholder-text: "ListenBrainz user token";
-                                enabled: !root.scrobble-listenbrainz-busy;
-                            }
-                            HorizontalLayout {
-                                spacing: 10px;
-                                if (!root.scrobble-listenbrainz-busy): Button {
-                                    text: "Save token";
-                                    clicked => {
-                                        root.scrobble-listenbrainz-busy = true;
-                                        root.scrobble-listenbrainz-status = "Saving token...";
-                                        root.scrobble-listenbrainz-save-requested();
+                        // ===================== ACTIVITY =====================
+                        if (root.current-page == "Activity"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: "Craft a Rich Presence by hand."; color: AppTheme.muted; font-size: 14px; }
+                            Card {
+                                VerticalLayout { spacing: 12px;
+                                    Text { text: "Activity type"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        SecondaryButton { label: "Custom RPC"; active: root.rpc-mode == "Custom RPC"; clicked => { root.rpc-mode = "Custom RPC"; } }
+                                        SecondaryButton { label: "Media RPC"; active: root.rpc-mode == "Media RPC"; clicked => { root.rpc-mode = "Media RPC"; } }
                                     }
-                                }
-                                if (root.scrobble-listenbrainz-connected && !root.scrobble-listenbrainz-busy): Button {
-                                    text: "Disconnect";
-                                    clicked => {
-                                        root.scrobble-listenbrainz-busy = true;
-                                        root.scrobble-listenbrainz-disconnect-requested();
+                                    if (root.rpc-mode == "Custom RPC"): VerticalLayout {
+                                        spacing: 10px;
+                                        Field { label: "Activity name"; value <=> root.activity-name; placeholder: "Music Presence"; }
+                                        Field { label: "Details"; value <=> root.activity-details; placeholder: "Listening to music"; }
+                                        Field { label: "State"; value <=> root.activity-state; placeholder: "Artist · Album"; }
+                                        HorizontalLayout {
+                                            spacing: 8px;
+                                            SecondaryButton { label: "Playing"; active: root.activity-type == "Playing"; clicked => { root.activity-type = "Playing"; } }
+                                            SecondaryButton { label: "Listening"; active: root.activity-type == "Listening"; clicked => { root.activity-type = "Listening"; } }
+                                            SecondaryButton { label: "Watching"; active: root.activity-type == "Watching"; clicked => { root.activity-type = "Watching"; } }
+                                            SecondaryButton { label: "Competing"; active: root.activity-type == "Competing"; clicked => { root.activity-type = "Competing"; } }
+                                        }
                                     }
-                                }
-                                if (root.scrobble-listenbrainz-busy): Button {
-                                    text: "Working...";
-                                    enabled: false;
-                                }
-                                Text {
-                                    text: root.scrobble-listenbrainz-status;
-                                    color: root.scrobble-listenbrainz-connected ? #72d49a : #a4a8b5;
-                                    vertical-alignment: center;
-                                    wrap: word-wrap;
+                                    if (root.rpc-mode == "Media RPC"): VerticalLayout {
+                                        spacing: 10px;
+                                        Text { text: "Manual metadata (auto-detected values can overwrite these)."; color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
+                                        Field { label: "Title"; value <=> root.media-title; placeholder: "Track or video title"; }
+                                        Field { label: "Artist / channel"; value <=> root.media-artist; placeholder: "Artist or channel"; }
+                                        Field { label: "Album / playlist"; value <=> root.media-album; placeholder: "Album or playlist"; }
+                                        HorizontalLayout {
+                                            spacing: 8px;
+                                            Field { label: "Duration (s)"; value <=> root.media-duration; placeholder: "0"; }
+                                            Field { label: "Position (s)"; value <=> root.media-position; placeholder: "0"; }
+                                        }
+                                        ToggleRow { title: "Playing"; subtitle: "Off shows a paused state and hides the timeline."; checked <=> root.media-playing; toggled => {} }
+                                    }
+                                    Text { text: "Artwork"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Large image key"; value <=> root.large-image; placeholder: "Optional asset key"; }
+                                        Field { label: "Hover text"; value <=> root.large-text; placeholder: "Optional"; }
+                                    }
+                                    Text { text: "Buttons"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Button 1 label"; value <=> root.button1-label; placeholder: "Open on YouTube"; }
+                                        Field { label: "Button 1 URL"; value <=> root.button1-url; placeholder: "https://…"; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Button 2 label"; value <=> root.button2-label; placeholder: "Visit channel"; }
+                                        Field { label: "Button 2 URL"; value <=> root.button2-url; placeholder: "https://…"; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        SecondaryButton { label: "Auto YouTube Music link"; clicked => { root.generate-youtube-music-link(); } }
+                                        PrimaryButton { label: "Update presence"; active: root.connected || root.gateway-connected; clicked => { root.presence-update-requested(); } }
+                                    }
                                 }
                             }
                         }
-                    }
 
-                    Rectangle {
-                        background: #191c25;
-                        border-radius: 16px;
-                        VerticalLayout {
-                            padding: 20px;
-                            spacing: 10px;
-                            Text {
-                                text: "Libre.fm";
-                                color: #f4f5f8;
-                                font-size: 18px;
-                                font-weight: 700;
-                            }
-                            Text {
-                                text: "Enter your Libre.fm API key and secret. The session is stored in the OS credential store.";
-                                color: #a4a8b5;
-                                font-size: 13px;
-                                wrap: word-wrap;
-                            }
-                            LineEdit {
-                                text <=> root.scrobble-librefm-api-key;
-                                placeholder-text: "Libre.fm API key";
-                                enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy;
-                            }
-                            LineEdit {
-                                text <=> root.scrobble-librefm-api-secret;
-                                input-type: InputType.password;
-                                placeholder-text: "Libre.fm API secret";
-                                enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy;
-                            }
-                            HorizontalLayout {
-                                spacing: 10px;
-                                if (!root.scrobble-librefm-connected && !root.scrobble-librefm-busy): Button {
-                                    text: "Authorize Libre.fm";
-                                    clicked => {
-                                        root.scrobble-librefm-busy = true;
-                                        root.scrobble-librefm-status = "Opening browser...";
-                                        root.scrobble-librefm-authorize-requested();
+                        // ===================== MEDIA =====================
+                        if (root.current-page == "Media"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: "Automatically broadcast what your desktop is playing."; color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Card {
+                                VerticalLayout { spacing: 14px;
+                                    HorizontalLayout {
+                                        spacing: 12px;
+                                        Text { text: "Auto-detect"; color: AppTheme.text; font-size: 16px; font-weight: 700; vertical-alignment: center; }
+                                        Rectangle { horizontal-stretch: 1; }
+                                        Switch {
+                                            checked <=> root.auto-detect;
+                                            toggled => { root.auto-detect-changed(root.auto-detect); }
+                                        }
+                                    }
+                                    Text { text: root.detection-status; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        PrimaryButton { label: root.detecting ? "Scanning…" : "Detect now"; active: !root.detecting; clicked => { root.detect-now-requested(); } }
+                                        SecondaryButton { label: "Open video"; active: !root.media-video-url.is-empty; clicked => { root.open-url-requested(root.media-video-url); } }
+                                        SecondaryButton { label: "Open channel"; active: !root.media-channel-url.is-empty; clicked => { root.open-url-requested(root.media-channel-url); } }
                                     }
                                 }
-                                if (root.scrobble-librefm-pending && !root.scrobble-librefm-busy): Button {
-                                    text: "Finish sign-in";
-                                    clicked => {
-                                        root.scrobble-librefm-busy = true;
-                                        root.scrobble-librefm-status = "Finishing authorization...";
-                                        root.scrobble-librefm-finish-requested();
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Detection sources"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    ToggleRow { title: "Native Now Playing"; subtitle: "OS media session: Now Playing / SMTC / MPRIS."; checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Browser tabs"; subtitle: "Foreground tab URL when available (YouTube, Vimeo, Twitch, Spotify)."; checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Media players"; subtitle: "Spotify, Apple Music and iTunes on macOS."; checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 12px;
+                                    Text { text: "Currently detected"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: (root.media-source.is-empty ? "Nothing yet" : root.media-source + (root.detected-app.is-empty ? "" : " · " + root.detected-app)); color: AppTheme.muted; font-size: 12px; }
+                                    Text { text: root.media-title.is-empty ? "—" : root.media-title; color: AppTheme.text; font-size: 20px; font-weight: 700; wrap: word-wrap; }
+                                    Text { text: ((root.media-artist.is-empty ? "" : root.media-artist) + (root.media-album.is-empty ? "" : " · " + root.media-album)); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                                    Rectangle {
+                                        height: 6px; border-radius: 3px; background: AppTheme.track;
+                                        Rectangle {
+                                            height: 6px; border-radius: 3px; background: AppTheme.accent;
+                                            width: parent.width * (
+                                                root.media-duration.to-float() > 0
+                                                ? Math.min(1, root.media-position.to-float() / root.media-duration.to-float())
+                                                : 0
+                                            );
+                                        }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Text { text: root.media-playing ? "▶ Playing" : "❚❚ Paused"; color: root.media-playing ? AppTheme.green : AppTheme.yellow; font-size: 12px; }
+                                        Text { text: root.media-position + " / " + root.media-duration + " s"; color: AppTheme.subtle; font-size: 12px; }
+                                    }
+                                    Field { label: "Video / track URL"; value <=> root.media-video-url; placeholder: "Detected automatically"; }
+                                    Field { label: "Channel / artist URL"; value <=> root.media-channel-url; placeholder: "Detected automatically"; }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Presence options"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        SecondaryButton { label: "Auto"; active: root.media-activity-type == "Auto"; clicked => { root.media-activity-type = "Auto"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: "Listening"; active: root.media-activity-type == "Listening"; clicked => { root.media-activity-type = "Listening"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: "Watching"; active: root.media-activity-type == "Watching"; clicked => { root.media-activity-type = "Watching"; root.detector-settings-changed(); } }
+                                    }
+                                    ToggleRow { title: "Show album"; checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Hide while paused"; checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
+                                }
+                            }
+                        }
+
+                        // ===================== APPS =====================
+                        if (root.current-page == "Apps"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: "Choose which sources may update your Rich Presence."; color: AppTheme.muted; font-size: 14px; }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Detection backends"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    ToggleRow { title: "Native Now Playing"; subtitle: "macOS Now Playing, Windows SMTC, Linux MPRIS."; checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Browser detection"; subtitle: "Chrome, Safari, Edge, Brave, Arc and Firefox."; checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Player apps"; subtitle: "Spotify, Apple Music, iTunes (AppleScript on macOS)."; checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Supported media sources"; color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: "Spotify · Apple Music · iTunes · YouTube · YouTube Music · Vimeo · Twitch · Bilibili · SoundCloud · Any MPRIS or SMTC player"; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: "A browser tab or player must be the active/playing source for URL extraction. When a full URL is not exposed, a canonical search link is generated from the window title instead."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                }
+                            }
+                        }
+
+                        // ===================== CONNECTIONS =====================
+                        if (root.current-page == "Connections"): VerticalLayout {
+                            spacing: 18px;
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Discord desktop Rich Presence"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: "Uses local IPC and a public Application ID — no Discord login required."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Field { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Discord application ID"; enabled: !root.connected && !root.connecting; }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        if (!root.connected && !root.connecting): PrimaryButton {
+                                            label: "Connect";
+                                            clicked => {
+                                                root.connecting = true;
+                                                root.connection-status = "Connecting…";
+                                                root.connect-requested();
+                                            }
+                                        }
+                                        if (root.connecting): SecondaryButton { label: "Connecting…"; active: false; clicked => {} }
+                                        if (root.connected): SecondaryButton {
+                                            label: "Disconnect";
+                                            clicked => {
+                                                root.connecting = true;
+                                                root.connection-status = "Disconnecting…";
+                                                root.disconnect-requested();
+                                            }
+                                        }
+                                        Text { text: root.connection-status; color: root.connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
                                     }
                                 }
-                                if (root.scrobble-librefm-connected && !root.scrobble-librefm-busy): Button {
-                                    text: "Disconnect";
-                                    clicked => {
-                                        root.scrobble-librefm-busy = true;
-                                        root.scrobble-librefm-disconnect-requested();
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Discord bot Gateway"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: "Logs in as a bot and changes the bot's activity. Tokens are encrypted and stored in the OS credential store."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    SecondaryButton { label: "Use personal-account OAuth2 instead"; clicked => { root.navigate("Profile"); } }
+                                    Field { label: "Bot token"; value <=> root.gateway-token; secret: true; placeholder: "Discord bot token"; enabled: !root.gateway-connected && !root.gateway-connecting; }
+                                    ToggleRow { title: "Remember bot token (encrypted)"; checked <=> root.remember-gateway-token; toggled => {} }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        if (!root.gateway-connected && !root.gateway-connecting): PrimaryButton {
+                                            label: "Login";
+                                            clicked => {
+                                                root.gateway-connecting = true;
+                                                root.gateway-status = "Connecting as bot…";
+                                                root.gateway-login-requested();
+                                            }
+                                        }
+                                        if (root.gateway-connecting): SecondaryButton { label: "Connecting…"; active: false; clicked => {} }
+                                        if (root.gateway-connected): SecondaryButton {
+                                            label: "Logout";
+                                            clicked => {
+                                                root.gateway-connecting = true;
+                                                root.gateway-status = "Logging out…";
+                                                root.gateway-logout-requested();
+                                            }
+                                        }
+                                        Text { text: root.gateway-status; color: root.gateway-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
                                     }
                                 }
-                                if (root.scrobble-librefm-busy): Button {
-                                    text: "Working...";
-                                    enabled: false;
+                            }
+                        }
+
+                        // ===================== PROFILE =====================
+                        if (root.current-page == "Profile"): VerticalLayout {
+                            spacing: 18px;
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Discord account"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your profile or send activity."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Field { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Discord application ID"; enabled: !root.oauth-connecting; }
+                                    Text { text: "Register http://127.0.0.1:49153/oauth/callback as an OAuth2 redirect URI."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        if (!root.oauth-connected && !root.oauth-connecting): PrimaryButton {
+                                            label: "Login with Discord";
+                                            clicked => {
+                                                root.oauth-connecting = true;
+                                                root.oauth-status = "Opening browser…";
+                                                root.oauth-login-requested();
+                                            }
+                                        }
+                                        if (root.oauth-connecting): SecondaryButton { label: "Cancel"; clicked => { root.oauth-status = "Canceling…"; root.oauth-cancel-requested(); } }
+                                        if (root.oauth-connecting && root.oauth-authorize-url != ""): SecondaryButton { label: "Open sign-in link"; clicked => { root.oauth-open-authorize-url-requested(); } }
+                                        if (root.oauth-has-session && !root.oauth-connecting): SecondaryButton {
+                                            label: "Logout";
+                                            clicked => {
+                                                root.oauth-connecting = true;
+                                                root.oauth-status = "Signing out…";
+                                                root.oauth-logout-requested();
+                                            }
+                                        }
+                                        Text { text: root.oauth-status; color: root.oauth-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
+                                    }
+                                    if (root.oauth-connecting && root.oauth-authorize-url != ""): Field { label: "Sign-in link"; value <=> root.oauth-authorize-url; placeholder: ""; }
                                 }
-                                Text {
-                                    text: root.scrobble-librefm-status;
-                                    color: root.scrobble-librefm-connected ? #72d49a : #a4a8b5;
-                                    vertical-alignment: center;
-                                    wrap: word-wrap;
+                            }
+                            if (root.oauth-profile-loaded): Card {
+                                VerticalLayout { spacing: 12px;
+                                    Text { text: "Profile preview"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Rectangle {
+                                        height: 130px; border-radius: 10px; background: root.oauth-accent-color;
+                                        if (root.oauth-has-banner): Image { source: root.oauth-banner; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 14px;
+                                        if (root.oauth-has-avatar): Rectangle {
+                                            width: 76px; height: 76px;
+                                            border-radius: 38px;
+                                            clip: true;
+                                            Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                                        }
+                                        if (!root.oauth-has-avatar): Rectangle {
+                                            width: 76px; height: 76px; border-radius: 38px; background: AppTheme.accent;
+                                            Text { text: root.oauth-initials; color: AppTheme.on-brand; font-size: 24px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                                        }
+                                        VerticalLayout {
+                                            spacing: 2px;
+                                            Text { text: root.oauth-display-name; color: AppTheme.text; font-size: 21px; font-weight: 700; }
+                                            Text { text: root.oauth-username; color: AppTheme.muted; font-size: 14px; }
+                                            Text { text: "User ID: " + root.oauth-user-id; color: AppTheme.subtle; font-size: 12px; }
+                                        }
+                                    }
+                                    Text { text: root.oauth-profile-art-status; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                    Text { text: "Preview only — profile changes, roles and live presence are not fetched."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
+                                }
+                            }
+                            if (!root.oauth-profile-loaded): Card {
+                                Text { text: "Sign in to preview your Discord display name, username, avatar and banner."; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                            }
+                        }
+
+                        // ===================== SCROBBLING =====================
+                        if (root.current-page == "Scrobbling"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: "Forward detected or manually entered songs to scrobbling services."; color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Last.fm"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    HorizontalLayout { spacing: 8px;
+                                        Field { label: "API key"; value <=> root.scrobble-lastfm-api-key; placeholder: "Last.fm API key"; enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
+                                        Field { label: "API secret"; value <=> root.scrobble-lastfm-api-secret; secret: true; placeholder: "Last.fm API secret"; enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
+                                    }
+                                    HorizontalLayout { spacing: 10px;
+                                        if (!root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): PrimaryButton { label: "Authorize"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Opening browser…"; root.scrobble-lastfm-authorize-requested(); } }
+                                        if (root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy): SecondaryButton { label: "Finish sign-in"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Finishing…"; root.scrobble-lastfm-finish-requested(); } }
+                                        if (root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): SecondaryButton { label: "Disconnect"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-disconnect-requested(); } }
+                                        if (root.scrobble-lastfm-busy): SecondaryButton { label: "Working…"; active: false; clicked => {} }
+                                        Text { text: root.scrobble-lastfm-status; color: root.scrobble-lastfm-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
+                                    }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "ListenBrainz"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Field { label: "User token"; value <=> root.scrobble-listenbrainz-token; secret: true; placeholder: "listenbrainz.org/settings token"; enabled: !root.scrobble-listenbrainz-busy; }
+                                    HorizontalLayout { spacing: 10px;
+                                        if (!root.scrobble-listenbrainz-busy): PrimaryButton { label: "Save token"; clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-status = "Saving…"; root.scrobble-listenbrainz-save-requested(); } }
+                                        if (root.scrobble-listenbrainz-connected && !root.scrobble-listenbrainz-busy): SecondaryButton { label: "Disconnect"; clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-disconnect-requested(); } }
+                                        if (root.scrobble-listenbrainz-busy): SecondaryButton { label: "Working…"; active: false; clicked => {} }
+                                        Text { text: root.scrobble-listenbrainz-status; color: root.scrobble-listenbrainz-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
+                                    }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 10px;
+                                    Text { text: "Libre.fm"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    HorizontalLayout { spacing: 8px;
+                                        Field { label: "API key"; value <=> root.scrobble-librefm-api-key; placeholder: "Libre.fm API key"; enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
+                                        Field { label: "API secret"; value <=> root.scrobble-librefm-api-secret; secret: true; placeholder: "Libre.fm API secret"; enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
+                                    }
+                                    HorizontalLayout { spacing: 10px;
+                                        if (!root.scrobble-librefm-connected && !root.scrobble-librefm-busy): PrimaryButton { label: "Authorize"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Opening browser…"; root.scrobble-librefm-authorize-requested(); } }
+                                        if (root.scrobble-librefm-pending && !root.scrobble-librefm-busy): SecondaryButton { label: "Finish sign-in"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Finishing…"; root.scrobble-librefm-finish-requested(); } }
+                                        if (root.scrobble-librefm-connected && !root.scrobble-librefm-busy): SecondaryButton { label: "Disconnect"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-disconnect-requested(); } }
+                                        if (root.scrobble-librefm-busy): SecondaryButton { label: "Working…"; active: false; clicked => {} }
+                                        Text { text: root.scrobble-librefm-status; color: root.scrobble-librefm-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
+                                    }
+                                }
+                            }
+                        }
+
+                        // ===================== SETTINGS =====================
+                        if (root.current-page == "Settings"): VerticalLayout {
+                            spacing: 18px;
+                            Card {
+                                VerticalLayout { spacing: 12px;
+                                    Text { text: "Appearance"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: "Discord-inspired colour scheme."; color: AppTheme.muted; font-size: 13px; }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        SecondaryButton { label: "☾ Dark"; active: AppTheme.dark; clicked => { AppTheme.dark = true; } }
+                                        SecondaryButton { label: "☀ Light"; active: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
+                                    }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 8px;
+                                    Text { text: "About"; color: AppTheme.text; font-size: 18px; font-weight: 700; }
+                                    Text { text: "Music Presence — share what you listen to on Discord."; color: AppTheme.muted; font-size: 13px; }
+                                    Text { text: "Detects over 100 media players, browser tabs and OS now-playing sessions. UI follows Discord's branding guidelines and Kizzy Enhanced's feature layout."; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                 }
                             }
                         }

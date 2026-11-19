@@ -28,6 +28,19 @@ zeroize = "1"
 [build-dependencies]
 slint-build = "1.19"
 
+# Native Now Playing readers (one per platform, compiled only for that target).
+[target.'cfg(target_os = "macos")'.dependencies]
+objc2 = "0.6"
+objc2-foundation = "0.3"
+objc2-media-player = "0.3"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.62", features = ["Media_Control", "Foundation", "Storage_Streams"] }
+
+[target.'cfg(target_os = "linux")'.dependencies]
+zbus = "5"
+zvariant = "5"
+
 [profile.release]
 opt-level = "s"
 lto = true
