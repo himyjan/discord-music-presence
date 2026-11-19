@@ -72,6 +72,24 @@ operating system and processor architecture.
 - **Native-feeling Discord integration:** get the familiar Discord activity
   experience with additional controls and customization.
 
+### Enhanced desktop UI and auto-detection
+
+This desktop build adds a Discord-branded interface with dark and light themes
+(based on [Discord's branding](https://discord.com/branding)) and a feature-
+based navigation layout inspired by Kizzy Enhanced. The **Media RPC** page can
+automatically detect playback from:
+
+- the OS Now Playing session (**macOS** Now Playing, **Windows** SMTC, **Linux**
+  MPRIS),
+- the foreground browser tab, extracting canonical **video / track** and
+  **channel / artist** URLs for YouTube, YouTube Music, Vimeo, Twitch, Bilibili,
+  Spotify and SoundCloud, and
+- local player apps on macOS (Spotify, Apple Music and iTunes) via AppleScript.
+
+Press **Detect now** for a single scan, or enable **Auto-detect** to keep the
+connected Discord activity in sync. When a full tab URL is unavailable, a
+canonical search link is generated from the window title instead.
+
 ### Keep optional processing off
 
 Animated artwork is disabled by default. Leave it disabled if you do not need
