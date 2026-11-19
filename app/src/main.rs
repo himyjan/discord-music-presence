@@ -57,7 +57,19 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "linux")]
     slint::set_xdg_app_id("music-presence")?;
     #[cfg(target_os = "macos")]
-    set_macos_application_icon()?;
+    let _macos_icon_timer = {
+        let timer = slint::Timer::default();
+        timer.start(
+            slint::TimerMode::SingleShot,
+            std::time::Duration::from_millis(500),
+            || {
+                if let Err(error) = set_macos_application_icon() {
+                    eprintln!("Could not set the macOS Dock icon: {error}");
+                }
+            },
+        );
+        timer
+    };
     if let Err(error) = restore_saved_token(&window) {
         window.set_gateway_status(error.into());
     }
