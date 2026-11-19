@@ -268,6 +268,7 @@ component StatusPill inherits Rectangle {
 // ---------------------------------------------------------------------------
 export component MainWindow inherits Window {
     title: "Music Presence";
+    icon: @image-url("../packaging/music-presence.svg");
     preferred-width: 1100px;
     preferred-height: 780px;
     min-width: 880px;
@@ -391,10 +392,11 @@ export component MainWindow inherits Window {
                 spacing: 10px;
                 HorizontalLayout {
                     spacing: 10px;
-                    Rectangle {
-                        width: 34px; height: 34px; border-radius: 17px;
-                        background: AppTheme.accent;
-                        Text { text: "♫"; color: AppTheme.on-brand; font-size: 20px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                    Image {
+                        source: @image-url("../packaging/music-presence.svg");
+                        width: 34px;
+                        height: 34px;
+                        image-fit: contain;
                     }
                     VerticalLayout {
                         spacing: 0px;
