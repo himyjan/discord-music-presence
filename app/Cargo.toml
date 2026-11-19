@@ -30,6 +30,7 @@ slint-build = "1.19"
 
 # Native Now Playing readers (one per platform, compiled only for that target).
 [target.'cfg(target_os = "macos")'.dependencies]
+objc2-app-kit = { version = "0.3", default-features = false, features = ["NSApplication", "NSImage", "NSResponder"] }
 objc2 = "0.6"
 objc2-foundation = "0.3"
 objc2-media-player = "0.3"

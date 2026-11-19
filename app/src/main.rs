@@ -24,6 +24,29 @@ use std::{
 
 slint::include_modules!();
 
+#[cfg(target_os = "macos")]
+fn set_macos_application_icon() -> Result<(), Box<dyn std::error::Error>> {
+    use objc2::{AnyThread, MainThreadMarker};
+    use objc2_app_kit::{NSApplication, NSImage};
+    use objc2_foundation::NSData;
+
+    const ICON_SVG: &[u8] = include_bytes!("../packaging/music-presence.svg");
+
+    let main_thread = MainThreadMarker::new().ok_or_else(|| {
+        std::io::Error::other("Could not set the macOS app icon outside the main thread.")
+    })?;
+    let icon_data =
+        unsafe { NSData::dataWithBytes_length(ICON_SVG.as_ptr().cast(), ICON_SVG.len()) };
+    let icon = NSImage::initWithData(NSImage::alloc(), &icon_data).ok_or_else(|| {
+        std::io::Error::other("Could not load the Music Presence SVG app icon on macOS.")
+    })?;
+    let application = NSApplication::sharedApplication(main_thread);
+    unsafe {
+        application.setApplicationIconImage(Some(&icon));
+    }
+    Ok(())
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(callback_uri) = oauth_protocol::callback_argument() {
         oauth_protocol::forward_callback(&callback_uri).map_err(std::io::Error::other)?;
@@ -31,6 +54,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let window = MainWindow::new()?;
+    #[cfg(target_os = "linux")]
+    slint::set_xdg_app_id("music-presence")?;
+    #[cfg(target_os = "macos")]
+    set_macos_application_icon()?;
     if let Err(error) = restore_saved_token(&window) {
         window.set_gateway_status(error.into());
     }
