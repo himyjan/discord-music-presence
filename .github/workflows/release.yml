@@ -98,7 +98,7 @@ jobs:
           retention-days: 3
 
   publish:
-    name: Publish preview release
+    name: Publish release
     if: startsWith(github.ref, 'refs/tags/slint-v')
     needs: build
     runs-on: ubuntu-24.04
@@ -113,13 +113,13 @@ jobs:
           pattern: release-*
           merge-multiple: true
 
-      - name: Publish GitHub prerelease
+      - name: Publish GitHub release
         uses: softprops/action-gh-release@v3
         with:
-          name: Music Presence Slint Preview ${{ github.ref_name }}
+          name: Music Presence ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          prerelease: true
-          make_latest: false
+          prerelease: false
+          make_latest: true
           generate_release_notes: true
           files: dist/*.tar.gz
           fail_on_unmatched_files: true
