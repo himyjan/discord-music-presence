@@ -282,6 +282,7 @@ export component MainWindow inherits Window {
     in-out property<string> activity-details: "Listening to music";
     in-out property<string> activity-state: "";
     in-out property<string> activity-type: "Listening";
+    in-out property<string> status-display-type: "Name";
     in-out property<string> media-title: "";
     in-out property<string> media-artist: "";
     in-out property<string> media-album: "";
@@ -573,6 +574,13 @@ export component MainWindow inherits Window {
                                         Field { label: "Large image URL"; value <=> root.large-url; placeholder: "https://…"; }
                                         Field { label: "Small image URL"; value <=> root.small-url; placeholder: "https://…"; }
                                     }
+                                    Text { text: "Status text in member list"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        SecondaryButton { label: "Name"; active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; } }
+                                        SecondaryButton { label: "State"; active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; } }
+                                        SecondaryButton { label: "Details"; active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; } }
+                                    }
                                     Text { text: "Buttons"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
                                     HorizontalLayout {
                                         spacing: 8px;
@@ -662,6 +670,13 @@ export component MainWindow inherits Window {
                                     }
                                     ToggleRow { title: "Show album"; checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
                                     ToggleRow { title: "Hide while paused"; checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
+                                    Text { text: "Status text in member list"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        SecondaryButton { label: "Name"; active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: "State"; active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; root.detector-settings-changed(); } }
+                                        SecondaryButton { label: "Details"; active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; root.detector-settings-changed(); } }
+                                    }
                                 }
                             }
                         }

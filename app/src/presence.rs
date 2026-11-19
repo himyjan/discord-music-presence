@@ -3,7 +3,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 use discord_rich_presence::activity::{self, Activity, Assets, Button, Timestamps};
 use twilight_model::gateway::presence::activity_button::ActivityButtonLink;
 use twilight_model::gateway::presence::{
-    Activity as GatewayActivity, ActivityAssets, ActivityButton, ActivityTimestamps, ActivityType,
+    Activity as GatewayActivity, ActivityAssets, ActivityButton, ActivityStatusDisplayType,
+    ActivityTimestamps, ActivityType,
 };
 
 const TEXT_LIMIT: usize = 128;
@@ -43,6 +44,16 @@ impl DetectedMedia {
     }
 }
 
+/// Which activity field shows in the member-list status text: 0=Name, 1=State, 2=Details.
+fn status_display_code(value: &str) -> Option<u8> {
+    match value {
+        "Name" => Some(0),
+        "State" => Some(1),
+        "Details" => Some(2),
+        _ => None,
+    }
+}
+
 /// Build a Discord activity from an auto-detected media snapshot.
 ///
 /// `activity_type_override` accepts "Listening" / "Watching"; anything else
@@ -51,6 +62,7 @@ pub fn presence_from_detected(
     media: &DetectedMedia,
     activity_type_override: &str,
     show_album: bool,
+    status_display_type: &str,
 ) -> Result<PresenceDraft, String> {
     if media.title.trim().is_empty() && media.artist.trim().is_empty() {
         return Err("No media detected yet.".into());
@@ -128,6 +140,7 @@ pub fn presence_from_detected(
             media.video_url.trim().to_string()
         },
         small_url: String::new(),
+        status_display_type: status_display_type.to_string(),
         button1_label: truncate_button_label(button1_label),
         button1_url,
         button2_label: truncate_button_label(button2_label),
@@ -163,6 +176,9 @@ pub struct PresenceDraft {
     pub large_url: String,
     /// Clickable URL for the small image asset.
     pub small_url: String,
+    /// Which activity field Discord shows in the member-list status text.
+    /// "Name" (default), "State" or "Details"; anything else leaves it unset.
+    pub status_display_type: String,
     pub button1_label: String,
     pub button1_url: String,
     pub button2_label: String,
@@ -243,6 +259,13 @@ impl PresenceDraft {
                 assets = assets.small_url(self.small_url.trim());
             }
             activity = activity.assets(assets);
+        }
+        if let Some(code) = status_display_code(&self.status_display_type) {
+            activity = activity.status_display_type(match code {
+                1 => activity::StatusDisplayType::State,
+                2 => activity::StatusDisplayType::Details,
+                _ => activity::StatusDisplayType::Name,
+            });
         }
 
         let buttons = [
@@ -326,7 +349,8 @@ impl PresenceDraft {
             state_url: nonempty(&self.state_url),
             timestamps,
             url: None,
-            status_display_type: None,
+            status_display_type: status_display_code(&self.status_display_type)
+                .map(ActivityStatusDisplayType::from),
         }
     }
 }
@@ -398,6 +422,7 @@ fn nonempty(value: &str) -> Option<String> {
 #[cfg(test)]
 mod tests {
     use super::{DetectedMedia, PresenceDraft, presence_from_detected, youtube_music_search_url};
+    use twilight_model::gateway::presence::ActivityStatusDisplayType;
 
     fn draft() -> PresenceDraft {
         PresenceDraft {
@@ -414,6 +439,7 @@ mod tests {
             state_url: String::new(),
             large_url: String::new(),
             small_url: String::new(),
+            status_display_type: String::new(),
             button1_label: "Open in YouTube Music".into(),
             button1_url: "https://music.youtube.com/watch?v=abc".into(),
             button2_label: String::new(),
@@ -456,7 +482,8 @@ mod tests {
             watching: true,
             status: "ok".into(),
         };
-        let presence = presence_from_detected(&media, "Auto", true).expect("valid presence");
+        let presence =
+            presence_from_detected(&media, "Auto", true, "Details").expect("valid presence");
         assert_eq!(presence.name, "YouTube");
         assert_eq!(presence.activity_type, 3);
         assert_eq!(presence.state, "Rick Astley · Whenever You Need Somebody");
@@ -477,8 +504,11 @@ mod tests {
         assert_eq!(gateway.details_url.as_deref(), Some(media.video_url.as_str()));
         assert_eq!(gateway.state_url.as_deref(), Some(media.channel_url.as_str()));
         assert_eq!(gateway.assets.unwrap().large_url.as_deref(), Some(media.video_url.as_str()));
+        assert_eq!(gateway.status_display_type, Some(ActivityStatusDisplayType::Details));
+        let ipc_value = serde_json::to_value(presence.ipc_activity()).unwrap();
+        assert_eq!(ipc_value["status_display_type"], 2);
 
-        let listening = presence_from_detected(&media, "Listening", false).unwrap();
+        let listening = presence_from_detected(&media, "Listening", false, "Name").unwrap();
         assert_eq!(listening.activity_type, 2);
         assert_eq!(listening.state, "Rick Astley");
     }

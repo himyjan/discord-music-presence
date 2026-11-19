@@ -39,6 +39,7 @@ pub struct Settings {
     pub activity_type: String,
     pub show_album: bool,
     pub hide_paused: bool,
+    pub status_display_type: String,
 }
 
 impl Default for Settings {
@@ -51,6 +52,7 @@ impl Default for Settings {
             activity_type: "Auto".into(),
             show_album: true,
             hide_paused: false,
+            status_display_type: "Details".into(),
         }
     }
 }
@@ -112,6 +114,7 @@ pub fn run_worker(
                     &detected,
                     &settings.activity_type,
                     settings.show_album,
+                    &settings.status_display_type,
                 ) {
                     let _ = rpc_tx.send(discord_rpc::Command::Update(presence.clone()));
                     let _ = gateway_tx.send(bot_gateway::Command::UpdatePresence(presence));

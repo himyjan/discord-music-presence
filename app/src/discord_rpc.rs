@@ -180,6 +180,7 @@ mod tests {
             state_url: String::new(),
             large_url: String::new(),
             small_url: String::new(),
+            status_display_type: String::new(),
             button1_label: String::new(),
             button1_url: String::new(),
             button2_label: String::new(),

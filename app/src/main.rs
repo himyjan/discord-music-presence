@@ -501,6 +501,7 @@ fn detector_settings_from_ui(window: &MainWindow) -> media_detector::Settings {
         activity_type: window.get_media_activity_type().to_string(),
         show_album: window.get_media_show_album(),
         hide_paused: window.get_media_hide_paused(),
+        status_display_type: window.get_status_display_type().to_string(),
     }
 }
 
@@ -640,6 +641,7 @@ fn presence_from_ui(window: &MainWindow) -> Result<PresenceDraft, String> {
         state_url: window.get_state_url().to_string(),
         large_url: window.get_large_url().to_string(),
         small_url: window.get_small_url().to_string(),
+        status_display_type: window.get_status_display_type().to_string(),
         button1_label: window.get_button1_label().to_string(),
         button1_url: window.get_button1_url().to_string(),
         button2_label: window.get_button2_label().to_string(),
