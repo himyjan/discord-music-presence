@@ -93,7 +93,8 @@ canonical search link is generated from the window title instead.
 Detected links are also attached to the Rich Presence **details** and **state**
 text and to the large image asset (Discord Social SDK field URLs), so the title,
 artist/channel and artwork are clickable in Discord. The **Activity** page has
-matching fields for manual activities.
+matching fields for manual activities. You can also choose whether the member-list
+status text shows the app name, the state (artist) or the details (track title).
 
 ### Keep optional processing off
 
