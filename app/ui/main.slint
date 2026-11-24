@@ -129,8 +129,8 @@ component FeatureCard inherits Rectangle {
     height: 84px;
     border-radius: 24px;
     background: root.checked
-        ? @linear-gradient(0deg, AppTheme.primary-container 0%, AppTheme.primary-container 40%, AppTheme.primary-container 100%)
-        : @linear-gradient(0deg, AppTheme.secondary-container 0%, AppTheme.secondary-container 40%, AppTheme.secondary-container 100%);
+        ? @linear-gradient(0deg, #5865f2 0%, #5865f2cc 50%, #5865f299 100%)
+        : @linear-gradient(0deg, #1a1a1e 0%, #1a1a1ecc 50%, #1a1a1e99 100%);
     HorizontalLayout {
         padding-left: 22px;
         padding-right: 18px;
@@ -258,7 +258,7 @@ component AccentButton inherits Rectangle {
 // Drawer navigation row (Kizzy drawer item: 20sp Semibold, 28 icon)
 component DrawerRow inherits Rectangle {
     in property<string> label;
-    in property<string> icon;
+    in property<image> icon;
     in property<string> page;
     in-out property<string> current-page;
     callback navigate(string);
@@ -269,7 +269,7 @@ component DrawerRow inherits Rectangle {
         padding-left: 14px;
         padding-right: 8px;
         spacing: 12px;
-        Text { text: root.icon; color: AppTheme.secondary; font-size: 22px; width: 28px; vertical-alignment: center; }
+        Image { source: root.icon; width: 25px; height: 25px; image-fit: contain; colorize: AppTheme.secondary; }
         Text { text: root.label; color: AppTheme.on-surface; font-size: 20px; font-weight: 600; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
     }
     TouchArea { clicked => { root.navigate(root.page); } }
@@ -438,7 +438,7 @@ export component MainWindow inherits Window {
                 spacing: 8px;
                 Rectangle {
                     width: 52px; height: 52px;
-                    Text { text: "☰"; color: AppTheme.on-surface; font-size: 24px; horizontal-alignment: center; vertical-alignment: center; }
+                    Image { source: @image-url("icons/ic_menu.svg"); width: 24px; height: 24px; image-fit: contain; colorize: AppTheme.on-surface; }
                     TouchArea { clicked => { root.openDrawer(); } }
                 }
                 VerticalLayout {
@@ -456,7 +456,7 @@ export component MainWindow inherits Window {
                 Rectangle {
                     width: 24px; height: 24px;
                     Rectangle { width: 8px; height: 8px; border-radius: 4px; background: AppTheme.red; x: 14px; y: 0px; }
-                    Text { text: "↻"; color: AppTheme.on-surface; font-size: 22px; horizontal-alignment: center; vertical-alignment: center; }
+                    Image { source: @image-url("icons/ic_update.svg"); width: 22px; height: 22px; image-fit: contain; colorize: AppTheme.on-surface; }
                     TouchArea { clicked => { root.navigate("Connections"); } }
                 }
                 Rectangle {
@@ -481,7 +481,7 @@ export component MainWindow inherits Window {
                 spacing: 8px;
                 Rectangle {
                     width: 48px; height: 48px;
-                    Text { text: "←"; color: AppTheme.on-surface; font-size: 26px; horizontal-alignment: center; vertical-alignment: center; }
+                    Image { source: @image-url("icons/ic_arrow_back.svg"); width: 26px; height: 26px; image-fit: contain; colorize: AppTheme.on-surface; }
                     TouchArea { clicked => { root.navigate("Home"); } }
                 }
                 Text {
@@ -503,7 +503,7 @@ export component MainWindow inherits Window {
                 }
                 if root.current-page == "Media" || root.current-page == "Apps" || root.current-page == "Logs": Rectangle {
                     width: 40px; height: 40px;
-                    Text { text: "⌕"; color: AppTheme.on-surface; font-size: 24px; horizontal-alignment: center; vertical-alignment: center; }
+                    Image { source: @image-url("icons/ic_settings.svg"); width: 22px; height: 22px; image-fit: contain; colorize: AppTheme.on-surface; }
                 }
             }
         }
@@ -514,11 +514,12 @@ export component MainWindow inherits Window {
                 padding: 12px;
                 padding-bottom: 24px;
                 spacing: 12px;
+                alignment: start;
 
                 // ===================== HOME =====================
                 if root.current-page == "Home": VerticalLayout {
                     spacing: 12px;
-                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Features"); }
+                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Features"); color: AppTheme.on-surface; font-size: 28px; font-weight: 700; }
                     FeatureCard {
                         icon: @image-url("icons/ic_media_rpc.svg");
                         title: AppLocalization.translate(AppLocalization.current_locale, "Media RPC");
@@ -543,12 +544,6 @@ export component MainWindow inherits Window {
                         toggled(v) => { root.rpc-mode-toggled("Custom", v); }
                         navigate(p) => { root.navigate(p); }
                     }
-                    Text {
-                        text: root.rpc-mode-status;
-                        color: AppTheme.on-surface-variant;
-                        font-size: 12px;
-                        wrap: word-wrap;
-                    }
                 }
 
                 // ===================== MEDIA RPC =====================
@@ -563,7 +558,7 @@ export component MainWindow inherits Window {
                         height: 44px;
                         HorizontalLayout {
                             spacing: 8px;
-                            Text { text: "⧉"; color: AppTheme.primary; font-size: 20px; vertical-alignment: center; }
+                            Image { source: @image-url("icons/ic_content_paste.svg"); width: 20px; height: 20px; image-fit: contain; colorize: AppTheme.primary; }
                             Text { text: AppLocalization.translate(AppLocalization.current_locale, "Copy to Custom RPC"); color: AppTheme.primary; font-size: 14px; font-weight: 600; vertical-alignment: center; }
                         }
                         TouchArea { clicked => {
@@ -861,15 +856,15 @@ export component MainWindow inherits Window {
                     Text { text: "Kizzy"; color: AppTheme.on-surface; font-size: 14px; font-weight: 500; vertical-alignment: center; }
                     Text { text: "Enhanced"; color: AppTheme.on-surface; font-size: 14px; font-weight: 500; vertical-alignment: center; }
                 }
-                DrawerRow { icon: "◐"; label: AppLocalization.translate(AppLocalization.current_locale, "Display"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                DrawerRow { icon: "文"; label: AppLocalization.translate(AppLocalization.current_locale, "Language"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                DrawerRow { icon: "≡"; label: AppLocalization.translate(AppLocalization.current_locale, "Logs"); page: "Logs"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                DrawerRow { icon: "⚙"; label: AppLocalization.translate(AppLocalization.current_locale, "Settings"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_palette.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Display"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_language.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Language"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_bug.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Logs"); page: "Logs"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_settings.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Settings"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
                 Rectangle { height: 1px; background: AppTheme.outline; }
                 SubtitleText { label: "HELP"; }
-                DrawerRow { icon: "?"; label: "FAQ"; page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                DrawerRow { icon: "ⓘ"; label: AppLocalization.translate(AppLocalization.current_locale, "About"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                DrawerRow { icon: "★"; label: "Kizzy Quickie"; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_help.svg"); label: "FAQ"; page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_info.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "About"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_star.svg"); label: "Kizzy Quickie"; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
                 Rectangle { vertical-stretch: 1; }
                 Rectangle {
                     height: 70px;
