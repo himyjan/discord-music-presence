@@ -103,12 +103,40 @@ fn set_macos_application_icon() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+fn register_kizzy_fonts() {
+    use slint::fontique_012::fontique;
+    let mut collection = fontique::Collection::new(fontique::CollectionOptions {
+        system_fonts: true,
+        ..Default::default()
+    });
+    let fonts = [
+        include_bytes!("../assets/fonts/google_sans_text_regular.ttf").as_slice(),
+        include_bytes!("../assets/fonts/google_sans_text_medium.ttf").as_slice(),
+        include_bytes!("../assets/fonts/google_sans_text_bold.ttf").as_slice(),
+        include_bytes!("../assets/fonts/google_sans_display_bold.ttf").as_slice(),
+    ];
+    let mut family_ids = Vec::new();
+    for data in fonts {
+        let blob = fontique::Blob::new(Arc::new(data.to_vec()));
+        for (family, _) in collection.register_fonts(blob, None) {
+            if !family_ids.contains(&family) {
+                family_ids.push(family);
+            }
+        }
+    }
+    collection.set_generic_families(fontique::GenericFamily::SansSerif, family_ids.into_iter());
+    if let Err(error) = slint::fontique_012::set_shared_collection(collection) {
+        eprintln!("Could not register Google Sans fonts: {error}");
+    }
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     if let Some(callback_uri) = oauth_protocol::callback_argument() {
         oauth_protocol::forward_callback(&callback_uri).map_err(std::io::Error::other)?;
         return Ok(());
     }
 
+    register_kizzy_fonts();
     let window = MainWindow::new()?;
     let rpc_modes = Arc::new(RpcModeFlags::default());
     let localizer = Arc::new(Localizer::bundled());

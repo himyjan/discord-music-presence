@@ -1,37 +1,52 @@
-// Music Presence — Discord-branded desktop UI.
-// Palette mirrors Discord's own dark/light surfaces (see discord.com/branding)
-// and the tokens shipped with Kizzy Enhanced.
+// Kizzy Enhanced — faithful desktop reproduction.
+// Palette, typography, spacing and component shapes mirror the Android app's
+// Discord Dark / Discord Light schemes and its Compose component specs.
 
 import { ComboBox, LineEdit, ScrollView } from "std-widgets.slint";
 
 // ---------------------------------------------------------------------------
-// Theme tokens
+// Kizzy Discord theme tokens (theme/Color.kt + theme/Theme.kt)
 // ---------------------------------------------------------------------------
 global AppTheme {
     in-out property<bool> dark: true;
 
-    // Surfaces
-    out property<color> bg: root.dark ? #313338 : #ffffff;
-    out property<color> sidebar: root.dark ? #2b2d31 : #f2f3f5;
-    out property<color> topbar: root.dark ? #313338 : #ffffff;
-    out property<color> card: root.dark ? #232428 : #f2f3f5;
-    out property<color> card-hover: root.dark ? #2e3035 : #e3e5e8;
-    out property<color> input: root.dark ? #1e1f22 : #ffffff;
-    out property<color> border: root.dark ? #3f4147 : #d9dadd;
-    out property<color> track: root.dark ? #3f4147 : #d9dadd;
+    // Brand + surfaces
+    out property<color> primary: #5865f2;
+    out property<color> on-primary: #ffffff;
+    out property<color> primary-container: root.dark ? #5865f2 : #e0e3ff;
+    out property<color> on-primary-container: root.dark ? #ffffff : #1e1f4b;
+    out property<color> secondary: #5865f2;
+    out property<color> secondary-container: root.dark ? #1a1a1e : #ffffff;
+    out property<color> on-secondary-container: root.dark ? #f2f3f5 : #060607;
+    out property<color> tertiary: root.dark ? #57f287 : #23a55a;
 
-    // Text
-    out property<color> text: root.dark ? #f2f3f5 : #2e3338;
-    out property<color> muted: root.dark ? #b5bac1 : #4e5058;
+    out property<color> background: root.dark ? #000000 : #f2f3f5;
+    out property<color> surface: root.dark ? #000000 : #ffffff;
+    out property<color> on-surface: root.dark ? #f2f3f5 : #060607;
+    out property<color> surface-variant: root.dark ? #1a1a1e : #ffffff;
+    out property<color> on-surface-variant: root.dark ? #b5bac1 : #4e5058;
+    out property<color> surface-high: root.dark ? #232428 : #f2f3f5;
+    out property<color> outline: root.dark ? #3f4147 : #c4c6ce;
+    out property<color> inverse-surface: root.dark ? #f2f3f5 : #2f3033;
+
+    // Text (kept for compatibility / high-contrast surfaces)
+    out property<color> text: root.on-surface;
+    out property<color> muted: root.on-surface-variant;
     out property<color> subtle: root.dark ? #949ba4 : #6d6f78;
 
-    // Brand / status
-    out property<color> accent: #5865f2;
-    out property<color> accent-hover: #4752c4;
-    out property<color> green: root.dark ? #23a55a : #248046;
-    out property<color> yellow: root.dark ? #f0b232 : #c8912b;
-    out property<color> red: root.dark ? #f23f43 : #da373c;
+    // Status
+    out property<color> green: root.dark ? #57f287 : #23a55a;
+    out property<color> yellow: root.dark ? #fee75c : #c8912b;
+    out property<color> red: root.dark ? #ed4245 : #da373c;
+    out property<color> logout-red: #f23f43;
     out property<color> on-brand: #ffffff;
+
+    // Activity type chip colours
+    out property<color> playing-color: #1976d2;
+    out property<color> streaming-color: #9c27b0;
+    out property<color> listening-color: #43a047;
+    out property<color> watching-color: #ff9800;
+    out property<color> competing-color: #f44336;
 }
 
 export global AppLocalization {
@@ -43,107 +58,27 @@ export global AppLocalization {
 }
 
 // ---------------------------------------------------------------------------
-// Reusable pieces
+// Shared components — mirror Kizzy's common/components specs
 // ---------------------------------------------------------------------------
-component NavItem inherits Rectangle {
-    in property<string> label;
-    in property<string> icon;
-    in property<string> page;
-    in-out property<string> current-page;
-    callback navigate(string);
 
-    height: 42px;
-    border-radius: 8px;
-    background: root.current-page == root.page
-        ? (AppTheme.dark ? #404249 : #e3e5e8)
-        : transparent;
-
-    HorizontalLayout {
-        spacing: 12px;
-        padding-left: 12px;
-        padding-right: 8px;
-        Text {
-            text: root.icon;
-            color: root.current-page == root.page ? AppTheme.text : AppTheme.muted;
-            font-size: 17px;
-            width: 22px;
-            vertical-alignment: center;
-        }
-        Text {
-            text: root.label;
-            color: root.current-page == root.page ? AppTheme.text : AppTheme.muted;
-            font-size: 14px;
-            font-weight: root.current-page == root.page ? 600 : 400;
-            vertical-alignment: center;
-        }
-    }
-    TouchArea {
-        clicked => { root.navigate(root.page); }
-    }
-}
-
-component PrimaryButton inherits Rectangle {
-    in property<string> label;
-    in property<bool> active: true;
-    callback clicked();
-    height: 38px;
-    min-width: 120px;
-    border-radius: 8px;
-    background: root.active ? AppTheme.accent : AppTheme.track;
-    Text {
-        text: root.label;
-        color: root.active ? AppTheme.on-brand : AppTheme.subtle;
-        font-size: 14px;
-        font-weight: 600;
-        horizontal-alignment: center;
-        vertical-alignment: center;
-    }
-    TouchArea {
-        enabled: root.active;
-        clicked => { root.clicked(); }
-    }
-}
-
-component SecondaryButton inherits Rectangle {
-    in property<string> label;
-    in property<bool> active: true;
-    callback clicked();
-    height: 38px;
-    min-width: 96px;
-    border-radius: 8px;
-    background: root.active ? AppTheme.card-hover : transparent;
-    border-width: 1px;
-    border-color: AppTheme.border;
-    Text {
-        text: root.label;
-        color: root.active ? AppTheme.text : AppTheme.subtle;
-        font-size: 14px;
-        font-weight: 500;
-        horizontal-alignment: center;
-        vertical-alignment: center;
-    }
-    TouchArea {
-        enabled: root.active;
-        clicked => { root.clicked(); }
-    }
-}
-
-component Switch inherits Rectangle {
+// KSwitch: 56x28 track, 14 radius, 20 thumb, offset 4 -> 32
+component KSwitch inherits Rectangle {
     in-out property<bool> checked;
     in property<bool> enabled: true;
     callback toggled();
-    width: 44px;
-    height: 24px;
-    border-radius: 12px;
-    background: !root.enabled ? AppTheme.border : (root.checked ? AppTheme.accent : AppTheme.track);
+    width: 56px;
+    height: 28px;
+    border-radius: 14px;
+    opacity: root.enabled ? 1 : 0.5;
+    background: root.checked ? AppTheme.primary : AppTheme.surface-variant;
     Rectangle {
-        x: root.checked ? 23px : 3px;
-        y: 3px;
-        width: 18px;
-        height: 18px;
-        border-radius: 9px;
-        background: AppTheme.on-brand;
-        animate x { duration: 120ms; }
+        x: root.checked ? 32px : 4px;
+        y: 4px;
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        background: root.checked ? AppTheme.on-primary : AppTheme.outline;
+        animate x { duration: 150ms; }
     }
     TouchArea {
         enabled: root.enabled;
@@ -151,182 +86,207 @@ component Switch inherits Rectangle {
     }
 }
 
-component ToggleRow inherits Rectangle {
+// SwitchBar: full-width 28-radius pill, primaryContainer bg, title + switch
+component SwitchBar inherits Rectangle {
     in property<string> title;
-    in property<string> subtitle;
-    in-out property<bool> checked;
     in property<bool> enabled: true;
+    in-out property<bool> checked;
     callback toggled();
-    height: root.subtitle.is-empty ? 46px : 62px;
+    height: 64px;
+    border-radius: 28px;
+    background: root.enabled ? AppTheme.primary-container : AppTheme.surface-variant;
     HorizontalLayout {
-        spacing: 12px;
+        padding-left: 20px;
+        padding-right: 16px;
+        spacing: 8px;
+        Text {
+            text: root.title;
+            color: root.enabled ? AppTheme.on-primary-container : AppTheme.on-surface-variant;
+            font-size: 16px;
+            font-weight: 500;
+            vertical-alignment: center;
+            overflow: elide;
+            horizontal-stretch: 1;
+        }
+        KSwitch { checked <=> root.checked; enabled: root.enabled; toggled => { root.toggled(); } }
+    }
+    TouchArea {
+        enabled: root.enabled;
+        clicked => { root.checked = !root.checked; root.toggled(); }
+    }
+}
+
+// FeatureCard: 84px tall, 24 radius, 3-stop gradient, icon 40, title 22 W500, switch
+component FeatureCard inherits Rectangle {
+    in property<image> icon;
+    in property<string> title;
+    in property<string> page;
+    in-out property<string> current-page;
+    in-out property<bool> checked;
+    in property<bool> show-switch: true;
+    callback navigate(string);
+    callback toggled(bool);
+    height: 84px;
+    border-radius: 24px;
+    background: root.checked
+        ? @linear-gradient(0deg, AppTheme.primary-container 0%, AppTheme.primary-container 40%, AppTheme.primary-container 100%)
+        : @linear-gradient(0deg, AppTheme.secondary-container 0%, AppTheme.secondary-container 40%, AppTheme.secondary-container 100%);
+    HorizontalLayout {
+        padding-left: 22px;
+        padding-right: 18px;
+        padding-top: 16px;
+        padding-bottom: 16px;
+        spacing: 20px;
+        Image {
+            source: root.icon;
+            width: 40px;
+            height: 40px;
+            image-fit: contain;
+            colorize: root.checked ? AppTheme.primary : AppTheme.secondary;
+        }
+        Text {
+            text: root.title;
+            color: root.checked ? AppTheme.on-primary-container : AppTheme.on-secondary-container;
+            font-size: 22px;
+            font-weight: 500;
+            vertical-alignment: center;
+            horizontal-stretch: 1;
+            overflow: elide;
+        }
+        if root.show-switch: KSwitch {
+            checked <=> root.checked;
+            toggled => { root.toggled(root.checked); }
+        }
+    }
+    TouchArea { clicked => { root.navigate(root.page); } }
+}
+
+// PreferenceSwitch: Surface row, 24 icon, 20 title, 14 desc, switch
+component PreferenceSwitch inherits Rectangle {
+    in property<string> title;
+    in property<string> description;
+    in property<image> icon;
+    in-out property<bool> checked;
+    callback toggled();
+    min-height: 72px;
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 6px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        spacing: 16px;
+        Image { source: root.icon; width: 24px; height: 24px; image-fit: contain; colorize: AppTheme.secondary; }
         VerticalLayout {
             horizontal-stretch: 1;
             spacing: 2px;
-            Text {
-                text: root.title;
-                color: root.enabled ? AppTheme.text : AppTheme.subtle;
-                font-size: 14px;
-                font-weight: 500;
-                vertical-alignment: center;
-            }
-            if !root.subtitle.is-empty: Text {
-                text: root.subtitle;
-                color: AppTheme.muted;
-                font-size: 12px;
-                wrap: word-wrap;
-            }
+            Text { text: root.title; color: AppTheme.on-surface; font-size: 20px; font-weight: 500; wrap: word-wrap; }
+            if root.description != "": Text { text: root.description; color: AppTheme.on-surface-variant; font-size: 14px; wrap: word-wrap; }
         }
-        Switch {
-            checked <=> root.checked;
-            enabled: root.enabled;
-            toggled => { root.toggled(); }
-        }
+        KSwitch { checked <=> root.checked; toggled => { root.toggled(); } }
     }
+    TouchArea { clicked => { root.checked = !root.checked; root.toggled(); } }
 }
 
-component Card inherits Rectangle {
-    in property<length> card-padding: 18px;
-    background: AppTheme.card;
-    border-radius: 12px;
-    border-width: 1px;
-    border-color: AppTheme.border;
-    VerticalLayout {
-        padding: root.card-padding;
-        spacing: 12px;
-        @children
-    }
+// Subtitle: primary-coloured label (Kizzy Subtitle / labelLarge)
+component SubtitleText inherits Text {
+    in property<string> label;
+    text: root.label;
+    color: AppTheme.primary;
+    font-size: 14px;
+    font-weight: 600;
 }
 
-component Field inherits VerticalLayout {
+// RpcField: label above a filled text field
+component RpcField inherits VerticalLayout {
     in property<string> label;
     in-out property<string> value;
     in property<string> placeholder;
     in property<bool> secret: false;
     in property<bool> enabled: true;
-    spacing: 6px;
-    Text {
-        text: root.label;
-        color: AppTheme.muted;
-        font-size: 12px;
-        font-weight: 600;
-    }
-    LineEdit {
-        text <=> root.value;
-        placeholder-text: root.placeholder;
-        enabled: root.enabled;
-        input-type: root.secret ? InputType.password : InputType.text;
+    spacing: 4px;
+    Text { text: root.label; color: AppTheme.on-surface-variant; font-size: 14px; }
+    Rectangle {
+        height: 52px;
+        border-radius: 8px;
+        background: AppTheme.surface-variant;
+        LineEdit {
+            text <=> root.value;
+            placeholder-text: root.placeholder;
+            enabled: root.enabled;
+            input-type: root.secret ? InputType.password : InputType.text;
+        }
     }
 }
 
-component FeatureCard inherits Rectangle {
-    in property<string> icon;
-    in property<string> title;
-    in property<string> description;
-    in property<string> page;
-    in-out property<string> current-page;
-    callback navigate(string);
-    height: 132px;
-    border-radius: 14px;
-    background: AppTheme.card;
-    border-width: 1px;
-    border-color: AppTheme.border;
+// Card: Kizzy Surface card
+component Card inherits Rectangle {
+    in property<length> pad: 16px;
+    background: AppTheme.surface-variant;
+    border-radius: 16px;
     VerticalLayout {
-        padding: 16px;
-        spacing: 6px;
-        Text { text: root.icon; color: AppTheme.accent; font-size: 24px; }
-        Text { text: root.title; color: AppTheme.text; font-size: 16px; font-weight: 700; }
-        Text {
-            text: root.description;
-            color: AppTheme.muted;
-            font-size: 12px;
-            wrap: word-wrap;
-        }
-    }
-    TouchArea {
-        clicked => { root.navigate(root.page); }
+        padding: root.pad;
+        spacing: 10px;
+        @children
     }
 }
 
-component RpcFeatureCard inherits Rectangle {
+component GhostButton inherits Rectangle {
+    in property<string> label;
+    in property<bool> active: true;
+    callback clicked();
+    height: 40px;
+    min-width: 100px;
+    border-radius: 20px;
+    background: AppTheme.secondary-container;
+    opacity: root.active ? 1 : 0.5;
+    Text { text: root.label; color: AppTheme.on-secondary-container; font-size: 14px; font-weight: 600; horizontal-alignment: center; vertical-alignment: center; }
+    TouchArea { enabled: root.active; clicked => { root.clicked(); } }
+}
+
+component AccentButton inherits Rectangle {
+    in property<string> label;
+    in property<bool> active: true;
+    callback clicked();
+    height: 40px;
+    min-width: 120px;
+    border-radius: 20px;
+    background: root.active ? AppTheme.primary : AppTheme.surface-variant;
+    Text { text: root.label; color: root.active ? AppTheme.on-primary : AppTheme.on-surface-variant; font-size: 14px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+    TouchArea { enabled: root.active; clicked => { root.clicked(); } }
+}
+
+// Drawer navigation row (Kizzy drawer item: 20sp Semibold, 28 icon)
+component DrawerRow inherits Rectangle {
+    in property<string> label;
     in property<string> icon;
-    in property<string> title;
-    in property<string> description;
     in property<string> page;
     in-out property<string> current-page;
-    in-out property<bool> checked;
     callback navigate(string);
-    callback toggled(bool);
-    height: 118px;
-    border-radius: 14px;
-    background: AppTheme.card;
-    border-width: 1px;
-    border-color: root.checked ? AppTheme.accent : AppTheme.border;
+    height: 54px;
+    border-radius: 12px;
+    background: root.current-page == root.page ? AppTheme.secondary-container : transparent;
     HorizontalLayout {
-        padding: 16px;
+        padding-left: 14px;
+        padding-right: 8px;
         spacing: 12px;
-        Rectangle {
-            width: 46px; height: 46px; border-radius: 12px;
-            background: root.checked ? AppTheme.accent : AppTheme.card-hover;
-            Text { text: root.icon; color: root.checked ? AppTheme.on-brand : AppTheme.accent; font-size: 22px; horizontal-alignment: center; vertical-alignment: center; }
-        }
-        VerticalLayout {
-            horizontal-stretch: 1;
-            spacing: 4px;
-            Text { text: root.title; color: AppTheme.text; font-size: 15px; font-weight: 700; }
-            Text { text: root.description; color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
-            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Open settings →"); color: AppTheme.accent; font-size: 11px; }
-        }
-        VerticalLayout {
-            width: 48px;
-            alignment: center;
-            Switch {
-                checked <=> root.checked;
-                toggled => { root.toggled(root.checked); }
-            }
-        }
+        Text { text: root.icon; color: AppTheme.secondary; font-size: 22px; width: 28px; vertical-alignment: center; }
+        Text { text: root.label; color: AppTheme.on-surface; font-size: 20px; font-weight: 600; vertical-alignment: center; horizontal-stretch: 1; overflow: elide; }
     }
-    TouchArea {
-        clicked => { root.navigate(root.page); }
-    }
-}
-
-component StatusPill inherits Rectangle {
-    in property<string> label;
-    in property<color> dot;
-    height: 26px;
-    border-radius: 13px;
-    background: AppTheme.card-hover;
-    HorizontalLayout {
-        spacing: 8px;
-        padding-left: 10px;
-        padding-right: 10px;
-        Rectangle {
-            width: 8px; height: 8px; border-radius: 4px;
-            background: root.dot;
-        }
-        Text {
-            text: root.label;
-            color: AppTheme.text;
-            font-size: 12px;
-            vertical-alignment: center;
-        }
-    }
+    TouchArea { clicked => { root.navigate(root.page); } }
 }
 
 // ---------------------------------------------------------------------------
 // Main window
 // ---------------------------------------------------------------------------
 export component MainWindow inherits Window {
-    title: AppLocalization.translate(AppLocalization.current_locale, "Music Presence");
-    icon: @image-url("../packaging/music-presence.svg");
-    preferred-width: 640px;
-    preferred-height: 860px;
-    min-width: 460px;
+    title: "Music Presence";
+    preferred-width: 560px;
+    preferred-height: 880px;
+    min-width: 420px;
     min-height: 600px;
-    background: AppTheme.bg;
+    background: AppTheme.background;
 
-    // ---- persisted / shared state (kept for Rust workers) ----
+    // ---- connection / activity (Rust contract) ----
     in-out property<string> application-id: "1571063796418744412";
     in-out property<string> rpc-mode: "Custom RPC";
     in-out property<string> activity-name: "Music Presence";
@@ -334,7 +294,7 @@ export component MainWindow inherits Window {
     in-out property<string> activity-state: "";
     in-out property<string> activity-type: "Listening";
     in-out property<string> status-display-type: "Name";
-    in-out property<string> media-title: AppLocalization.translate(AppLocalization.current_locale, "");
+    in-out property<string> media-title: "";
     in-out property<string> media-artist: "";
     in-out property<string> media-album: "";
     in-out property<string> media-kind: "Song";
@@ -342,14 +302,14 @@ export component MainWindow inherits Window {
     in-out property<string> media-position: "";
     in-out property<bool> media-playing: true;
     in-out property<string> large-image: "";
-    in-out property<string> large-text: AppLocalization.translate(AppLocalization.current_locale, "");
+    in-out property<string> large-text: "";
     in-out property<string> details-url: "";
     in-out property<string> state-url: "";
     in-out property<string> large-url: "";
     in-out property<string> small-url: "";
-    in-out property<string> button1-label: AppLocalization.translate(AppLocalization.current_locale, "");
+    in-out property<string> button1-label: "";
     in-out property<string> button1-url: "";
-    in-out property<string> button2-label: AppLocalization.translate(AppLocalization.current_locale, "");
+    in-out property<string> button2-label: "";
     in-out property<string> button2-url: "";
     in-out property<string> connection-status: "Disconnected";
     in-out property<bool> connected: false;
@@ -396,7 +356,7 @@ export component MainWindow inherits Window {
     in-out property<bool> scrobble-librefm-pending: false;
     in-out property<string> scrobble-librefm-status: "Not connected";
 
-    // ---- auto-detection state ----
+    // ---- detection ----
     in-out property<string> media-source: "";
     in-out property<string> detected-app: "";
     in-out property<string> detected-site: "";
@@ -436,7 +396,7 @@ export component MainWindow inherits Window {
     in-out property<string> custom-button2-label: "";
     in-out property<string> custom-button2-url: "";
 
-    // ---- callbacks (wired in Rust) ----
+    // ---- callbacks (Rust contract) ----
     callback connect-requested();
     callback disconnect-requested();
     callback presence-update-requested();
@@ -462,700 +422,475 @@ export component MainWindow inherits Window {
     callback rpc-mode-toggled(string, bool);
     callback custom-presence-update-requested();
 
-    // Helper: navigate + share current page with nav items.
-    function navigate(page: string) {
-        root.current-page = page;
-    }
+    function navigate(page: string) { root.current-page = page; }
+    function openDrawer() { root.drawer-open = true; }
 
+    // =========================== CONTENT ===========================
     VerticalLayout {
-        // ---- Home: large top app bar (Kizzy-style) ----
-        if (root.current-page == "Home"): Rectangle {
-            height: 104px;
-            background: AppTheme.topbar;
+        // ---- Large top app bar (Home) ----
+        if root.current-page == "Home": Rectangle {
+            height: 118px;
+            background: AppTheme.background;
             HorizontalLayout {
-                padding-left: 20px; padding-right: 20px; padding-top: 12px; spacing: 14px;
+                padding-left: 0px;
+                padding-right: 12px;
+                padding-top: 4px;
+                spacing: 8px;
                 Rectangle {
-                    width: 40px; height: 40px; border-radius: 20px;
-                    background: AppTheme.card-hover;
-                    Text { text: "☰"; color: AppTheme.text; font-size: 20px; horizontal-alignment: center; vertical-alignment: center; }
-                    TouchArea { clicked => { root.drawer-open = true; } }
+                    width: 52px; height: 52px;
+                    Text { text: "☰"; color: AppTheme.on-surface; font-size: 24px; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.openDrawer(); } }
                 }
                 VerticalLayout {
                     horizontal-stretch: 1;
-                    spacing: 2px;
+                    spacing: 0px;
                     Text {
-                        text: "Welcome" + (root.oauth-display-name.is-empty ? "" : ", " + root.oauth-display-name);
-                        color: AppTheme.text; font-size: 24px; font-weight: 700;
+                        text: AppLocalization.translate(AppLocalization.current_locale, "Welcome") + (root.oauth-display-name.is-empty ? "" : ", " + root.oauth-display-name);
+                        color: AppTheme.on-surface;
+                        font-size: 28px;
+                        font-weight: 700;
                         overflow: elide;
+                        vertical-alignment: center;
                     }
-                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Music Presence · Discord Rich Presence"); color: AppTheme.muted; font-size: 12px; }
                 }
                 Rectangle {
-                    width: 40px; height: 40px; border-radius: 20px;
-                    background: root.oauth-has-avatar ? AppTheme.card-hover : AppTheme.accent;
+                    width: 24px; height: 24px;
+                    Rectangle { width: 8px; height: 8px; border-radius: 4px; background: AppTheme.red; x: 14px; y: 0px; }
+                    Text { text: "↻"; color: AppTheme.on-surface; font-size: 22px; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.navigate("Connections"); } }
+                }
+                Rectangle {
+                    width: 44px; height: 44px; border-radius: 22px;
+                    border-width: 2px; border-color: AppTheme.secondary-container;
                     clip: true;
-                    if (root.oauth-has-avatar): Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
-                    if (!root.oauth-has-avatar): Text { text: root.oauth-initials.is-empty ? "?" : root.oauth-initials; color: AppTheme.on-brand; font-size: 14px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                    background: AppTheme.secondary-container;
+                    if root.oauth-has-avatar: Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                    if !root.oauth-has-avatar: Text { text: root.oauth-initials.is-empty ? "?" : root.oauth-initials; color: AppTheme.on-surface; font-size: 16px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
                     TouchArea { clicked => { root.navigate("Profile"); } }
                 }
             }
         }
-        // ---- Other pages: top app bar with back button ----
-        if (root.current-page != "Home"): Rectangle {
-            height: 58px;
-            background: AppTheme.topbar;
+
+        // ---- Standard app bar with back button ----
+        if root.current-page != "Home": Rectangle {
+            height: 56px;
+            background: AppTheme.background;
             HorizontalLayout {
-                padding-left: 16px; padding-right: 20px; spacing: 12px;
+                padding-left: 4px;
+                padding-right: 12px;
+                spacing: 8px;
                 Rectangle {
-                    width: 36px; height: 36px; border-radius: 18px;
-                    background: AppTheme.card-hover;
-                    Text { text: "←"; color: AppTheme.text; font-size: 20px; horizontal-alignment: center; vertical-alignment: center; }
+                    width: 48px; height: 48px;
+                    Text { text: "←"; color: AppTheme.on-surface; font-size: 26px; horizontal-alignment: center; vertical-alignment: center; }
                     TouchArea { clicked => { root.navigate("Home"); } }
                 }
                 Text {
-                    text: root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Manual RPC")
+                    text: root.current-page == "Media" ? AppLocalization.translate(AppLocalization.current_locale, "Media RPC")
+                        : root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Manual RPC")
                         : root.current-page == "Custom" ? AppLocalization.translate(AppLocalization.current_locale, "Custom RPC")
-                        : root.current-page == "Media" ? AppLocalization.translate(AppLocalization.current_locale, "Media RPC")
                         : root.current-page == "Apps" ? AppLocalization.translate(AppLocalization.current_locale, "App Detection")
-                        : root.current-page == "Connections" ? AppLocalization.translate(AppLocalization.current_locale, "Connections")
-                        : root.current-page == "Profile" ? AppLocalization.translate(AppLocalization.current_locale, "Discord Profile")
+                        : root.current-page == "Connections" ? AppLocalization.translate(AppLocalization.current_locale, "RPC Settings")
+                        : root.current-page == "Profile" ? AppLocalization.translate(AppLocalization.current_locale, "Profile")
                         : root.current-page == "Scrobbling" ? AppLocalization.translate(AppLocalization.current_locale, "Scrobbling")
                         : root.current-page == "Logs" ? AppLocalization.translate(AppLocalization.current_locale, "Logs")
                         : AppLocalization.translate(AppLocalization.current_locale, "Settings");
-                    color: AppTheme.text; font-size: 18px; font-weight: 700; vertical-alignment: center;
+                    color: AppTheme.on-surface;
+                    font-size: 28px;
+                    font-weight: 700;
+                    vertical-alignment: center;
+                    horizontal-stretch: 1;
+                    overflow: elide;
                 }
-                Rectangle { horizontal-stretch: 1; }
-                StatusPill {
-                    label: root.detecting ? "Scanning…" : (root.media-source.is-empty ? "No media" : root.media-source);
-                    dot: root.detecting ? AppTheme.yellow : (root.media-source.is-empty ? AppTheme.subtle : AppTheme.green);
-                }
-                Rectangle {
-                    width: 36px; height: 36px; border-radius: 18px;
-                    background: AppTheme.card-hover;
-                    Text { text: "☰"; color: AppTheme.text; font-size: 18px; horizontal-alignment: center; vertical-alignment: center; }
-                    TouchArea { clicked => { root.drawer-open = true; } }
+                if root.current-page == "Media" || root.current-page == "Apps" || root.current-page == "Logs": Rectangle {
+                    width: 40px; height: 40px;
+                    Text { text: "⌕"; color: AppTheme.on-surface; font-size: 24px; horizontal-alignment: center; vertical-alignment: center; }
                 }
             }
         }
 
-        // Scrolling page area
         ScrollView {
-                    vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
-                    VerticalLayout {
-                        padding: 24px;
-                        padding-bottom: 40px;
-                        spacing: 18px;
+            vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
+            VerticalLayout {
+                padding: 12px;
+                padding-bottom: 24px;
+                spacing: 12px;
 
-                        // ===================== HOME =====================
-                        if (root.current-page == "Home"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: "Welcome" + (root.oauth-display-name.is-empty ? "" : ", " + root.oauth-display-name) + " — choose which Rich Presence modes to run."; color: AppTheme.text; font-size: 20px; font-weight: 700; wrap: word-wrap; }
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "All three modes can be on at the same time. Discord shows the most recent update."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                            // Single-column feature list so the window can stay narrow
-                            RpcFeatureCard { icon: "♫"; title: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect playing media and browser links."); page: "Media"; current-page <=> root.current-page; checked <=> root.rpc-media-enabled; toggled(v) => { root.rpc-mode-toggled("Media", v); } navigate(p) => { root.navigate(p); } }
-                            RpcFeatureCard { icon: "✎"; title: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Broadcast details you enter yourself."); page: "Activity"; current-page <=> root.current-page; checked <=> root.rpc-manual-enabled; toggled(v) => { root.rpc-mode-toggled("Manual", v); } navigate(p) => { root.navigate(p); } }
-                            RpcFeatureCard { icon: "◆"; title: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Fully custom activity with assets and buttons."); page: "Custom"; current-page <=> root.current-page; checked <=> root.rpc-custom-enabled; toggled(v) => { root.rpc-mode-toggled("Custom", v); } navigate(p) => { root.navigate(p); } }
-                            FeatureCard { icon: "⚡"; title: AppLocalization.translate(AppLocalization.current_locale, "Connections"); description: AppLocalization.translate(AppLocalization.current_locale, "Desktop RPC, bot gateway and OAuth sign-in."); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                            FeatureCard { icon: "▦"; title: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); description: AppLocalization.translate(AppLocalization.current_locale, "Choose which players and browsers are used."); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                            FeatureCard { icon: "↻"; title: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); description: AppLocalization.translate(AppLocalization.current_locale, "Last.fm, ListenBrainz and Libre.fm."); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                            Card {
-                                VerticalLayout { spacing: 8px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "RPC status"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: root.rpc-mode-status; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Add your Application ID under Connections and connect to start broadcasting."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                }
+                // ===================== HOME =====================
+                if root.current-page == "Home": VerticalLayout {
+                    spacing: 12px;
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Features"); }
+                    FeatureCard {
+                        icon: @image-url("icons/ic_media_rpc.svg");
+                        title: AppLocalization.translate(AppLocalization.current_locale, "Media RPC");
+                        page: "Media"; current-page <=> root.current-page;
+                        checked <=> root.rpc-media-enabled;
+                        toggled(v) => { root.rpc-mode-toggled("Media", v); }
+                        navigate(p) => { root.navigate(p); }
+                    }
+                    FeatureCard {
+                        icon: @image-url("icons/ic_dev_rpc.svg");
+                        title: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC");
+                        page: "Activity"; current-page <=> root.current-page;
+                        checked <=> root.rpc-manual-enabled;
+                        toggled(v) => { root.rpc-mode-toggled("Manual", v); }
+                        navigate(p) => { root.navigate(p); }
+                    }
+                    FeatureCard {
+                        icon: @image-url("icons/ic_rpc_placeholder.svg");
+                        title: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC");
+                        page: "Custom"; current-page <=> root.current-page;
+                        checked <=> root.rpc-custom-enabled;
+                        toggled(v) => { root.rpc-mode-toggled("Custom", v); }
+                        navigate(p) => { root.navigate(p); }
+                    }
+                    Text {
+                        text: root.rpc-mode-status;
+                        color: AppTheme.on-surface-variant;
+                        font-size: 12px;
+                        wrap: word-wrap;
+                    }
+                }
+
+                // ===================== MEDIA RPC =====================
+                if root.current-page == "Media": VerticalLayout {
+                    spacing: 10px;
+                    SwitchBar {
+                        title: AppLocalization.translate(AppLocalization.current_locale, "Enable Media RPC");
+                        checked <=> root.rpc-media-enabled;
+                        toggled => { root.rpc-mode-toggled("Media", root.rpc-media-enabled); }
+                    }
+                    Rectangle {
+                        height: 44px;
+                        HorizontalLayout {
+                            spacing: 8px;
+                            Text { text: "⧉"; color: AppTheme.primary; font-size: 20px; vertical-alignment: center; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Copy to Custom RPC"); color: AppTheme.primary; font-size: 14px; font-weight: 600; vertical-alignment: center; }
+                        }
+                        TouchArea { clicked => {
+                            root.custom-name = root.activity-name;
+                            root.custom-details = root.media-title;
+                            root.custom-state = root.media-artist;
+                            root.custom-large-image = root.large-image;
+                            root.custom-button1-url = root.media-video-url;
+                            root.custom-button2-url = root.media-channel-url;
+                        } }
+                    }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); }
+                    PreferenceSwitch { title: "Show Artist Name"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-show-artist; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Show Album Name"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Show Cover Art"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-cover-art; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Enable Timestamps"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-timestamps; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Show Playback State"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-playback-state; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Hide RPC on Pause"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Show Song as Title"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-song-as-title; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Auto-detect activity type"; icon: @image-url("icons/ic_media_rpc.svg"); checked <=> root.media-auto-activity-type; toggled => { root.detector-settings-changed(); } }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Detection"); }
+                    SwitchBar { title: "Auto-detect"; checked <=> root.auto-detect; toggled => { root.auto-detect-changed(root.auto-detect); } }
+                    PreferenceSwitch { title: "Native Now Playing"; checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Browser Tabs"; checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Media Players"; checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
+                    Card {
+                        VerticalLayout { spacing: 6px;
+                            Text { text: root.media-title.is-empty ? "—" : root.media-title; color: AppTheme.on-surface; font-size: 16px; font-weight: 600; wrap: word-wrap; }
+                            Text { text: root.media-artist; color: AppTheme.on-surface-variant; font-size: 14px; wrap: word-wrap; }
+                            Text { text: root.detection-status; color: AppTheme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+                            GhostButton { label: "Detect now"; active: !root.detecting; clicked => { root.detect-now-requested(); } }
+                        }
+                    }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Activity Type"); }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        GhostButton { label: "Auto"; active: root.media-activity-type == "Auto"; clicked => { root.media-activity-type = "Auto"; root.detector-settings-changed(); } }
+                        GhostButton { label: "Listening"; active: root.media-activity-type == "Listening"; clicked => { root.media-activity-type = "Listening"; root.detector-settings-changed(); } }
+                        GhostButton { label: "Watching"; active: root.media-activity-type == "Watching"; clicked => { root.media-activity-type = "Watching"; root.detector-settings-changed(); } }
+                    }
+                }
+
+                // ===================== MANUAL RPC =====================
+                if root.current-page == "Activity": VerticalLayout {
+                    spacing: 10px;
+                    SwitchBar {
+                        title: AppLocalization.translate(AppLocalization.current_locale, "Enable Manual RPC");
+                        checked <=> root.rpc-manual-enabled;
+                        toggled => { root.rpc-mode-toggled("Manual", root.rpc-manual-enabled); }
+                    }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Advanced Settings"); }
+                    RpcField { label: AppLocalization.translate(AppLocalization.current_locale, "Activity Name"); value <=> root.activity-name; placeholder: "Music Presence"; }
+                    RpcField { label: AppLocalization.translate(AppLocalization.current_locale, "Activity Details"); value <=> root.activity-details; placeholder: "Listening to music"; }
+                    RpcField { label: AppLocalization.translate(AppLocalization.current_locale, "Activity State"); value <=> root.activity-state; placeholder: "Artist · Album"; }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "RPC buttons"); }
+                    RpcField { label: "Button 1 text"; value <=> root.button1-label; placeholder: "Open"; }
+                    RpcField { label: "Button 1 URL"; value <=> root.button1-url; placeholder: "https://…"; }
+                    RpcField { label: "Button 2 text"; value <=> root.button2-label; placeholder: "Channel"; }
+                    RpcField { label: "Button 2 URL"; value <=> root.button2-url; placeholder: "https://…"; }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Field URLs"); }
+                    RpcField { label: "Details URL"; value <=> root.details-url; placeholder: "https://…"; }
+                    RpcField { label: "State URL"; value <=> root.state-url; placeholder: "https://…"; }
+                    RpcField { label: "Large URL"; value <=> root.large-url; placeholder: "https://…"; }
+                    RpcField { label: "Small URL"; value <=> root.small-url; placeholder: "https://…"; }
+                    AccentButton { label: AppLocalization.translate(AppLocalization.current_locale, "Update presence"); active: root.connected || root.gateway-connected; clicked => { root.presence-update-requested(); } }
+                }
+
+                // ===================== CUSTOM RPC =====================
+                if root.current-page == "Custom": VerticalLayout {
+                    spacing: 10px;
+                    SwitchBar {
+                        title: AppLocalization.translate(AppLocalization.current_locale, "Enable Custom RPC");
+                        checked <=> root.rpc-custom-enabled;
+                        toggled => { root.rpc-mode-toggled("Custom", root.rpc-custom-enabled); }
+                    }
+                    RpcField { label: AppLocalization.translate(AppLocalization.current_locale, "Activity Name"); value <=> root.custom-name; placeholder: "Music Presence"; }
+                    RpcField { label: AppLocalization.translate(AppLocalization.current_locale, "Activity Details"); value <=> root.custom-details; placeholder: "Listening to music"; }
+                    RpcField { label: AppLocalization.translate(AppLocalization.current_locale, "Activity State"); value <=> root.custom-state; placeholder: "Artist · Album"; }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Activity Type"); }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        GhostButton { label: "Playing"; active: root.custom-activity-type == "Playing"; clicked => { root.custom-activity-type = "Playing"; } }
+                        GhostButton { label: "Listening"; active: root.custom-activity-type == "Listening"; clicked => { root.custom-activity-type = "Listening"; } }
+                        GhostButton { label: "Watching"; active: root.custom-activity-type == "Watching"; clicked => { root.custom-activity-type = "Watching"; } }
+                        GhostButton { label: "Competing"; active: root.custom-activity-type == "Competing"; clicked => { root.custom-activity-type = "Competing"; } }
+                    }
+                    RpcField { label: "Activity Large Image"; value <=> root.custom-large-image; placeholder: "asset key or URL"; }
+                    RpcField { label: "Activity Large Text"; value <=> root.custom-large-text; placeholder: "hover text"; }
+                    RpcField { label: "Details URL"; value <=> root.custom-details-url; placeholder: "https://…"; }
+                    RpcField { label: "State URL"; value <=> root.custom-state-url; placeholder: "https://…"; }
+                    RpcField { label: "Large URL"; value <=> root.custom-large-url; placeholder: "https://…"; }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "RPC buttons"); }
+                    RpcField { label: "Button 1 text"; value <=> root.custom-button1-label; placeholder: "Open"; }
+                    RpcField { label: "Button 1 URL"; value <=> root.custom-button1-url; placeholder: "https://…"; }
+                    RpcField { label: "Button 2 text"; value <=> root.custom-button2-label; placeholder: "Channel"; }
+                    RpcField { label: "Button 2 URL"; value <=> root.custom-button2-url; placeholder: "https://…"; }
+                    AccentButton { label: "Apply custom presence"; clicked => { root.custom-presence-update-requested(); } }
+                }
+
+                // ===================== APP DETECTION =====================
+                if root.current-page == "Apps": VerticalLayout {
+                    spacing: 10px;
+                    SwitchBar { title: "Enable App Detection"; checked <=> root.auto-detect; toggled => { root.auto-detect-changed(root.auto-detect); } }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Detection sources"); }
+                    PreferenceSwitch { title: "Native Now Playing"; description: "Now Playing / SMTC / MPRIS"; checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Browser Tabs"; description: "YouTube, Vimeo, Twitch, Spotify"; checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
+                    PreferenceSwitch { title: "Media Players"; description: "Spotify, Apple Music, iTunes"; checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
+                }
+
+                // ===================== CONNECTIONS =====================
+                if root.current-page == "Connections": VerticalLayout {
+                    spacing: 10px;
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Discord Desktop"); }
+                    RpcField { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Application ID"; enabled: !root.connected && !root.connecting; }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        if !root.connected && !root.connecting: AccentButton { label: AppLocalization.translate(AppLocalization.current_locale, "Connect"); clicked => { root.connecting = true; root.connection-status = "Connecting…"; root.connect-requested(); } }
+                        if root.connected: GhostButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.connecting = true; root.connection-status = "Disconnecting…"; root.disconnect-requested(); } }
+                    }
+                    Text { text: root.connection-status; color: AppTheme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Discord OAuth2"); }
+                    GhostButton { label: AppLocalization.translate(AppLocalization.current_locale, "Login with Discord"); active: !root.oauth-connected; clicked => { root.navigate("Profile"); } }
+                    SubtitleText { label: AppLocalization.translate(AppLocalization.current_locale, "Bot Gateway"); }
+                    RpcField { label: "Bot token"; value <=> root.gateway-token; secret: true; placeholder: "Discord bot token"; enabled: !root.gateway-connected && !root.gateway-connecting; }
+                    PreferenceSwitch { title: "Remember bot token"; checked <=> root.remember-gateway-token; toggled => {} }
+                    HorizontalLayout {
+                        spacing: 8px;
+                        if !root.gateway-connected && !root.gateway-connecting: AccentButton { label: "Login"; clicked => { root.gateway-connecting = true; root.gateway-status = "Connecting…"; root.gateway-login-requested(); } }
+                        if root.gateway-connected: GhostButton { label: "Logout"; clicked => { root.gateway-connecting = true; root.gateway-status = "Logging out…"; root.gateway-logout-requested(); } }
+                    }
+                    Text { text: root.gateway-status; color: AppTheme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+                }
+
+                // ===================== PROFILE =====================
+                if root.current-page == "Profile": VerticalLayout {
+                    spacing: 12px;
+                    if !root.oauth-profile-loaded: Card {
+                        VerticalLayout { spacing: 10px;
+                            Text { text: "Discord Login"; color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            AccentButton { label: AppLocalization.translate(AppLocalization.current_locale, "Login with Discord"); active: !root.oauth-connected; clicked => { root.oauth-connecting = true; root.oauth-status = "Opening browser…"; root.oauth-login-requested(); } }
+                            if root.oauth-connecting: GhostButton { label: "Cancel"; clicked => { root.oauth-cancel-requested(); } }
+                            if root.oauth-connecting && root.oauth-authorize-url != "": GhostButton { label: "Open sign-in link"; clicked => { root.oauth-open-authorize-url-requested(); } }
+                            if root.oauth-has-session && !root.oauth-connecting: GhostButton { label: "Log Out"; clicked => { root.oauth-connecting = true; root.oauth-status = "Signing out…"; root.oauth-logout-requested(); } }
+                            Text { text: root.oauth-status; color: AppTheme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+                            RpcField { label: "Application ID"; value <=> root.application-id; placeholder: "Numeric Application ID"; }
+                        }
+                    }
+                    if root.oauth-profile-loaded: VerticalLayout {
+                        spacing: 12px;
+                        Rectangle {
+                            height: 188px;
+                            background: AppTheme.surface-high;
+                            Rectangle {
+                                y: 0px; width: 100%; height: 140px;
+                                background: root.oauth-accent-color;
+                                if root.oauth-has-banner: Image { source: root.oauth-banner; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                            }
+                            Rectangle {
+                                x: 20px; y: 92px;
+                                width: 96px; height: 96px;
+                                border-width: 5px; border-color: AppTheme.primary;
+                                border-radius: 48px;
+                                clip: true;
+                                background: AppTheme.secondary-container;
+                                if root.oauth-has-avatar: Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                                if !root.oauth-has-avatar: Text { text: root.oauth-initials; color: AppTheme.on-surface; font-size: 28px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
                             }
                         }
-
-                        // ===================== ACTIVITY =====================
-                        if (root.current-page == "Activity"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Craft a Rich Presence by hand."); color: AppTheme.muted; font-size: 14px; }
-                            Card {
-                                VerticalLayout { spacing: 12px;
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC enabled"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Run this mode independently of Media and Custom."); checked <=> root.rpc-manual-enabled; toggled => { root.rpc-mode-toggled("Manual", root.rpc-manual-enabled); } }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Activity type"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); active: root.rpc-mode == "Custom RPC"; clicked => { root.rpc-mode = "Custom RPC"; } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); active: root.rpc-mode == "Media RPC"; clicked => { root.rpc-mode = "Media RPC"; } }
-                                    }
-                                    if (root.rpc-mode == "Custom RPC"): VerticalLayout {
-                                        spacing: 10px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Activity name"); value <=> root.activity-name; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Music Presence"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); value <=> root.activity-details; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Listening to music"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "State"); value <=> root.activity-state; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Artist · Album"); }
-                                        HorizontalLayout {
-                                            spacing: 8px;
-                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Playing"); active: root.activity-type == "Playing"; clicked => { root.activity-type = "Playing"; } }
-                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Listening"); active: root.activity-type == "Listening"; clicked => { root.activity-type = "Listening"; } }
-                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Watching"); active: root.activity-type == "Watching"; clicked => { root.activity-type = "Watching"; } }
-                                            SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Competing"); active: root.activity-type == "Competing"; clicked => { root.activity-type = "Competing"; } }
-                                        }
-                                    }
-                                    if (root.rpc-mode == "Media RPC"): VerticalLayout {
-                                        spacing: 10px;
-                                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Manual metadata (auto-detected values can overwrite these)."); color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Title"); value <=> root.media-title; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Track or video title"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Artist / channel"); value <=> root.media-artist; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Artist or channel"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Album / playlist"); value <=> root.media-album; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Album or playlist"); }
-                                        HorizontalLayout {
-                                            spacing: 8px;
-                                            Field { label: AppLocalization.translate(AppLocalization.current_locale, "Duration (s)"); value <=> root.media-duration; placeholder: AppLocalization.translate(AppLocalization.current_locale, "0"); }
-                                            Field { label: AppLocalization.translate(AppLocalization.current_locale, "Position (s)"); value <=> root.media-position; placeholder: AppLocalization.translate(AppLocalization.current_locale, "0"); }
-                                        }
-                                        ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Playing"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Off shows a paused state and hides the timeline."); checked <=> root.media-playing; toggled => {} }
-                                    }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Artwork"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Large image key or image URL"); value <=> root.large-image; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Optional asset key"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Hover text"); value <=> root.large-text; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Optional"); }
-                                    }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Clickable field URLs (Discord Social SDK)"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Makes the details line, state line and image assets clickable in Discord."); color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Details URL"); value <=> root.details-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "State URL"); value <=> root.state-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Large image URL"); value <=> root.large-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Small image URL"); value <=> root.small-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
-                                    }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Status text in member list"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Name"); active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "State"); active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; } }
-                                    }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Buttons"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 1 label"); value <=> root.button1-label; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Open on YouTube"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 1 URL"); value <=> root.button1-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 2 label"); value <=> root.button2-label; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Visit channel"); }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "Button 2 URL"); value <=> root.button2-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "https://…"); }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Auto YouTube Music link"); clicked => { root.generate-youtube-music-link(); } }
-                                        PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Update presence"); active: root.connected || root.gateway-connected; clicked => { root.presence-update-requested(); } }
-                                    }
-                                }
-                            }
+                        VerticalLayout {
+                            padding-left: 20px;
+                            padding-right: 20px;
+                            spacing: 4px;
+                            Text { text: root.oauth-display-name; color: AppTheme.on-surface; font-size: 22px; font-weight: 700; }
+                            Text { text: root.oauth-username; color: AppTheme.on-surface-variant; font-size: 16px; }
+                            SubtitleText { label: "BIO"; }
+                            Text { text: root.oauth-bio; color: AppTheme.on-surface; font-size: 14px; wrap: word-wrap; }
                         }
+                        Text { text: root.oauth-profile-art-status; color: AppTheme.on-surface-variant; font-size: 12px; wrap: word-wrap; }
+                        GhostButton { label: "Log Out"; clicked => { root.oauth-connecting = true; root.oauth-status = "Signing out…"; root.oauth-logout-requested(); } }
+                    }
+                }
 
-                        // ===================== MEDIA =====================
-                        if (root.current-page == "Media"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Automatically broadcast what your desktop is playing."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
-                            Card {
-                                VerticalLayout { spacing: 14px;
-                                    ToggleRow { title: "Media RPC enabled"; subtitle: "Run this mode independently of Manual and Custom."; checked <=> root.rpc-media-enabled; toggled => { root.rpc-mode-toggled("Media", root.rpc-media-enabled); } }
-                                    HorizontalLayout {
-                                        spacing: 12px;
-                                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect"); color: AppTheme.text; font-size: 16px; font-weight: 700; vertical-alignment: center; }
-                                        Rectangle { horizontal-stretch: 1; }
-                                        Switch {
-                                            checked <=> root.auto-detect;
-                                            toggled => { root.auto-detect-changed(root.auto-detect); }
-                                        }
-                                    }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, root.detection-status); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        PrimaryButton { label: root.detecting ? AppLocalization.translate(AppLocalization.current_locale, "Scanning…") : AppLocalization.translate(AppLocalization.current_locale, "Detect now"); active: !root.detecting; clicked => { root.detect-now-requested(); } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open video"); active: !root.media-video-url.is-empty; clicked => { root.open-url-requested(root.media-video-url); } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open channel"); active: !root.media-channel-url.is-empty; clicked => { root.open-url-requested(root.media-channel-url); } }
-                                    }
-                                }
+                // ===================== SCROBBLING =====================
+                if root.current-page == "Scrobbling": VerticalLayout {
+                    spacing: 12px;
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: "Last.fm"; color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            RpcField { label: "API key"; value <=> root.scrobble-lastfm-api-key; placeholder: "Last.fm API key"; enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
+                            RpcField { label: "API secret"; value <=> root.scrobble-lastfm-api-secret; secret: true; placeholder: "Last.fm API secret"; enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
+                            HorizontalLayout { spacing: 8px;
+                                if !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy: AccentButton { label: "Authorize"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Opening browser…"; root.scrobble-lastfm-authorize-requested(); } }
+                                if root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy: GhostButton { label: "Finish sign-in"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-finish-requested(); } }
+                                if root.scrobble-lastfm-connected: GhostButton { label: "Disconnect"; clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-disconnect-requested(); } }
                             }
-                            Card {
-                                VerticalLayout { spacing: 6px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Presence details"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    ToggleRow { title: "Show artist name"; checked <=> root.media-show-artist; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Show album name"; checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Show cover art"; subtitle: "Use detected artwork when available."; checked <=> root.media-cover-art; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Show app icon"; checked <=> root.media-app-icon; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Enable timestamps"; checked <=> root.media-timestamps; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Show playback state"; checked <=> root.media-playback-state; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Hide when paused"; checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Show song as title"; checked <=> root.media-song-as-title; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: "Auto activity type"; checked <=> root.media-auto-activity-type; toggled => { root.detector-settings-changed(); } }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Detection sources"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Native Now Playing"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "OS media session: Now Playing / SMTC / MPRIS."); checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Browser tabs"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Foreground tab URL when available (YouTube, Vimeo, Twitch, Spotify)."); checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Media players"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Spotify, Apple Music and iTunes on macOS."); checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 12px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Currently detected"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: (root.media-source.is-empty ? AppLocalization.translate(AppLocalization.current_locale, "Nothing yet") : root.media-source + (root.detected-app.is-empty ? "" : " · " + root.detected-app)); color: AppTheme.muted; font-size: 12px; }
-                                    Text { text: root.media-title.is-empty ? "—" : root.media-title; color: AppTheme.text; font-size: 20px; font-weight: 700; wrap: word-wrap; }
-                                    Text { text: ((root.media-artist.is-empty ? "" : root.media-artist) + (root.media-album.is-empty ? "" : " · " + root.media-album)); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
-                                    Rectangle {
-                                        height: 6px; border-radius: 3px; background: AppTheme.track;
-                                        Rectangle {
-                                            height: 6px; border-radius: 3px; background: AppTheme.accent;
-                                            width: parent.width * (
-                                                root.media-duration.to-float() > 0
-                                                ? Math.min(1, root.media-position.to-float() / root.media-duration.to-float())
-                                                : 0
-                                            );
-                                        }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Text { text: root.media-playing ? AppLocalization.translate(AppLocalization.current_locale, "▶ Playing") : AppLocalization.translate(AppLocalization.current_locale, "❚❚ Paused"); color: root.media-playing ? AppTheme.green : AppTheme.yellow; font-size: 12px; }
-                                        Text { text: root.media-position + " / " + root.media-duration + " s"; color: AppTheme.subtle; font-size: 12px; }
-                                    }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Video / track URL"); value <=> root.media-video-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Detected automatically"); }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Channel / artist URL"); value <=> root.media-channel-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Detected automatically"); }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Presence options"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Auto"); active: root.media-activity-type == "Auto"; clicked => { root.media-activity-type = "Auto"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Listening"); active: root.media-activity-type == "Listening"; clicked => { root.media-activity-type = "Listening"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Watching"); active: root.media-activity-type == "Watching"; clicked => { root.media-activity-type = "Watching"; root.detector-settings-changed(); } }
-                                    }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Show album"); checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Hide while paused"); checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Status text in member list"); color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Name"); active: root.status-display-type == "Name"; clicked => { root.status-display-type = "Name"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "State"); active: root.status-display-type == "State"; clicked => { root.status-display-type = "State"; root.detector-settings-changed(); } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); active: root.status-display-type == "Details"; clicked => { root.status-display-type = "Details"; root.detector-settings-changed(); } }
-                                    }
-                                }
-                            }
+                            Text { text: root.scrobble-lastfm-status; color: AppTheme.on-surface-variant; font-size: 12px; }
                         }
-
-                        // ===================== APPS =====================
-                        if (root.current-page == "Apps"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Choose which sources may update your Rich Presence."); color: AppTheme.muted; font-size: 14px; }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Detection backends"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Native Now Playing"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "macOS Now Playing, Windows SMTC, Linux MPRIS."); checked <=> root.detect-native; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Browser detection"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Chrome, Safari, Edge, Brave, Arc and Firefox."); checked <=> root.detect-browser; toggled => { root.detector-settings-changed(); } }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Player apps"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Spotify, Apple Music, iTunes (AppleScript on macOS)."); checked <=> root.detect-players; toggled => { root.detector-settings-changed(); } }
-                                }
+                    }
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: "ListenBrainz"; color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            RpcField { label: "User token"; value <=> root.scrobble-listenbrainz-token; secret: true; placeholder: "listenbrainz.org/settings token"; enabled: !root.scrobble-listenbrainz-busy; }
+                            HorizontalLayout { spacing: 8px;
+                                if !root.scrobble-listenbrainz-busy: AccentButton { label: "Save token"; clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-status = "Saving…"; root.scrobble-listenbrainz-save-requested(); } }
+                                if root.scrobble-listenbrainz-connected: GhostButton { label: "Disconnect"; clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-disconnect-requested(); } }
                             }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Supported media sources"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Spotify · Apple Music · iTunes · YouTube · YouTube Music · Vimeo · Twitch · Bilibili · SoundCloud · Any MPRIS or SMTC player"); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "A browser tab or player must be the active/playing source for URL extraction. When a full URL is not exposed, a canonical search link is generated from the window title instead."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                }
-                            }
+                            Text { text: root.scrobble-listenbrainz-status; color: AppTheme.on-surface-variant; font-size: 12px; }
                         }
-
-                        // ===================== CONNECTIONS =====================
-                        if (root.current-page == "Connections"): VerticalLayout {
-                            spacing: 18px;
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Activity connection method"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Desktop Rich Presence is the default and needs no token. Bot Gateway is optional and requires a bot token."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    ComboBox {
-                                        model: [
-                                            AppLocalization.translate(AppLocalization.current_locale, "Discord desktop Rich Presence"),
-                                            AppLocalization.translate(AppLocalization.current_locale, "Discord bot Gateway")
-                                        ];
-                                        current-index <=> root.connection-method-index;
-                                        enabled: !root.connected && !root.connecting && !root.gateway-connected && !root.gateway-connecting;
-                                    }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Discord Application ID"); value <=> root.application-id; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Numeric Discord application ID"); enabled: !root.connected && !root.connecting && !root.oauth-connecting; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "This ID is used for desktop Rich Presence and browser OAuth. Leave the default to use the built-in OAuth application."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                }
+                    }
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: "Libre.fm"; color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            RpcField { label: "API key"; value <=> root.scrobble-librefm-api-key; placeholder: "Libre.fm API key"; enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
+                            RpcField { label: "API secret"; value <=> root.scrobble-librefm-api-secret; secret: true; placeholder: "Libre.fm API secret"; enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
+                            HorizontalLayout { spacing: 8px;
+                                if !root.scrobble-librefm-connected && !root.scrobble-librefm-busy: AccentButton { label: "Authorize"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Opening browser…"; root.scrobble-librefm-authorize-requested(); } }
+                                if root.scrobble-librefm-pending && !root.scrobble-librefm-busy: GhostButton { label: "Finish sign-in"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-finish-requested(); } }
+                                if root.scrobble-librefm-connected: GhostButton { label: "Disconnect"; clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-disconnect-requested(); } }
                             }
-                            if (root.connection-method-index == 0): Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord desktop Rich Presence"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Connects to the running Discord desktop app through local IPC. No browser login or account token is needed to publish activity."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        if (!root.connected && !root.connecting): PrimaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Connect");
-                                            clicked => {
-                                                root.connecting = true;
-                                                root.connection-status = "Connecting…";
-                                                root.connect-requested();
-                                            }
-                                        }
-                                        if (root.connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Connecting…"); active: false; clicked => {} }
-                                        if (root.connected): SecondaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect");
-                                            clicked => {
-                                                root.connecting = true;
-                                                root.connection-status = "Disconnecting…";
-                                                root.disconnect-requested();
-                                            }
-                                        }
-                                        Text { text: root.connection-status; color: root.connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
-                                    }
-                                }
-                            }
-                            if (root.connection-method-index == 1): Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord bot Gateway"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Optional bot-only connection. Browser OAuth signs in for profile details and cannot replace a bot token or change a personal account's activity."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Bot token"); value <=> root.gateway-token; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Discord bot token"); enabled: !root.gateway-connected && !root.gateway-connecting; }
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Remember bot token (encrypted)"); checked <=> root.remember-gateway-token; toggled => {} }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        if (!root.gateway-connected && !root.gateway-connecting): PrimaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Login");
-                                            clicked => {
-                                                root.gateway-connecting = true;
-                                                root.gateway-status = "Connecting as bot…";
-                                                root.gateway-login-requested();
-                                            }
-                                        }
-                                        if (root.gateway-connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Connecting…"); active: false; clicked => {} }
-                                        if (root.gateway-connected): SecondaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Logout");
-                                            clicked => {
-                                                root.gateway-connecting = true;
-                                                root.gateway-status = "Logging out…";
-                                                root.gateway-logout-requested();
-                                            }
-                                        }
-                                        Text { text: root.gateway-status; color: root.gateway-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
-                                    }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord account browser sign-in"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Opens Discord in your system browser and loads your account profile using OAuth. This is separate from the selected activity connection method."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        if (!root.oauth-has-session && !root.oauth-connecting): PrimaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Sign in with Discord");
-                                            clicked => {
-                                                root.oauth-connecting = true;
-                                                root.oauth-status = "Opening browser…";
-                                                root.oauth-login-requested();
-                                            }
-                                        }
-                                        if (root.oauth-connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Cancel"); clicked => { root.oauth-status = "Canceling…"; root.oauth-cancel-requested(); } }
-                                        if (root.oauth-connecting && root.oauth-authorize-url != ""): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open sign-in link"); clicked => { root.oauth-open-authorize-url-requested(); } }
-                                        if (root.oauth-has-session && !root.oauth-connecting): SecondaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Logout");
-                                            clicked => {
-                                                root.oauth-connecting = true;
-                                                root.oauth-status = "Signing out…";
-                                                root.oauth-logout-requested();
-                                            }
-                                        }
-                                        Text { text: root.oauth-status; color: root.oauth-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
-                                    }
-                                    if (root.oauth-connecting && root.oauth-authorize-url != ""): Field { label: AppLocalization.translate(AppLocalization.current_locale, "Sign-in link"); value <=> root.oauth-authorize-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, ""); }
-                                }
-                            }
-                        }
-
-                        // ===================== PROFILE =====================
-                        if (root.current-page == "Profile"): VerticalLayout {
-                            spacing: 18px;
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord account"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Sign in through your browser to preview the profile fields Discord shares with the identify scope. This does not change your profile or send activity."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Application ID"); value <=> root.application-id; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Numeric Discord application ID"); enabled: !root.oauth-connecting; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Uses Kizzy Enhanced's OAuth app by default; you can enter your own Client ID. Callback: kizzy://oauth2/callback."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        if (!root.oauth-connected && !root.oauth-connecting): PrimaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Login with Discord");
-                                            clicked => {
-                                                root.oauth-connecting = true;
-                                                root.oauth-status = "Opening browser…";
-                                                root.oauth-login-requested();
-                                            }
-                                        }
-                                        if (root.oauth-connecting): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Cancel"); clicked => { root.oauth-status = "Canceling…"; root.oauth-cancel-requested(); } }
-                                        if (root.oauth-connecting && root.oauth-authorize-url != ""): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open sign-in link"); clicked => { root.oauth-open-authorize-url-requested(); } }
-                                        if (root.oauth-has-session && !root.oauth-connecting): SecondaryButton {
-                                            label: AppLocalization.translate(AppLocalization.current_locale, "Logout");
-                                            clicked => {
-                                                root.oauth-connecting = true;
-                                                root.oauth-status = "Signing out…";
-                                                root.oauth-logout-requested();
-                                            }
-                                        }
-                                        Text { text: root.oauth-status; color: root.oauth-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; wrap: word-wrap; }
-                                    }
-                                    if (root.oauth-connecting && root.oauth-authorize-url != ""): Field { label: AppLocalization.translate(AppLocalization.current_locale, "Sign-in link"); value <=> root.oauth-authorize-url; placeholder: AppLocalization.translate(AppLocalization.current_locale, ""); }
-                                }
-                            }
-                            if (root.oauth-profile-loaded): Card {
-                                VerticalLayout { spacing: 12px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Profile preview"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Rectangle {
-                                        height: 130px; border-radius: 10px; background: root.oauth-accent-color;
-                                        if (root.oauth-has-banner): Image { source: root.oauth-banner; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 14px;
-                                        if (root.oauth-has-avatar): Rectangle {
-                                            width: 76px; height: 76px;
-                                            border-radius: 38px;
-                                            clip: true;
-                                            Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
-                                        }
-                                        if (!root.oauth-has-avatar): Rectangle {
-                                            width: 76px; height: 76px; border-radius: 38px; background: AppTheme.accent;
-                                            Text { text: root.oauth-initials; color: AppTheme.on-brand; font-size: 24px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
-                                        }
-                                        VerticalLayout {
-                                            spacing: 2px;
-                                            Text { text: root.oauth-display-name; color: AppTheme.text; font-size: 21px; font-weight: 700; }
-                                            Text { text: root.oauth-username; color: AppTheme.muted; font-size: 14px; }
-                                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "User ID: ") + root.oauth-user-id; color: AppTheme.subtle; font-size: 12px; }
-                                        }
-                                    }
-                                    Rectangle {
-                                        height: 1px;
-                                        background: AppTheme.border;
-                                    }
-                                    Text { text: "ABOUT ME"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
-                                    Text {
-                                        text: root.oauth-bio;
-                                        color: AppTheme.text;
-                                        font-size: 13px;
-                                        wrap: word-wrap;
-                                    }
-                                    Text { text: root.oauth-profile-art-status; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Preview only — profile changes, roles and live presence are not fetched."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                }
-                            }
-                            if (!root.oauth-profile-loaded): Card {
-                                Text { text: AppLocalization.translate(AppLocalization.current_locale, "Sign in to preview your Discord display name, username, avatar and banner."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                            }
-                        }
-
-                        // ===================== CUSTOM RPC =====================
-                        if (root.current-page == "Custom"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Define a completely custom activity."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
-                            Card {
-                                VerticalLayout { spacing: 12px;
-                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC enabled"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Run this mode independently of Media and Manual."); checked <=> root.rpc-custom-enabled; toggled => { root.rpc-mode-toggled("Custom", root.rpc-custom-enabled); } }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Name"); value <=> root.custom-name; placeholder: "Music Presence"; }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); value <=> root.custom-details; placeholder: "Listening to music"; }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "State"); value <=> root.custom-state; placeholder: "Artist · Album"; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        SecondaryButton { label: "Playing"; active: root.custom-activity-type == "Playing"; clicked => { root.custom-activity-type = "Playing"; } }
-                                        SecondaryButton { label: "Listening"; active: root.custom-activity-type == "Listening"; clicked => { root.custom-activity-type = "Listening"; } }
-                                        SecondaryButton { label: "Watching"; active: root.custom-activity-type == "Watching"; clicked => { root.custom-activity-type = "Watching"; } }
-                                        SecondaryButton { label: "Competing"; active: root.custom-activity-type == "Competing"; clicked => { root.custom-activity-type = "Competing"; } }
-                                    }
-                                    Text { text: "Assets & field URLs"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: "Large image key or URL"; value <=> root.custom-large-image; placeholder: "Optional"; }
-                                        Field { label: "Large text"; value <=> root.custom-large-text; placeholder: "Optional"; }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: "Details URL"; value <=> root.custom-details-url; placeholder: "https://…"; }
-                                        Field { label: "State URL"; value <=> root.custom-state-url; placeholder: "https://…"; }
-                                    }
-                                    Field { label: "Large image URL"; value <=> root.custom-large-url; placeholder: "https://…"; }
-                                    Text { text: "Buttons"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: "Button 1 label"; value <=> root.custom-button1-label; placeholder: "Open"; }
-                                        Field { label: "Button 1 URL"; value <=> root.custom-button1-url; placeholder: "https://…"; }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 8px;
-                                        Field { label: "Button 2 label"; value <=> root.custom-button2-label; placeholder: "Channel"; }
-                                        Field { label: "Button 2 URL"; value <=> root.custom-button2-url; placeholder: "https://…"; }
-                                    }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        PrimaryButton { label: "Apply custom presence"; clicked => { root.custom-presence-update-requested(); } }
-                                        SecondaryButton { label: "Copy from Manual"; active: true; clicked => { root.custom-name = root.activity-name; root.custom-details = root.activity-details; root.custom-state = root.activity-state; root.custom-activity-type = root.activity-type; root.custom-large-image = root.large-image; root.custom-large-text = root.large-text; root.custom-button1-label = root.button1-label; root.custom-button1-url = root.button1-url; root.custom-button2-label = root.button2-label; root.custom-button2-url = root.button2-url; } }
-                                    }
-                                }
-                            }
-                        }
-
-                        // ===================== SCROBBLING =====================
-                        if (root.current-page == "Scrobbling"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Forward detected or manually entered songs to scrobbling services."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Last.fm"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    HorizontalLayout { spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API key"); value <=> root.scrobble-lastfm-api-key; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Last.fm API key"); enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API secret"); value <=> root.scrobble-lastfm-api-secret; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Last.fm API secret"); enabled: !root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy; }
-                                    }
-                                    HorizontalLayout { spacing: 10px;
-                                        if (!root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Authorize"); clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Opening browser…"; root.scrobble-lastfm-authorize-requested(); } }
-                                        if (root.scrobble-lastfm-pending && !root.scrobble-lastfm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Finish sign-in"); clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-status = "Finishing…"; root.scrobble-lastfm-finish-requested(); } }
-                                        if (root.scrobble-lastfm-connected && !root.scrobble-lastfm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.scrobble-lastfm-busy = true; root.scrobble-lastfm-disconnect-requested(); } }
-                                        if (root.scrobble-lastfm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Working…"); active: false; clicked => {} }
-                                        Text { text: root.scrobble-lastfm-status; color: root.scrobble-lastfm-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
-                                    }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "ListenBrainz"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "User token"); value <=> root.scrobble-listenbrainz-token; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "listenbrainz.org/settings token"); enabled: !root.scrobble-listenbrainz-busy; }
-                                    HorizontalLayout { spacing: 10px;
-                                        if (!root.scrobble-listenbrainz-busy): PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Save token"); clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-status = "Saving…"; root.scrobble-listenbrainz-save-requested(); } }
-                                        if (root.scrobble-listenbrainz-connected && !root.scrobble-listenbrainz-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.scrobble-listenbrainz-busy = true; root.scrobble-listenbrainz-disconnect-requested(); } }
-                                        if (root.scrobble-listenbrainz-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Working…"); active: false; clicked => {} }
-                                        Text { text: root.scrobble-listenbrainz-status; color: root.scrobble-listenbrainz-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
-                                    }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Libre.fm"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    HorizontalLayout { spacing: 8px;
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API key"); value <=> root.scrobble-librefm-api-key; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Libre.fm API key"); enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
-                                        Field { label: AppLocalization.translate(AppLocalization.current_locale, "API secret"); value <=> root.scrobble-librefm-api-secret; secret: true; placeholder: AppLocalization.translate(AppLocalization.current_locale, "Libre.fm API secret"); enabled: !root.scrobble-librefm-connected && !root.scrobble-librefm-busy; }
-                                    }
-                                    HorizontalLayout { spacing: 10px;
-                                        if (!root.scrobble-librefm-connected && !root.scrobble-librefm-busy): PrimaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Authorize"); clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Opening browser…"; root.scrobble-librefm-authorize-requested(); } }
-                                        if (root.scrobble-librefm-pending && !root.scrobble-librefm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Finish sign-in"); clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-status = "Finishing…"; root.scrobble-librefm-finish-requested(); } }
-                                        if (root.scrobble-librefm-connected && !root.scrobble-librefm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Disconnect"); clicked => { root.scrobble-librefm-busy = true; root.scrobble-librefm-disconnect-requested(); } }
-                                        if (root.scrobble-librefm-busy): SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Working…"); active: false; clicked => {} }
-                                        Text { text: root.scrobble-librefm-status; color: root.scrobble-librefm-connected ? AppTheme.green : AppTheme.muted; font-size: 13px; vertical-alignment: center; }
-                                    }
-                                }
-                            }
-                        }
-
-                        // ===================== LOGS =====================
-                        if (root.current-page == "Logs"): VerticalLayout {
-                            spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Current status"); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
-                            Card {
-                                VerticalLayout { spacing: 8px;
-                                    Text { text: "Desktop RPC"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
-                                    Text { text: root.connection-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: "Bot Gateway"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
-                                    Text { text: root.gateway-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: "Discord OAuth2"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
-                                    Text { text: root.oauth-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: "Media detection"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
-                                    Text { text: root.detection-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
-                                    Text { text: "Scrobbling"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
-                                    Text { text: root.scrobble-lastfm-status + " · " + root.scrobble-listenbrainz-status + " · " + root.scrobble-librefm-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
-                                }
-                            }
-                        }
-
-                        // ===================== SETTINGS =====================
-                        if (root.current-page == "Settings"): VerticalLayout {
-                            spacing: 18px;
-                            Card {
-                                VerticalLayout { spacing: 10px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Language"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Choose the language used by the app. Missing translations fall back to English."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
-                                    ComboBox {
-                                        model: AppLocalization.language_options;
-                                        current-value <=> AppLocalization.selected_language;
-                                        selected(value) => { AppLocalization.language_selected(value); }
-                                    }
-                                    SecondaryButton {
-                                        label: "Reset to English";
-                                        clicked => { AppLocalization.language_selected("English"); }
-                                    }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 12px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Appearance"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Discord-inspired colour scheme."); color: AppTheme.muted; font-size: 13px; }
-                                    HorizontalLayout {
-                                        spacing: 10px;
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "☾ Dark"); active: AppTheme.dark; clicked => { AppTheme.dark = true; } }
-                                        SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "☀ Light"); active: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
-                                    }
-                                }
-                            }
-                            Card {
-                                VerticalLayout { spacing: 8px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "About"); color: AppTheme.text; font-size: 18px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Music Presence — share what you listen to on Discord."); color: AppTheme.muted; font-size: 13px; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Detects over 100 media players, browser tabs and OS now-playing sessions. UI follows Discord's branding guidelines and Kizzy Enhanced's feature layout."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
-                                }
-                            }
+                            Text { text: root.scrobble-librefm-status; color: AppTheme.on-surface-variant; font-size: 12px; }
                         }
                     }
                 }
+
+                // ===================== LOGS =====================
+                if root.current-page == "Logs": VerticalLayout {
+                    spacing: 8px;
+                    Card {
+                        VerticalLayout { spacing: 6px;
+                            Text { text: "Desktop RPC"; color: AppTheme.primary; font-size: 11px; font-weight: 700; }
+                            Text { text: root.connection-status; color: AppTheme.on-surface; font-size: 14px; wrap: word-wrap; }
+                            Text { text: "Bot Gateway"; color: AppTheme.primary; font-size: 11px; font-weight: 700; }
+                            Text { text: root.gateway-status; color: AppTheme.on-surface; font-size: 14px; wrap: word-wrap; }
+                            Text { text: "Discord OAuth2"; color: AppTheme.primary; font-size: 11px; font-weight: 700; }
+                            Text { text: root.oauth-status; color: AppTheme.on-surface; font-size: 14px; wrap: word-wrap; }
+                            Text { text: "Media detection"; color: AppTheme.primary; font-size: 11px; font-weight: 700; }
+                            Text { text: root.detection-status; color: AppTheme.on-surface; font-size: 14px; wrap: word-wrap; }
+                            Text { text: "Scrobbling"; color: AppTheme.primary; font-size: 11px; font-weight: 700; }
+                            Text { text: root.scrobble-lastfm-status + " · " + root.scrobble-listenbrainz-status + " · " + root.scrobble-librefm-status; color: AppTheme.on-surface; font-size: 14px; wrap: word-wrap; }
+                        }
+                    }
+                }
+
+                // ===================== SETTINGS =====================
+                if root.current-page == "Settings": VerticalLayout {
+                    spacing: 12px;
+                    Card {
+                        VerticalLayout { spacing: 10px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Display"); color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            HorizontalLayout { spacing: 8px;
+                                GhostButton { label: "☾ Dark"; active: AppTheme.dark; clicked => { AppTheme.dark = true; } }
+                                GhostButton { label: "☀ Light"; active: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
+                            }
+                        }
+                    }
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Language"); color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            ComboBox {
+                                model: AppLocalization.language_options;
+                                current-value <=> AppLocalization.selected_language;
+                                selected(value) => { AppLocalization.language_selected(value); }
+                            }
+                            GhostButton { label: "Reset to English"; clicked => { AppLocalization.language_selected("English"); } }
+                        }
+                    }
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "About"); color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            Text { text: "Music Presence — a desktop reproduction of Kizzy Enhanced."; color: AppTheme.on-surface-variant; font-size: 14px; wrap: word-wrap; }
+                        }
+                    }
+                }
+            }
+        }
     }
-    if (root.drawer-open): Rectangle {
-        x: 0; y: 0;
-        width: 100%; height: 100%;
-        background: #00000080;
+
+    // =========================== DRAWER ===========================
+    if root.drawer-open: Rectangle {
+        x: 0; y: 0; width: 100%; height: 100%;
+        background: #00000099;
         TouchArea { clicked => { root.drawer-open = false; } }
         Rectangle {
             x: 0; y: 0;
-            width: 288px;
+            width: 300px;
             height: 100%;
-            background: AppTheme.sidebar;
+            background: AppTheme.surface;
             VerticalLayout {
-                padding: 16px; spacing: 6px;
+                padding: 15px;
+                spacing: 5px;
                 HorizontalLayout {
-                    spacing: 10px;
-                    Rectangle {
-                        width: 44px; height: 44px; border-radius: 22px; background: AppTheme.accent;
-                        if (root.oauth-has-avatar): Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
-                        if (!root.oauth-has-avatar): Text { text: root.oauth-initials.is-empty ? "?" : root.oauth-initials; color: AppTheme.on-brand; font-size: 16px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
-                    }
-                    VerticalLayout {
-                        horizontal-stretch: 1;
-                        Text { text: root.oauth-display-name.is-empty ? "Music Presence" : root.oauth-display-name; color: AppTheme.text; font-size: 15px; font-weight: 700; }
-                        Text { text: root.oauth-username.is-empty ? "Not signed in" : root.oauth-username; color: AppTheme.muted; font-size: 12px; }
-                    }
+                    padding-top: 8px;
+                    padding-bottom: 10px;
+                    spacing: 6px;
+                    Text { text: "Kizzy"; color: AppTheme.on-surface; font-size: 14px; font-weight: 500; vertical-alignment: center; }
+                    Text { text: "Enhanced"; color: AppTheme.on-surface; font-size: 14px; font-weight: 500; vertical-alignment: center; }
                 }
-                Rectangle { height: 8px; }
-                NavItem { icon: "⌂"; label: AppLocalization.translate(AppLocalization.current_locale, "Home"); page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "♫"; label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "✎"; label: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC"); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "◆"; label: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); page: "Custom"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "▦"; label: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "⚡"; label: AppLocalization.translate(AppLocalization.current_locale, "RPC Settings"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "☺"; label: AppLocalization.translate(AppLocalization.current_locale, "Profile"); page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "↻"; label: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "⚙"; label: AppLocalization.translate(AppLocalization.current_locale, "Style & Appearance"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "i"; label: AppLocalization.translate(AppLocalization.current_locale, "About"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                NavItem { icon: "≡"; label: AppLocalization.translate(AppLocalization.current_locale, "Logs"); page: "Logs"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: "◐"; label: AppLocalization.translate(AppLocalization.current_locale, "Display"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: "文"; label: AppLocalization.translate(AppLocalization.current_locale, "Language"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: "≡"; label: AppLocalization.translate(AppLocalization.current_locale, "Logs"); page: "Logs"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: "⚙"; label: AppLocalization.translate(AppLocalization.current_locale, "Settings"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                Rectangle { height: 1px; background: AppTheme.outline; }
+                SubtitleText { label: "HELP"; }
+                DrawerRow { icon: "?"; label: "FAQ"; page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: "ⓘ"; label: AppLocalization.translate(AppLocalization.current_locale, "About"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: "★"; label: "Kizzy Quickie"; page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
                 Rectangle { vertical-stretch: 1; }
-                Card {
-                    VerticalLayout { spacing: 6px;
-                        StatusPill { label: root.connected ? "Desktop RPC: Connected" : "Desktop RPC: Offline"; dot: root.connected ? AppTheme.green : AppTheme.subtle; }
-                        StatusPill { label: root.gateway-connected ? "Bot gateway: Online" : "Bot gateway: Offline"; dot: root.gateway-connected ? AppTheme.green : AppTheme.subtle; }
-                        StatusPill { label: root.oauth-connected ? "Discord: Signed in" : "Discord: Not signed in"; dot: root.oauth-connected ? AppTheme.green : AppTheme.subtle; }
+                Rectangle {
+                    height: 70px;
+                    border-radius: 15px;
+                    background: AppTheme.secondary-container;
+                    HorizontalLayout {
+                        padding: 8px;
+                        spacing: 10px;
+                        Rectangle {
+                            width: 50px; height: 50px; border-radius: 25px;
+                            clip: true; background: AppTheme.primary;
+                            if root.oauth-has-avatar: Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                            if !root.oauth-has-avatar: Text { text: root.oauth-initials.is-empty ? "?" : root.oauth-initials; color: AppTheme.on-primary; font-size: 18px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                        }
+                        VerticalLayout {
+                            horizontal-stretch: 1;
+                            Text { text: root.oauth-display-name.is-empty ? "Music Presence" : root.oauth-display-name; color: AppTheme.on-secondary-container; font-size: 20px; font-weight: 600; overflow: elide; }
+                            Text { text: root.oauth-username.is-empty ? "Not signed in" : root.oauth-username; color: AppTheme.on-secondary-container; font-size: 14px; overflow: elide; }
+                        }
                     }
+                    TouchArea { clicked => { root.navigate("Profile"); root.drawer-open = false; } }
                 }
             }
         }
