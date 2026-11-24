@@ -7,7 +7,7 @@ use std::{
 };
 
 #[cfg(any(target_os = "linux", target_os = "macos"))]
-use std::{fs, path::PathBuf};
+use std::{fs, path::Path, path::PathBuf};
 
 use url::Url;
 
@@ -15,19 +15,21 @@ const SCHEME: &str = "kizzy";
 const CALLBACK_HOST: &str = "oauth2";
 const CALLBACK_PATH: &str = "/callback";
 const CALLBACK_PORT: u16 = 49153;
+#[cfg(target_os = "macos")]
 const MACOS_HANDLER_BUNDLE_ID: &str = "com.musicpresence.oauth-handler";
 
 pub fn callback_argument() -> Option<String> {
     env::args_os().skip(1).find_map(|argument| {
         let argument = argument.into_string().ok()?;
-        argument.starts_with("kizzy://").then_some(argument)
+        let prefix = format!("{SCHEME}://");
+        argument.starts_with(&prefix).then_some(argument)
     })
 }
 
 pub fn forward_callback(uri: &str) -> Result<(), String> {
     validate_callback_uri(uri)?;
 
-    let mut relay_url = Url::parse("http://127.0.0.1:49153/oauth/relay")
+    let mut relay_url = Url::parse(&format!("http://127.0.0.1:{CALLBACK_PORT}/oauth/relay"))
         .map_err(|error| format!("Could not construct OAuth callback relay URL: {error}"))?;
     relay_url.query_pairs_mut().append_pair("uri", uri);
 
@@ -40,11 +42,10 @@ pub fn forward_callback(uri: &str) -> Result<(), String> {
         .set_read_timeout(Some(Duration::from_secs(5)))
         .map_err(|error| format!("Could not set OAuth relay timeout: {error}"))?;
 
-    let request_target = format!(
-        "{}?{}",
-        relay_url.path(),
-        relay_url.query().unwrap_or_default()
-    );
+    let request_target = match relay_url.query() {
+        Some(query) if !query.is_empty() => format!("{}?{query}", relay_url.path()),
+        _ => relay_url.path().to_owned(),
+    };
     write!(
         stream,
         "GET {request_target} HTTP/1.1\r\nHost: 127.0.0.1:{CALLBACK_PORT}\r\nConnection: close\r\n\r\n"
@@ -102,24 +103,19 @@ fn register_windows() -> Result<(), String> {
     let executable = env::current_exe()
         .map_err(|error| format!("Could not locate the app executable: {error}"))?;
     let command = format!("\"{}\" \"%1\"", executable.display());
-    let key = r"HKCU\Software\Classes\kizzy";
+    let key = format!(r"HKCU\Software\Classes\{SCHEME}");
+    let command_key = format!(r"HKCU\Software\Classes\{SCHEME}\shell\open\command");
+
     run_command(
-        Command::new("reg.exe").args(["add", key, "/ve", "/d", "URL:Kizzy OAuth Protocol", "/f"]),
+        Command::new("reg.exe").args(["add", &key, "/ve", "/d", "URL:Kizzy OAuth Protocol", "/f"]),
         "Could not register the Kizzy OAuth URL protocol",
     )?;
     run_command(
-        Command::new("reg.exe").args(["add", key, "/v", "URL Protocol", "/d", "", "/f"]),
+        Command::new("reg.exe").args(["add", &key, "/v", "URL Protocol", "/d", "", "/f"]),
         "Could not mark the Kizzy OAuth URL protocol",
     )?;
     run_command(
-        Command::new("reg.exe").args([
-            "add",
-            r"HKCU\Software\Classes\kizzy\shell\open\command",
-            "/ve",
-            "/d",
-            &command,
-            "/f",
-        ]),
+        Command::new("reg.exe").args(["add", &command_key, "/ve", "/d", &command, "/f"]),
         "Could not register the Kizzy OAuth callback command",
     )
 }
@@ -149,12 +145,9 @@ fn register_linux() -> Result<(), String> {
     )
     .map_err(|error| format!("Could not write the OAuth desktop handler: {error}"))?;
 
+    let mime_type = format!("x-scheme-handler/{SCHEME}");
     run_command(
-        Command::new("xdg-mime").args([
-            "default",
-            "music-presence-oauth.desktop",
-            "x-scheme-handler/kizzy",
-        ]),
+        Command::new("xdg-mime").args(["default", "music-presence-oauth.desktop", &mime_type]),
         "Could not set the Kizzy OAuth URL handler",
     )
 }
@@ -179,16 +172,6 @@ fn desktop_exec_argument(value: &str) -> String {
 
 #[cfg(target_os = "macos")]
 fn register_macos() -> Result<(), String> {
-    const APPLESCRIPT: &str = r#"on open location callbackURL
-    set relayQuery to "uri=" & callbackURL
-    do shell script "/usr/bin/curl --fail --silent --show-error --max-time 8 --get --data-urlencode " & quoted form of relayQuery & " http://127.0.0.1:49153/oauth/relay"
-end open location
-
-on run
-    return
-end run
-"#;
-
     let home = env::var_os("HOME")
         .map(PathBuf::from)
         .ok_or_else(|| "Could not locate the current user's home directory.".to_string())?;
@@ -198,41 +181,34 @@ end run
     let app_bundle = support_dir.join("Kizzy OAuth Callback.app");
     let info_plist = app_bundle.join("Contents/Info.plist");
 
-    if app_bundle.exists() {
-        let output = Command::new("/usr/libexec/PlistBuddy")
-            .args(["-c", "Print :CFBundleIdentifier"])
-            .arg(&info_plist)
-            .output()
-            .map_err(|error| format!("Could not inspect the existing OAuth handler: {error}"))?;
-        if !output.status.success()
-            || String::from_utf8_lossy(&output.stdout).trim() != MACOS_HANDLER_BUNDLE_ID
-        {
-            return Err(format!(
-                "The OAuth handler path already exists and is not owned by Music Presence: {}",
-                app_bundle.display()
-            ));
+    let needs_build = if app_bundle.exists() {
+        let owned_by_app = info_plist.exists() && {
+            let output = Command::new("/usr/libexec/PlistBuddy")
+                .args(["-c", "Print :CFBundleIdentifier"])
+                .arg(&info_plist)
+                .output()
+                .map_err(|error| format!("Could not inspect the existing OAuth handler: {error}"))?;
+            output.status.success()
+                && String::from_utf8_lossy(&output.stdout).trim() == MACOS_HANDLER_BUNDLE_ID
+        };
+
+        if !owned_by_app {
+            fs::remove_dir_all(&app_bundle).map_err(|error| {
+                format!(
+                    "Could not replace existing unowned OAuth handler at {}: {error}",
+                    app_bundle.display()
+                )
+            })?;
+            true
+        } else {
+            false
         }
     } else {
-        let source = support_dir.join("kizzy-oauth-callback.applescript");
-        fs::write(&source, APPLESCRIPT)
-            .map_err(|error| format!("Could not write the OAuth callback handler: {error}"))?;
-        let compile_result = Command::new("/usr/bin/osacompile")
-            .args(["-o"])
-            .arg(&app_bundle)
-            .arg(&source)
-            .output()
-            .map_err(|error| format!("Could not compile the macOS OAuth handler: {error}"));
-        let remove_result = fs::remove_file(&source);
-        let output = compile_result?;
-        remove_result
-            .map_err(|error| format!("Could not remove the temporary OAuth script: {error}"))?;
-        if !output.status.success() {
-            return Err(format!(
-                "Could not compile the macOS OAuth handler: {}",
-                String::from_utf8_lossy(&output.stderr).trim()
-            ));
-        }
-        configure_macos_handler(&info_plist)?;
+        true
+    };
+
+    if needs_build {
+        compile_macos_handler(&support_dir, &app_bundle, &info_plist)?;
     }
 
     let register = Command::new(
@@ -252,27 +228,77 @@ end run
 }
 
 #[cfg(target_os = "macos")]
-fn configure_macos_handler(info_plist: &std::path::Path) -> Result<(), String> {
-    for command in [
-        format!("Set :CFBundleIdentifier {MACOS_HANDLER_BUNDLE_ID}"),
-        "Add :CFBundleURLTypes array".into(),
-        "Add :CFBundleURLTypes:0 dict".into(),
-        "Add :CFBundleURLTypes:0:CFBundleURLName string \"Music Presence OAuth Callback\"".into(),
-        "Add :CFBundleURLTypes:0:CFBundleURLSchemes array".into(),
-        format!("Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string {SCHEME}"),
-    ] {
+fn compile_macos_handler(
+    support_dir: &Path,
+    app_bundle: &Path,
+    info_plist: &Path,
+) -> Result<(), String> {
+    let applescript = format!(
+        r#"on open location callbackURL
+    set relayQuery to "uri=" & callbackURL
+    do shell script "/usr/bin/curl --fail --silent --show-error --max-time 8 --get --data-urlencode " & quoted form of relayQuery & " http://127.0.0.1:{CALLBACK_PORT}/oauth/relay"
+end open location
+
+on run
+    return
+end run
+"#
+    );
+
+    let source = support_dir.join("kizzy-oauth-callback.applescript");
+    fs::write(&source, applescript)
+        .map_err(|error| format!("Could not write the OAuth callback handler: {error}"))?;
+    let compile_result = Command::new("/usr/bin/osacompile")
+        .args(["-o"])
+        .arg(app_bundle)
+        .arg(&source)
+        .output()
+        .map_err(|error| format!("Could not compile the macOS OAuth handler: {error}"));
+    let remove_result = fs::remove_file(&source);
+    let output = compile_result?;
+    remove_result
+        .map_err(|error| format!("Could not remove the temporary OAuth script: {error}"))?;
+    if !output.status.success() {
+        return Err(format!(
+            "Could not compile the macOS OAuth handler: {}",
+            String::from_utf8_lossy(&output.stderr).trim()
+        ));
+    }
+    configure_macos_handler(info_plist)
+}
+
+#[cfg(target_os = "macos")]
+fn configure_macos_handler(info_plist: &Path) -> Result<(), String> {
+    let run_plist = |cmd: &str| -> Result<(), String> {
         let output = Command::new("/usr/libexec/PlistBuddy")
-            .args(["-c", &command])
+            .args(["-c", cmd])
             .arg(info_plist)
             .output()
             .map_err(|error| format!("Could not configure the macOS OAuth handler: {error}"))?;
-        if !output.status.success() {
-            return Err(format!(
-                "Could not configure the macOS OAuth handler: {}",
+        if output.status.success() {
+            Ok(())
+        } else {
+            Err(format!(
+                "Could not configure the macOS OAuth handler ({cmd}): {}",
                 String::from_utf8_lossy(&output.stderr).trim()
-            ));
+            ))
         }
-    }
+    };
+
+    run_plist(&format!("Set :CFBundleIdentifier {MACOS_HANDLER_BUNDLE_ID}"))?;
+
+    // Remove any pre-existing CFBundleURLTypes so re-configuring never fails on duplicate keys.
+    let _ = Command::new("/usr/libexec/PlistBuddy")
+        .args(["-c", "Delete :CFBundleURLTypes"])
+        .arg(info_plist)
+        .output();
+
+    run_plist("Add :CFBundleURLTypes array")?;
+    run_plist("Add :CFBundleURLTypes:0 dict")?;
+    run_plist("Add :CFBundleURLTypes:0:CFBundleURLName string Music Presence OAuth Callback")?;
+    run_plist("Add :CFBundleURLTypes:0:CFBundleURLSchemes array")?;
+    run_plist(&format!("Add :CFBundleURLTypes:0:CFBundleURLSchemes:0 string {SCHEME}"))?;
+
     Ok(())
 }
 

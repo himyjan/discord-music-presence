@@ -230,6 +230,34 @@ component Card inherits Rectangle {
     }
 }
 
+
+component ThemeChoice inherits Rectangle {
+    in property<string> label;
+    in property<bool> selected;
+    callback clicked();
+    min-height: 64px;
+    HorizontalLayout {
+        padding-left: 8px;
+        padding-right: 8px;
+        padding-top: 12px;
+        padding-bottom: 12px;
+        spacing: 16px;
+        Image {
+            source: @image-url("icons/ic_check.svg");
+            width: 24px; height: 24px; image-fit: contain;
+            colorize: root.selected ? AppTheme.primary : transparent;
+            visible: root.selected;
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 2px;
+            Text { text: root.label; color: AppTheme.on-surface; font-size: 20px; font-weight: 500; }
+            Text { text: ""; color: AppTheme.on-surface-variant; font-size: 12px; }
+        }
+    }
+    TouchArea { clicked => { root.clicked(); } }
+}
+
 component GhostButton inherits Rectangle {
     in property<string> label;
     in property<bool> active: true;
@@ -241,6 +269,28 @@ component GhostButton inherits Rectangle {
     opacity: root.active ? 1 : 0.5;
     Text { text: root.label; color: AppTheme.on-secondary-container; font-size: 14px; font-weight: 600; horizontal-alignment: center; vertical-alignment: center; }
     TouchArea { enabled: root.active; clicked => { root.clicked(); } }
+}
+
+// ThemeButton: always clickable, shows selection via filled background
+component ThemeButton inherits Rectangle {
+    in property<string> label;
+    in property<bool> selected;
+    callback clicked();
+    height: 44px;
+    min-width: 110px;
+    border-radius: 22px;
+    background: root.selected ? AppTheme.primary : AppTheme.secondary-container;
+    border-width: root.selected ? 0px : 1px;
+    border-color: AppTheme.outline;
+    Text {
+        text: root.label;
+        color: root.selected ? AppTheme.on-primary : AppTheme.on-secondary-container;
+        font-size: 15px;
+        font-weight: 600;
+        horizontal-alignment: center;
+        vertical-alignment: center;
+    }
+    TouchArea { clicked => { root.clicked(); } }
 }
 
 component AccentButton inherits Rectangle {
@@ -382,6 +432,10 @@ export component MainWindow inherits Window {
     in-out property<bool> rpc-manual-enabled: false;
     in-out property<bool> rpc-custom-enabled: false;
     in-out property<string> rpc-mode-status: "All RPC modes off";
+    in-out property<string> theme-style: "DiscordDark";
+    in-out property<bool> language-follow-system: false;
+    in-out property<string> language: "en";
+
     in-out property<string> custom-name: "Music Presence";
     in-out property<string> custom-details: "";
     in-out property<string> custom-state: "";
@@ -802,6 +856,53 @@ export component MainWindow inherits Window {
                     }
                 }
 
+                // ===================== DISPLAY =====================
+                if root.current-page == "Display": VerticalLayout {
+                    spacing: 10px;
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Theme style"); color: AppTheme.on-surface-variant; font-size: 14px; font-weight: 600; wrap: word-wrap; }
+                            ThemeChoice { label: AppLocalization.translate(AppLocalization.current_locale, "Kizzy"); selected: AppTheme.dark == false && root.theme-style == "Kizzy"; clicked => { root.theme-style = "Kizzy"; AppTheme.dark = false; } }
+                            ThemeChoice { label: AppLocalization.translate(AppLocalization.current_locale, "Discord dark"); selected: root.theme-style == "DiscordDark"; clicked => { root.theme-style = "DiscordDark"; AppTheme.dark = true; } }
+                            ThemeChoice { label: AppLocalization.translate(AppLocalization.current_locale, "Discord light"); selected: root.theme-style == "DiscordLight"; clicked => { root.theme-style = "DiscordLight"; AppTheme.dark = false; } }
+                        }
+                    }
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Dark theme"); color: AppTheme.on-surface-variant; font-size: 14px; font-weight: 600; wrap: word-wrap; }
+                            KSwitch { checked <=> AppTheme.dark; toggled => {} }
+                        }
+                    }
+                }
+
+                // ===================== LANGUAGE =====================
+                if root.current-page == "Language": VerticalLayout {
+                    spacing: 8px;
+                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Follow system language"); color: AppTheme.on-surface-variant; font-size: 12px; font-weight: 500; }
+                    ThemeChoice { label: AppLocalization.translate(AppLocalization.current_locale, "System default"); selected: root.language-follow-system; clicked => { root.language-follow-system = true; } }
+                    ThemeChoice { label: "English"; selected: root.language == "en" && !root.language-follow-system; clicked => { root.language-follow-system = false; root.language = "en"; AppLocalization.language_selected("English"); } }
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        spacing: 6px;
+                        for lang in AppLocalization.language_options: ThemeChoice {
+                            label: lang;
+                            selected: root.language-follow-system == false && root.language == lang && lang != "English";
+                            clicked => { root.language-follow-system = false; root.language = lang; AppLocalization.language_selected(lang); }
+                        }
+                    }
+                }
+
+                // ===================== ABOUT =====================
+                if root.current-page == "About": VerticalLayout {
+                    spacing: 12px;
+                    Card {
+                        VerticalLayout { spacing: 8px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "About"); color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
+                            Text { text: "Music Presence — a desktop reproduction of Kizzy Enhanced."; color: AppTheme.on-surface-variant; font-size: 14px; wrap: word-wrap; }
+                        }
+                    }
+                }
+
                 // ===================== SETTINGS =====================
                 if root.current-page == "Settings": VerticalLayout {
                     spacing: 12px;
@@ -809,8 +910,8 @@ export component MainWindow inherits Window {
                         VerticalLayout { spacing: 10px;
                             Text { text: AppLocalization.translate(AppLocalization.current_locale, "Display"); color: AppTheme.on-surface; font-size: 20px; font-weight: 700; }
                             HorizontalLayout { spacing: 8px;
-                                GhostButton { label: "☾ Dark"; active: AppTheme.dark; clicked => { AppTheme.dark = true; } }
-                                GhostButton { label: "☀ Light"; active: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
+                                ThemeButton { label: "Dark"; selected: AppTheme.dark; clicked => { AppTheme.dark = true; } }
+                                ThemeButton { label: "Light"; selected: !AppTheme.dark; clicked => { AppTheme.dark = false; } }
                             }
                         }
                     }
@@ -856,8 +957,8 @@ export component MainWindow inherits Window {
                     Text { text: "Kizzy"; color: AppTheme.on-surface; font-size: 14px; font-weight: 500; vertical-alignment: center; }
                     Text { text: "Enhanced"; color: AppTheme.on-surface; font-size: 14px; font-weight: 500; vertical-alignment: center; }
                 }
-                DrawerRow { icon: @image-url("icons/ic_palette.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Display"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
-                DrawerRow { icon: @image-url("icons/ic_language.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Language"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_palette.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Display"); page: "Display"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                DrawerRow { icon: @image-url("icons/ic_language.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Language"); page: "Language"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
                 DrawerRow { icon: @image-url("icons/ic_bug.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Logs"); page: "Logs"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
                 DrawerRow { icon: @image-url("icons/ic_settings.svg"); label: AppLocalization.translate(AppLocalization.current_locale, "Settings"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
                 Rectangle { height: 1px; background: AppTheme.outline; }
