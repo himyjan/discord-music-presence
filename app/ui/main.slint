@@ -366,6 +366,7 @@ export component MainWindow inherits Window {
     in-out property<bool> oauth-has-session: false;
     in-out property<string> oauth-authorize-url: "";
     in-out property<string> current-page: "Home";
+    in-out property<bool> drawer-open: false;
     in-out property<bool> oauth-profile-loaded: false;
     in-out property<string> oauth-display-name: "";
     in-out property<string> oauth-username: "";
@@ -466,120 +467,79 @@ export component MainWindow inherits Window {
         root.current-page = page;
     }
 
-    HorizontalLayout {
-        // ------------------------- Sidebar -------------------------
-        Rectangle {
-            width: 232px;
-            background: AppTheme.sidebar;
-            VerticalLayout {
-                padding: 16px;
-                spacing: 10px;
-                HorizontalLayout {
-                    spacing: 10px;
-                    Image {
-                        source: @image-url("../packaging/music-presence.svg");
-                        width: 34px;
-                        height: 34px;
-                        image-fit: contain;
-                    }
-                    VerticalLayout {
-                        spacing: 0px;
-                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Music Presence"); color: AppTheme.text; font-size: 15px; font-weight: 700; vertical-alignment: center; }
-                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "Rich Presence for Discord"); color: AppTheme.muted; font-size: 11px; }
-                    }
-                }
-                Rectangle { height: 6px; }
-                NavItem { icon: "⌂"; label: AppLocalization.translate(AppLocalization.current_locale, "Home"); page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "✎"; label: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC"); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "◆"; label: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); page: "Custom"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "♫"; label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "▦"; label: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "⚡"; label: AppLocalization.translate(AppLocalization.current_locale, "Connections"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "☺"; label: AppLocalization.translate(AppLocalization.current_locale, "Profile"); page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "↻"; label: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "⚙"; label: AppLocalization.translate(AppLocalization.current_locale, "Settings"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                Rectangle { vertical-stretch: 1; }
+    VerticalLayout {
+        // ---- Home: large top app bar (Kizzy-style) ----
+        if (root.current-page == "Home"): Rectangle {
+            height: 104px;
+            background: AppTheme.topbar;
+            HorizontalLayout {
+                padding-left: 20px; padding-right: 20px; padding-top: 12px; spacing: 14px;
                 Rectangle {
-                    background: AppTheme.card;
-                    border-radius: 10px;
-                    VerticalLayout {
-                        padding: 12px; spacing: 6px;
-                        Text { text: AppLocalization.translate(AppLocalization.current_locale, "STATUS"); color: AppTheme.subtle; font-size: 10px; font-weight: 700; }
-                        StatusPill {
-                            label: root.connected
-                                ? AppLocalization.translate(AppLocalization.current_locale, "Desktop RPC: Connected")
-                                : AppLocalization.translate(AppLocalization.current_locale, "Desktop RPC: Offline");
-                            dot: root.connected ? AppTheme.green : AppTheme.subtle;
-                        }
-                        StatusPill {
-                            label: root.gateway-connected
-                                ? AppLocalization.translate(AppLocalization.current_locale, "Bot gateway: Online")
-                                : AppLocalization.translate(AppLocalization.current_locale, "Bot gateway: Offline");
-                            dot: root.gateway-connected ? AppTheme.green : AppTheme.subtle;
-                        }
-                        StatusPill {
-                            label: root.oauth-connected
-                                ? AppLocalization.translate(AppLocalization.current_locale, "Discord: Signed in")
-                                : AppLocalization.translate(AppLocalization.current_locale, "Discord: Not signed in");
-                            dot: root.oauth-connected ? AppTheme.green : AppTheme.subtle;
-                        }
-                        StatusPill {
-                            label: root.auto-detect
-                                ? AppLocalization.translate(AppLocalization.current_locale, "Auto-detect: On")
-                                : AppLocalization.translate(AppLocalization.current_locale, "Auto-detect: Off");
-                            dot: root.auto-detect ? AppTheme.green : AppTheme.yellow;
-                        }
+                    width: 40px; height: 40px; border-radius: 20px;
+                    background: AppTheme.card-hover;
+                    Text { text: "☰"; color: AppTheme.text; font-size: 20px; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.drawer-open = true; } }
+                }
+                VerticalLayout {
+                    horizontal-stretch: 1;
+                    spacing: 2px;
+                    Text {
+                        text: "Welcome" + (root.oauth-display-name.is-empty ? "" : ", " + root.oauth-display-name);
+                        color: AppTheme.text; font-size: 24px; font-weight: 700;
+                        overflow: elide;
                     }
+                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Music Presence · Discord Rich Presence"); color: AppTheme.muted; font-size: 12px; }
+                }
+                Rectangle {
+                    width: 40px; height: 40px; border-radius: 20px;
+                    background: root.oauth-has-avatar ? AppTheme.card-hover : AppTheme.accent;
+                    clip: true;
+                    if (root.oauth-has-avatar): Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                    if (!root.oauth-has-avatar): Text { text: root.oauth-initials.is-empty ? "?" : root.oauth-initials; color: AppTheme.on-brand; font-size: 14px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.navigate("Profile"); } }
+                }
+            }
+        }
+        // ---- Other pages: top app bar with back button ----
+        if (root.current-page != "Home"): Rectangle {
+            height: 58px;
+            background: AppTheme.topbar;
+            HorizontalLayout {
+                padding-left: 16px; padding-right: 20px; spacing: 12px;
+                Rectangle {
+                    width: 36px; height: 36px; border-radius: 18px;
+                    background: AppTheme.card-hover;
+                    Text { text: "←"; color: AppTheme.text; font-size: 20px; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.navigate("Home"); } }
+                }
+                Text {
+                    text: root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Manual RPC")
+                        : root.current-page == "Custom" ? AppLocalization.translate(AppLocalization.current_locale, "Custom RPC")
+                        : root.current-page == "Media" ? AppLocalization.translate(AppLocalization.current_locale, "Media RPC")
+                        : root.current-page == "Apps" ? AppLocalization.translate(AppLocalization.current_locale, "App Detection")
+                        : root.current-page == "Connections" ? AppLocalization.translate(AppLocalization.current_locale, "Connections")
+                        : root.current-page == "Profile" ? AppLocalization.translate(AppLocalization.current_locale, "Discord Profile")
+                        : root.current-page == "Scrobbling" ? AppLocalization.translate(AppLocalization.current_locale, "Scrobbling")
+                        : root.current-page == "Logs" ? AppLocalization.translate(AppLocalization.current_locale, "Logs")
+                        : AppLocalization.translate(AppLocalization.current_locale, "Settings");
+                    color: AppTheme.text; font-size: 18px; font-weight: 700; vertical-alignment: center;
+                }
+                Rectangle { horizontal-stretch: 1; }
+                StatusPill {
+                    label: root.detecting ? "Scanning…" : (root.media-source.is-empty ? "No media" : root.media-source);
+                    dot: root.detecting ? AppTheme.yellow : (root.media-source.is-empty ? AppTheme.subtle : AppTheme.green);
+                }
+                Rectangle {
+                    width: 36px; height: 36px; border-radius: 18px;
+                    background: AppTheme.card-hover;
+                    Text { text: "☰"; color: AppTheme.text; font-size: 18px; horizontal-alignment: center; vertical-alignment: center; }
+                    TouchArea { clicked => { root.drawer-open = true; } }
                 }
             }
         }
 
-        // ------------------------- Main column -------------------------
-        Rectangle {
-            background: AppTheme.bg;
-            VerticalLayout {
-                // Top bar
-                Rectangle {
-                    height: 60px;
-                    background: AppTheme.topbar;
-                    HorizontalLayout {
-                        padding-left: 24px; padding-right: 24px; spacing: 12px;
-                        Text {
-                            text: root.current-page == "Home" ? AppLocalization.translate(AppLocalization.current_locale, "Overview")
-                                : root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Manual RPC")
-                                : root.current-page == "Custom" ? AppLocalization.translate(AppLocalization.current_locale, "Custom RPC")
-                                : root.current-page == "Media" ? AppLocalization.translate(AppLocalization.current_locale, "Media RPC")
-                                : root.current-page == "Apps" ? AppLocalization.translate(AppLocalization.current_locale, "App Detection")
-                                : root.current-page == "Connections" ? AppLocalization.translate(AppLocalization.current_locale, "Connections")
-                                : root.current-page == "Profile" ? AppLocalization.translate(AppLocalization.current_locale, "Discord Profile")
-                                : root.current-page == "Scrobbling" ? AppLocalization.translate(AppLocalization.current_locale, "Scrobbling")
-                                : AppLocalization.translate(AppLocalization.current_locale, "Settings");
-                            color: AppTheme.text;
-                            font-size: 18px;
-                            font-weight: 700;
-                            vertical-alignment: center;
-                        }
-                        Rectangle { horizontal-stretch: 1; }
-                        StatusPill {
-                            label: root.detecting
-                                ? AppLocalization.translate(AppLocalization.current_locale, "Scanning…")
-                                : (root.media-source.is-empty
-                                    ? AppLocalization.translate(AppLocalization.current_locale, "No media")
-                                    : root.media-source);
-                            dot: root.detecting ? AppTheme.yellow : (root.media-source.is-empty ? AppTheme.subtle : AppTheme.green);
-                        }
-                        SecondaryButton {
-                            label: AppTheme.dark
-                                ? AppLocalization.translate(AppLocalization.current_locale, "☾ Dark")
-                                : AppLocalization.translate(AppLocalization.current_locale, "☀ Light");
-                            min-width: 104px;
-                            clicked => { AppTheme.dark = !AppTheme.dark; }
-                        }
-                    }
-                }
-
-                // Scrolling page area
-                ScrollView {
+        // Scrolling page area
+        ScrollView {
                     vertical-scrollbar-policy: ScrollBarPolicy.as-needed;
                     VerticalLayout {
                         padding: 24px;
@@ -1100,6 +1060,26 @@ export component MainWindow inherits Window {
                             }
                         }
 
+                        // ===================== LOGS =====================
+                        if (root.current-page == "Logs"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Current status"); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Card {
+                                VerticalLayout { spacing: 8px;
+                                    Text { text: "Desktop RPC"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
+                                    Text { text: root.connection-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: "Bot Gateway"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
+                                    Text { text: root.gateway-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: "Discord OAuth2"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
+                                    Text { text: root.oauth-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: "Media detection"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
+                                    Text { text: root.detection-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: "Scrobbling"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
+                                    Text { text: root.scrobble-lastfm-status + " · " + root.scrobble-listenbrainz-status + " · " + root.scrobble-librefm-status; color: AppTheme.text; font-size: 13px; wrap: word-wrap; }
+                                }
+                            }
+                        }
+
                         // ===================== SETTINGS =====================
                         if (root.current-page == "Settings"): VerticalLayout {
                             spacing: 18px;
@@ -1133,6 +1113,49 @@ export component MainWindow inherits Window {
                                 }
                             }
                         }
+                    }
+                }
+    }
+    if (root.drawer-open): Rectangle {
+        background: #00000080;
+        TouchArea { clicked => { root.drawer-open = false; } }
+        Rectangle {
+            width: 288px;
+            height: parent.height;
+            background: AppTheme.sidebar;
+            VerticalLayout {
+                padding: 16px; spacing: 6px;
+                HorizontalLayout {
+                    spacing: 10px;
+                    Rectangle {
+                        width: 44px; height: 44px; border-radius: 22px; background: AppTheme.accent;
+                        if (root.oauth-has-avatar): Image { source: root.oauth-avatar; width: parent.width; height: parent.height; image-fit: ImageFit.cover; }
+                        if (!root.oauth-has-avatar): Text { text: root.oauth-initials.is-empty ? "?" : root.oauth-initials; color: AppTheme.on-brand; font-size: 16px; font-weight: 700; horizontal-alignment: center; vertical-alignment: center; }
+                    }
+                    VerticalLayout {
+                        horizontal-stretch: 1;
+                        Text { text: root.oauth-display-name.is-empty ? "Music Presence" : root.oauth-display-name; color: AppTheme.text; font-size: 15px; font-weight: 700; }
+                        Text { text: root.oauth-username.is-empty ? "Not signed in" : root.oauth-username; color: AppTheme.muted; font-size: 12px; }
+                    }
+                }
+                Rectangle { height: 8px; }
+                NavItem { icon: "⌂"; label: AppLocalization.translate(AppLocalization.current_locale, "Home"); page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "♫"; label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "✎"; label: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC"); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "◆"; label: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); page: "Custom"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "▦"; label: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "⚡"; label: AppLocalization.translate(AppLocalization.current_locale, "RPC Settings"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "☺"; label: AppLocalization.translate(AppLocalization.current_locale, "Profile"); page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "↻"; label: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "⚙"; label: AppLocalization.translate(AppLocalization.current_locale, "Style & Appearance"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "i"; label: AppLocalization.translate(AppLocalization.current_locale, "About"); page: "Settings"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                NavItem { icon: "≡"; label: AppLocalization.translate(AppLocalization.current_locale, "Logs"); page: "Logs"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); root.drawer-open = false; } }
+                Rectangle { vertical-stretch: 1; }
+                Card {
+                    VerticalLayout { spacing: 6px;
+                        StatusPill { label: root.connected ? "Desktop RPC: Connected" : "Desktop RPC: Offline"; dot: root.connected ? AppTheme.green : AppTheme.subtle; }
+                        StatusPill { label: root.gateway-connected ? "Bot gateway: Online" : "Bot gateway: Offline"; dot: root.gateway-connected ? AppTheme.green : AppTheme.subtle; }
+                        StatusPill { label: root.oauth-connected ? "Discord: Signed in" : "Discord: Not signed in"; dot: root.oauth-connected ? AppTheme.green : AppTheme.subtle; }
                     }
                 }
             }
