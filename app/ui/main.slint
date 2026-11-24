@@ -1092,6 +1092,10 @@ export component MainWindow inherits Window {
                                         current-value <=> AppLocalization.selected_language;
                                         selected(value) => { AppLocalization.language_selected(value); }
                                     }
+                                    SecondaryButton {
+                                        label: "Reset to English";
+                                        clicked => { AppLocalization.language_selected("English"); }
+                                    }
                                 }
                             }
                             Card {
