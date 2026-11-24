@@ -8,6 +8,7 @@
 
 use std::process::Command as ProcessCommand;
 use std::sync::mpsc;
+use std::sync::Arc;
 use std::time::Duration;
 
 use crate::bot_gateway;
@@ -40,6 +41,9 @@ pub struct Settings {
     pub show_album: bool,
     pub hide_paused: bool,
     pub status_display_type: String,
+    pub show_artist: bool,
+    pub cover_art: bool,
+    pub timestamps: bool,
 }
 
 impl Default for Settings {
@@ -53,6 +57,9 @@ impl Default for Settings {
             show_album: true,
             hide_paused: false,
             status_display_type: "Details".into(),
+            show_artist: true,
+            cover_art: true,
+            timestamps: true,
         }
     }
 }
@@ -65,6 +72,7 @@ pub fn run_worker(
     rpc_tx: mpsc::Sender<discord_rpc::Command>,
     gateway_tx: mpsc::Sender<bot_gateway::Command>,
     scrobble_tx: mpsc::Sender<scrobbling::Command>,
+    media_rpc_enabled: Arc<std::sync::atomic::AtomicBool>,
 ) {
     let mut settings = Settings::default();
     let mut running = false;
@@ -107,11 +115,25 @@ pub fn run_worker(
         let should_update = signature != last_signature && !detected.is_empty();
         last_signature = signature;
 
-        if should_update && (settings.auto_update || detect_now) {
+        if should_update
+            && (settings.auto_update || detect_now)
+            && media_rpc_enabled.load(std::sync::atomic::Ordering::Relaxed)
+        {
             let skip_paused = settings.hide_paused && !detected.playing;
             if !skip_paused {
+                let mut presence_media = detected.clone();
+                if !settings.show_artist {
+                    presence_media.artist.clear();
+                }
+                if !settings.cover_art {
+                    presence_media.artwork_url.clear();
+                }
+                if !settings.timestamps {
+                    presence_media.duration_seconds = 0;
+                    presence_media.position_seconds = 0;
+                }
                 if let Ok(presence) = presence_from_detected(
-                    &detected,
+                    &presence_media,
                     &settings.activity_type,
                     settings.show_album,
                     &settings.status_display_type,

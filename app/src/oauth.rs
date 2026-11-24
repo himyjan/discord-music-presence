@@ -75,6 +75,9 @@ struct DiscordUser {
     banner: Option<String>,
     #[serde(default)]
     accent_color: Option<u32>,
+    /// Undocumented but commonly returned by /users/@me; may be absent.
+    #[serde(default)]
+    bio: Option<String>,
 }
 
 struct DecodedImage {
@@ -593,6 +596,13 @@ fn set_profile(ui: &slint::Weak<MainWindow>, profile: Option<DiscordUser>, image
                 window.set_oauth_username(format!("@{}", profile.username).into());
                 window.set_oauth_user_id(profile.id.into());
                 window.set_oauth_initials(initials.into());
+                let bio = profile
+                    .bio
+                    .as_deref()
+                    .map(str::trim)
+                    .filter(|value| !value.is_empty())
+                    .unwrap_or("No about-me text is set on this account.");
+                window.set_oauth_bio(bio.into());
                 window.set_oauth_accent_color(profile.accent_color.map_or(
                     slint::Color::from_rgb_u8(35, 36, 40),
                     |color| {
@@ -609,6 +619,7 @@ fn set_profile(ui: &slint::Weak<MainWindow>, profile: Option<DiscordUser>, image
                 window.set_oauth_username("".into());
                 window.set_oauth_user_id("".into());
                 window.set_oauth_initials("".into());
+                window.set_oauth_bio("".into());
                 window.set_oauth_accent_color(slint::Color::from_rgb_u8(35, 36, 40));
             }
             window.set_oauth_has_avatar(images.avatar.is_some());

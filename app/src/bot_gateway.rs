@@ -15,6 +15,8 @@ pub enum Command {
     },
     Logout,
     UpdatePresence(PresenceDraft),
+    /// Clear the bot activity when no RPC mode is enabled.
+    ClearPresence,
 }
 
 struct PendingLogin {
@@ -152,6 +154,14 @@ async fn run_gateway(
                     set_ui(&ui, true, false, "Bot activity updated.".into());
                 }
             }
+            Input::Command(Some(Command::ClearPresence)) => {
+                current_presence = None;
+                if connected
+                    && let Some(active_shard) = shard.as_ref()
+                {
+                    send_cleared_presence(active_shard);
+                }
+            }
             Input::Command(None) => break,
             Input::Event(Some(Ok(Event::Ready(_)))) => {
                 connected = true;
@@ -226,6 +236,13 @@ fn send_presence(shard: &Shard, draft: &PresenceDraft) {
     match UpdatePresence::new(vec![draft.gateway_activity()], false, None, Status::Online) {
         Ok(presence) => shard.command(&presence),
         Err(error) => eprintln!("Could not build Discord bot presence: {error}"),
+    }
+}
+
+fn send_cleared_presence(shard: &Shard) {
+    match UpdatePresence::new(Vec::new(), false, None, Status::Online) {
+        Ok(presence) => shard.command(&presence),
+        Err(error) => eprintln!("Could not clear Discord bot presence: {error}"),
     }
 }
 

@@ -9,6 +9,8 @@ pub enum Command {
         presence: PresenceDraft,
     },
     Update(PresenceDraft),
+    /// Clear the activity when no RPC mode is enabled.
+    Clear,
     Disconnect,
 }
 
@@ -87,6 +89,18 @@ pub fn run_worker(commands: mpsc::Receiver<Command>, ui: slint::Weak<MainWindow>
                             eprintln!("Failed to close disconnected Discord IPC: {close_error}");
                         }
                     }
+                }
+            }
+            Command::Clear => {
+                if let Some(connected) = client.as_mut()
+                    && let Err(error) = connected.clear_activity()
+                {
+                    set_ui_state(
+                        &ui,
+                        false,
+                        false,
+                        format!("Could not clear desktop activity: {error}"),
+                    );
                 }
             }
             Command::Disconnect => {

@@ -13,7 +13,7 @@ use bot_gateway::Command as GatewayCommand;
 use discord_rpc::Command as RpcCommand;
 use oauth::Command as OAuthCommand;
 use localization::Localizer;
-use presence::{PresenceDraft, youtube_music_search_url};
+use presence::{DetectedMedia, PresenceDraft, presence_from_detected, youtube_music_search_url};
 use scrobbling::{Command as ScrobbleCommand, Provider as ScrobbleProvider, ScrobbleTrack};
 use slint::{ComponentHandle, ModelRc, SharedString, VecModel};
 use std::{
@@ -24,6 +24,59 @@ use std::{
     },
     thread,
 };
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+enum RpcMode {
+    Media,
+    Manual,
+    Custom,
+}
+
+impl RpcMode {
+    fn parse(value: &str) -> Option<Self> {
+        match value {
+            "Media" => Some(Self::Media),
+            "Manual" => Some(Self::Manual),
+            "Custom" => Some(Self::Custom),
+            _ => None,
+        }
+    }
+}
+
+/// Three independent on/off flags — all RPC modes may run in parallel.
+/// Discord only shows the most recently sent presence, so the last writer wins.
+struct RpcModeFlags {
+    media: Arc<AtomicBool>,
+    manual: Arc<AtomicBool>,
+    custom: Arc<AtomicBool>,
+}
+
+impl Default for RpcModeFlags {
+    fn default() -> Self {
+        Self {
+            media: Arc::new(AtomicBool::new(false)),
+            manual: Arc::new(AtomicBool::new(false)),
+            custom: Arc::new(AtomicBool::new(false)),
+        }
+    }
+}
+
+impl RpcModeFlags {
+    fn set(&self, mode: RpcMode, value: bool) {
+        let flag = match mode {
+            RpcMode::Media => &self.media,
+            RpcMode::Manual => &self.manual,
+            RpcMode::Custom => &self.custom,
+        };
+        flag.store(value, Ordering::Relaxed);
+    }
+
+    fn any(&self) -> bool {
+        self.media.load(Ordering::Relaxed)
+            || self.manual.load(Ordering::Relaxed)
+            || self.custom.load(Ordering::Relaxed)
+    }
+}
 
 slint::include_modules!();
 
@@ -57,6 +110,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let window = MainWindow::new()?;
+    let rpc_modes = Arc::new(RpcModeFlags::default());
     let localizer = Arc::new(Localizer::bundled());
     let localization = window.global::<AppLocalization>();
     localization.set_language_options(ModelRc::new(VecModel::from_iter(
@@ -156,6 +210,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let detector_rpc_tx = rpc_tx.clone();
     let detector_gateway_tx = gateway_tx.clone();
     let detector_scrobble_tx = scrobble_tx.clone();
+    let detector_media_enabled = Arc::clone(&rpc_modes.media);
     let detector_worker = thread::Builder::new()
         .name("media-detector".into())
         .spawn(move || {
@@ -165,6 +220,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 detector_rpc_tx,
                 detector_gateway_tx,
                 detector_scrobble_tx,
+                detector_media_enabled,
             )
         })?;
 
@@ -517,6 +573,85 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
+    let mode_tx = rpc_tx.clone();
+    let mode_gateway_tx = gateway_tx.clone();
+    let mode_ui = window.as_weak();
+    let mode_flags = Arc::clone(&rpc_modes);
+    window.on_rpc_mode_toggled(move |mode_name, enabled| {
+        let Some(mode) = RpcMode::parse(mode_name.as_str()) else {
+            return;
+        };
+        mode_flags.set(mode, enabled);
+        if let Some(window) = mode_ui.upgrade() {
+            window.set_rpc_mode_status(
+                format!(
+                    "Media RPC {} · Manual RPC {} · Custom RPC {}",
+                    if mode_flags.media.load(Ordering::Relaxed) {
+                        "on"
+                    } else {
+                        "off"
+                    },
+                    if mode_flags.manual.load(Ordering::Relaxed) {
+                        "on"
+                    } else {
+                        "off"
+                    },
+                    if mode_flags.custom.load(Ordering::Relaxed) {
+                        "on"
+                    } else {
+                        "off"
+                    },
+                )
+                .into(),
+            );
+        }
+        if !enabled {
+            if !mode_flags.any() {
+                let _ = mode_tx.send(RpcCommand::Clear);
+                let _ = mode_gateway_tx.send(GatewayCommand::ClearPresence);
+            }
+            return;
+        }
+        let Some(window) = mode_ui.upgrade() else {
+            return;
+        };
+        let presence = match mode {
+            RpcMode::Media => media_presence_from_ui(&window),
+            RpcMode::Manual => presence_from_ui(&window),
+            RpcMode::Custom => custom_presence_from_ui(&window),
+        };
+        match presence {
+            Ok(presence) => {
+                let _ = mode_tx.send(RpcCommand::Update(presence.clone()));
+                let _ = mode_gateway_tx.send(GatewayCommand::UpdatePresence(presence));
+            }
+            Err(error) => {
+                if let Some(window) = mode_ui.upgrade() {
+                    window.set_rpc_mode_status(error.into());
+                }
+            }
+        }
+    });
+
+    let custom_tx = rpc_tx.clone();
+    let custom_gateway_tx = gateway_tx.clone();
+    let custom_ui = window.as_weak();
+    let custom_flags = Arc::clone(&rpc_modes);
+    window.on_custom_presence_update_requested(move || {
+        let Some(window) = custom_ui.upgrade() else {
+            return;
+        };
+        match custom_presence_from_ui(&window) {
+            Ok(presence) => {
+                let _ = custom_tx.send(RpcCommand::Update(presence.clone()));
+                let _ = custom_gateway_tx.send(GatewayCommand::UpdatePresence(presence));
+                window.set_rpc_mode_status("Custom RPC applied.".into());
+            }
+            Err(error) => window.set_rpc_mode_status(error.into()),
+        }
+    });
+    let _ = custom_flags;
+
     let run_result = window.run();
     drop(window);
     oauth_stopping.store(true, Ordering::Relaxed);
@@ -556,6 +691,9 @@ fn detector_settings_from_ui(window: &MainWindow) -> media_detector::Settings {
         show_album: window.get_media_show_album(),
         hide_paused: window.get_media_hide_paused(),
         status_display_type: window.get_status_display_type().to_string(),
+        show_artist: window.get_media_show_artist(),
+        cover_art: window.get_media_cover_art(),
+        timestamps: window.get_media_timestamps(),
     }
 }
 
@@ -631,6 +769,61 @@ fn scrobble_track_from_ui(window: &MainWindow) -> Result<Option<ScrobbleTrack>, 
         position_seconds: position,
         playing: window.get_media_playing(),
     }))
+}
+
+fn media_presence_from_ui(window: &MainWindow) -> Result<PresenceDraft, String> {
+    let media = DetectedMedia {
+        title: window.get_media_title().to_string(),
+        artist: window.get_media_artist().to_string(),
+        album: window.get_media_album().to_string(),
+        duration_seconds: parse_seconds(&window.get_media_duration(), "duration")?,
+        position_seconds: parse_seconds(&window.get_media_position(), "position")?,
+        playing: window.get_media_playing(),
+        video_url: window.get_media_video_url().to_string(),
+        channel_url: window.get_media_channel_url().to_string(),
+        artwork_url: window.get_large_image().to_string(),
+        site: window.get_detected_site().to_string(),
+        watching: window.get_media_kind() == "Music video",
+        source: window.get_media_source().to_string(),
+        app: window.get_detected_app().to_string(),
+        status: String::new(),
+    };
+    presence_from_detected(
+        &media,
+        &window.get_media_activity_type(),
+        window.get_media_show_album(),
+        &window.get_status_display_type(),
+    )
+}
+
+fn custom_presence_from_ui(window: &MainWindow) -> Result<PresenceDraft, String> {
+    let draft = PresenceDraft {
+        name: window.get_custom_name().to_string(),
+        details: window.get_custom_details().to_string(),
+        state: window.get_custom_state().to_string(),
+        activity_type: match window.get_custom_activity_type().as_str() {
+            "Listening" => 2,
+            "Watching" => 3,
+            "Competing" => 5,
+            _ => 0,
+        },
+        playing: false,
+        position_seconds: 0,
+        duration_seconds: 0,
+        large_image: window.get_custom_large_image().to_string(),
+        large_text: window.get_custom_large_text().to_string(),
+        details_url: window.get_custom_details_url().to_string(),
+        state_url: window.get_custom_state_url().to_string(),
+        large_url: window.get_custom_large_url().to_string(),
+        small_url: String::new(),
+        status_display_type: window.get_status_display_type().to_string(),
+        button1_label: window.get_custom_button1_label().to_string(),
+        button1_url: window.get_custom_button1_url().to_string(),
+        button2_label: window.get_custom_button2_label().to_string(),
+        button2_url: window.get_custom_button2_url().to_string(),
+    };
+    draft.validate()?;
+    Ok(draft)
 }
 
 fn presence_from_ui(window: &MainWindow) -> Result<PresenceDraft, String> {

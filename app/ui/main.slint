@@ -248,6 +248,49 @@ component FeatureCard inherits Rectangle {
     }
 }
 
+component RpcFeatureCard inherits Rectangle {
+    in property<string> icon;
+    in property<string> title;
+    in property<string> description;
+    in property<string> page;
+    in-out property<string> current-page;
+    in-out property<bool> checked;
+    callback navigate(string);
+    callback toggled(bool);
+    height: 118px;
+    border-radius: 14px;
+    background: AppTheme.card;
+    border-width: 1px;
+    border-color: root.checked ? AppTheme.accent : AppTheme.border;
+    HorizontalLayout {
+        padding: 16px;
+        spacing: 12px;
+        Rectangle {
+            width: 46px; height: 46px; border-radius: 12px;
+            background: root.checked ? AppTheme.accent : AppTheme.card-hover;
+            Text { text: root.icon; color: root.checked ? AppTheme.on-brand : AppTheme.accent; font-size: 22px; horizontal-alignment: center; vertical-alignment: center; }
+        }
+        VerticalLayout {
+            horizontal-stretch: 1;
+            spacing: 4px;
+            Text { text: root.title; color: AppTheme.text; font-size: 15px; font-weight: 700; }
+            Text { text: root.description; color: AppTheme.muted; font-size: 12px; wrap: word-wrap; }
+            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Open settings →"); color: AppTheme.accent; font-size: 11px; }
+        }
+        VerticalLayout {
+            width: 48px;
+            alignment: center;
+            Switch {
+                checked <=> root.checked;
+                toggled => { root.toggled(root.checked); }
+            }
+        }
+    }
+    TouchArea {
+        clicked => { root.navigate(root.page); }
+    }
+}
+
 component StatusPill inherits Rectangle {
     in property<string> label;
     in property<color> dot;
@@ -328,6 +371,7 @@ export component MainWindow inherits Window {
     in-out property<string> oauth-username: "";
     in-out property<string> oauth-user-id: "";
     in-out property<string> oauth-initials: "";
+    in-out property<string> oauth-bio: "";
     in-out property<color> oauth-accent-color: #232428;
     in-out property<string> oauth-profile-art-status: "";
     in-out property<bool> oauth-has-avatar: false;
@@ -366,6 +410,30 @@ export component MainWindow inherits Window {
     in-out property<string> media-activity-type: "Auto";
     in-out property<bool> media-show-album: true;
     in-out property<bool> media-hide-paused: false;
+    in-out property<bool> rpc-media-enabled: false;
+    in-out property<bool> media-show-artist: true;
+    in-out property<bool> media-cover-art: true;
+    in-out property<bool> media-app-icon: false;
+    in-out property<bool> media-timestamps: true;
+    in-out property<bool> media-playback-state: false;
+    in-out property<bool> media-song-as-title: true;
+    in-out property<bool> media-auto-activity-type: true;
+    in-out property<bool> rpc-manual-enabled: false;
+    in-out property<bool> rpc-custom-enabled: false;
+    in-out property<string> rpc-mode-status: "All RPC modes off";
+    in-out property<string> custom-name: "Music Presence";
+    in-out property<string> custom-details: "";
+    in-out property<string> custom-state: "";
+    in-out property<string> custom-activity-type: "Listening";
+    in-out property<string> custom-large-image: "";
+    in-out property<string> custom-large-text: "";
+    in-out property<string> custom-details-url: "";
+    in-out property<string> custom-state-url: "";
+    in-out property<string> custom-large-url: "";
+    in-out property<string> custom-button1-label: "";
+    in-out property<string> custom-button1-url: "";
+    in-out property<string> custom-button2-label: "";
+    in-out property<string> custom-button2-url: "";
 
     // ---- callbacks (wired in Rust) ----
     callback connect-requested();
@@ -390,6 +458,8 @@ export component MainWindow inherits Window {
     callback auto-detect-changed(bool);
     callback detector-settings-changed();
     callback open-url-requested(string);
+    callback rpc-mode-toggled(string, bool);
+    callback custom-presence-update-requested();
 
     // Helper: navigate + share current page with nav items.
     function navigate(page: string) {
@@ -420,7 +490,8 @@ export component MainWindow inherits Window {
                 }
                 Rectangle { height: 6px; }
                 NavItem { icon: "⌂"; label: AppLocalization.translate(AppLocalization.current_locale, "Home"); page: "Home"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                NavItem { icon: "✎"; label: AppLocalization.translate(AppLocalization.current_locale, "Activity"); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "✎"; label: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC"); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                NavItem { icon: "◆"; label: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); page: "Custom"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                 NavItem { icon: "♫"; label: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                 NavItem { icon: "▦"; label: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                 NavItem { icon: "⚡"; label: AppLocalization.translate(AppLocalization.current_locale, "Connections"); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
@@ -475,7 +546,8 @@ export component MainWindow inherits Window {
                         padding-left: 24px; padding-right: 24px; spacing: 12px;
                         Text {
                             text: root.current-page == "Home" ? AppLocalization.translate(AppLocalization.current_locale, "Overview")
-                                : root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Activity")
+                                : root.current-page == "Activity" ? AppLocalization.translate(AppLocalization.current_locale, "Manual RPC")
+                                : root.current-page == "Custom" ? AppLocalization.translate(AppLocalization.current_locale, "Custom RPC")
                                 : root.current-page == "Media" ? AppLocalization.translate(AppLocalization.current_locale, "Media RPC")
                                 : root.current-page == "Apps" ? AppLocalization.translate(AppLocalization.current_locale, "App Detection")
                                 : root.current-page == "Connections" ? AppLocalization.translate(AppLocalization.current_locale, "Connections")
@@ -517,26 +589,28 @@ export component MainWindow inherits Window {
                         // ===================== HOME =====================
                         if (root.current-page == "Home"): VerticalLayout {
                             spacing: 18px;
-                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Everything you need to broadcast what you play."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Text { text: "Welcome" + (root.oauth-display-name.is-empty ? "" : ", " + root.oauth-display-name) + " — choose which Rich Presence modes to run."; color: AppTheme.text; font-size: 20px; font-weight: 700; wrap: word-wrap; }
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "All three modes can be on at the same time. Discord shows the most recent update."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
                             HorizontalLayout {
                                 spacing: 14px;
-                                FeatureCard { icon: "♫"; title: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect your music and videos, with video and channel links."); page: "Media"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                                FeatureCard { icon: "▦"; title: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); description: AppLocalization.translate(AppLocalization.current_locale, "Choose which players and browsers feed your status."); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                RpcFeatureCard { icon: "♫"; title: AppLocalization.translate(AppLocalization.current_locale, "Media RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect playing media and browser links."); page: "Media"; current-page <=> root.current-page; checked <=> root.rpc-media-enabled; toggled(v) => { root.rpc-mode-toggled("Media", v); } navigate(p) => { root.navigate(p); } }
+                                RpcFeatureCard { icon: "✎"; title: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Broadcast details you enter yourself."); page: "Activity"; current-page <=> root.current-page; checked <=> root.rpc-manual-enabled; toggled(v) => { root.rpc-mode-toggled("Manual", v); } navigate(p) => { root.navigate(p); } }
                             }
                             HorizontalLayout {
                                 spacing: 14px;
-                                FeatureCard { icon: "✎"; title: AppLocalization.translate(AppLocalization.current_locale, "Activity"); description: AppLocalization.translate(AppLocalization.current_locale, "Hand-craft a custom or media Rich Presence."); page: "Activity"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                                FeatureCard { icon: "⚡"; title: AppLocalization.translate(AppLocalization.current_locale, "Connections"); description: AppLocalization.translate(AppLocalization.current_locale, "Connect Discord desktop, bot gateway, and OAuth."); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                RpcFeatureCard { icon: "◆"; title: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC"); description: AppLocalization.translate(AppLocalization.current_locale, "Fully custom activity with assets and buttons."); page: "Custom"; current-page <=> root.current-page; checked <=> root.rpc-custom-enabled; toggled(v) => { root.rpc-mode-toggled("Custom", v); } navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "⚡"; title: AppLocalization.translate(AppLocalization.current_locale, "Connections"); description: AppLocalization.translate(AppLocalization.current_locale, "Desktop RPC, bot gateway and OAuth sign-in."); page: "Connections"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                             }
                             HorizontalLayout {
                                 spacing: 14px;
-                                FeatureCard { icon: "☺"; title: AppLocalization.translate(AppLocalization.current_locale, "Profile"); description: AppLocalization.translate(AppLocalization.current_locale, "Preview the Discord account details OAuth can share."); page: "Profile"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
-                                FeatureCard { icon: "↻"; title: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); description: AppLocalization.translate(AppLocalization.current_locale, "Forward plays to Last.fm, ListenBrainz, and Libre.fm."); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "▦"; title: AppLocalization.translate(AppLocalization.current_locale, "App Detection"); description: AppLocalization.translate(AppLocalization.current_locale, "Choose which players and browsers are used."); page: "Apps"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
+                                FeatureCard { icon: "↻"; title: AppLocalization.translate(AppLocalization.current_locale, "Scrobbling"); description: AppLocalization.translate(AppLocalization.current_locale, "Last.fm, ListenBrainz and Libre.fm."); page: "Scrobbling"; current-page <=> root.current-page; navigate(p) => { root.navigate(p); } }
                             }
                             Card {
                                 VerticalLayout { spacing: 8px;
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Quick start"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
-                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "1. Open Media RPC and press Detect now.  2. Turn on Auto-detect to keep Discord in sync.  3. Add your Application ID under Connections and connect."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "RPC status"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    Text { text: root.rpc-mode-status; color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Add your Application ID under Connections and connect to start broadcasting."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                 }
                             }
                         }
@@ -547,6 +621,7 @@ export component MainWindow inherits Window {
                             Text { text: AppLocalization.translate(AppLocalization.current_locale, "Craft a Rich Presence by hand."); color: AppTheme.muted; font-size: 14px; }
                             Card {
                                 VerticalLayout { spacing: 12px;
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Manual RPC enabled"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Run this mode independently of Media and Custom."); checked <=> root.rpc-manual-enabled; toggled => { root.rpc-mode-toggled("Manual", root.rpc-manual-enabled); } }
                                     Text { text: AppLocalization.translate(AppLocalization.current_locale, "Activity type"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
                                     HorizontalLayout {
                                         spacing: 8px;
@@ -630,6 +705,7 @@ export component MainWindow inherits Window {
                             Text { text: AppLocalization.translate(AppLocalization.current_locale, "Automatically broadcast what your desktop is playing."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
                             Card {
                                 VerticalLayout { spacing: 14px;
+                                    ToggleRow { title: "Media RPC enabled"; subtitle: "Run this mode independently of Manual and Custom."; checked <=> root.rpc-media-enabled; toggled => { root.rpc-mode-toggled("Media", root.rpc-media-enabled); } }
                                     HorizontalLayout {
                                         spacing: 12px;
                                         Text { text: AppLocalization.translate(AppLocalization.current_locale, "Auto-detect"); color: AppTheme.text; font-size: 16px; font-weight: 700; vertical-alignment: center; }
@@ -646,6 +722,20 @@ export component MainWindow inherits Window {
                                         SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open video"); active: !root.media-video-url.is-empty; clicked => { root.open-url-requested(root.media-video-url); } }
                                         SecondaryButton { label: AppLocalization.translate(AppLocalization.current_locale, "Open channel"); active: !root.media-channel-url.is-empty; clicked => { root.open-url-requested(root.media-channel-url); } }
                                     }
+                                }
+                            }
+                            Card {
+                                VerticalLayout { spacing: 6px;
+                                    Text { text: AppLocalization.translate(AppLocalization.current_locale, "Presence details"); color: AppTheme.text; font-size: 16px; font-weight: 700; }
+                                    ToggleRow { title: "Show artist name"; checked <=> root.media-show-artist; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Show album name"; checked <=> root.media-show-album; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Show cover art"; subtitle: "Use detected artwork when available."; checked <=> root.media-cover-art; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Show app icon"; checked <=> root.media-app-icon; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Enable timestamps"; checked <=> root.media-timestamps; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Show playback state"; checked <=> root.media-playback-state; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Hide when paused"; checked <=> root.media-hide-paused; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Show song as title"; checked <=> root.media-song-as-title; toggled => { root.detector-settings-changed(); } }
+                                    ToggleRow { title: "Auto activity type"; checked <=> root.media-auto-activity-type; toggled => { root.detector-settings-changed(); } }
                                 }
                             }
                             Card {
@@ -891,12 +981,72 @@ export component MainWindow inherits Window {
                                             Text { text: AppLocalization.translate(AppLocalization.current_locale, "User ID: ") + root.oauth-user-id; color: AppTheme.subtle; font-size: 12px; }
                                         }
                                     }
+                                    Rectangle {
+                                        height: 1px;
+                                        background: AppTheme.border;
+                                    }
+                                    Text { text: "ABOUT ME"; color: AppTheme.subtle; font-size: 11px; font-weight: 700; }
+                                    Text {
+                                        text: root.oauth-bio;
+                                        color: AppTheme.text;
+                                        font-size: 13px;
+                                        wrap: word-wrap;
+                                    }
                                     Text { text: root.oauth-profile-art-status; color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                     Text { text: AppLocalization.translate(AppLocalization.current_locale, "Preview only — profile changes, roles and live presence are not fetched."); color: AppTheme.subtle; font-size: 12px; wrap: word-wrap; }
                                 }
                             }
                             if (!root.oauth-profile-loaded): Card {
                                 Text { text: AppLocalization.translate(AppLocalization.current_locale, "Sign in to preview your Discord display name, username, avatar and banner."); color: AppTheme.muted; font-size: 13px; wrap: word-wrap; }
+                            }
+                        }
+
+                        // ===================== CUSTOM RPC =====================
+                        if (root.current-page == "Custom"): VerticalLayout {
+                            spacing: 18px;
+                            Text { text: AppLocalization.translate(AppLocalization.current_locale, "Define a completely custom activity."); color: AppTheme.muted; font-size: 14px; wrap: word-wrap; }
+                            Card {
+                                VerticalLayout { spacing: 12px;
+                                    ToggleRow { title: AppLocalization.translate(AppLocalization.current_locale, "Custom RPC enabled"); subtitle: AppLocalization.translate(AppLocalization.current_locale, "Run this mode independently of Media and Manual."); checked <=> root.rpc-custom-enabled; toggled => { root.rpc-mode-toggled("Custom", root.rpc-custom-enabled); } }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Name"); value <=> root.custom-name; placeholder: "Music Presence"; }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "Details"); value <=> root.custom-details; placeholder: "Listening to music"; }
+                                    Field { label: AppLocalization.translate(AppLocalization.current_locale, "State"); value <=> root.custom-state; placeholder: "Artist · Album"; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        SecondaryButton { label: "Playing"; active: root.custom-activity-type == "Playing"; clicked => { root.custom-activity-type = "Playing"; } }
+                                        SecondaryButton { label: "Listening"; active: root.custom-activity-type == "Listening"; clicked => { root.custom-activity-type = "Listening"; } }
+                                        SecondaryButton { label: "Watching"; active: root.custom-activity-type == "Watching"; clicked => { root.custom-activity-type = "Watching"; } }
+                                        SecondaryButton { label: "Competing"; active: root.custom-activity-type == "Competing"; clicked => { root.custom-activity-type = "Competing"; } }
+                                    }
+                                    Text { text: "Assets & field URLs"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Large image key or URL"; value <=> root.custom-large-image; placeholder: "Optional"; }
+                                        Field { label: "Large text"; value <=> root.custom-large-text; placeholder: "Optional"; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Details URL"; value <=> root.custom-details-url; placeholder: "https://…"; }
+                                        Field { label: "State URL"; value <=> root.custom-state-url; placeholder: "https://…"; }
+                                    }
+                                    Field { label: "Large image URL"; value <=> root.custom-large-url; placeholder: "https://…"; }
+                                    Text { text: "Buttons"; color: AppTheme.text; font-size: 14px; font-weight: 600; }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Button 1 label"; value <=> root.custom-button1-label; placeholder: "Open"; }
+                                        Field { label: "Button 1 URL"; value <=> root.custom-button1-url; placeholder: "https://…"; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 8px;
+                                        Field { label: "Button 2 label"; value <=> root.custom-button2-label; placeholder: "Channel"; }
+                                        Field { label: "Button 2 URL"; value <=> root.custom-button2-url; placeholder: "https://…"; }
+                                    }
+                                    HorizontalLayout {
+                                        spacing: 10px;
+                                        PrimaryButton { label: "Apply custom presence"; clicked => { root.custom-presence-update-requested(); } }
+                                        SecondaryButton { label: "Copy from Manual"; active: true; clicked => { root.custom-name = root.activity-name; root.custom-details = root.activity-details; root.custom-state = root.activity-state; root.custom-activity-type = root.activity-type; root.custom-large-image = root.large-image; root.custom-large-text = root.large-text; root.custom-button1-label = root.button1-label; root.custom-button1-url = root.button1-url; root.custom-button2-label = root.button2-label; root.custom-button2-url = root.button2-url; } }
+                                    }
+                                }
                             }
                         }
 
